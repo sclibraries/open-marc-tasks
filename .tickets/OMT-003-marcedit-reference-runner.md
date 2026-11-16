@@ -1,6 +1,6 @@
 Title: Add the MarcEdit reference runner and a check that conformance answers really come from MarcEdit
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new developer tooling; no library behavior changes
 Milestone: M1 — Format and runner
@@ -61,7 +61,7 @@ Verification:
   (runs MarcEdit through Docker) and report its counts.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 73d637a, merged into main (owner OK 2026-11-16). Python 3.9 gate 30 passed, 1 skipped; host reference test passed against MarcEdit 7.6.
 
 Review:
-- (orchestrator fills in)
+- All acceptance tests met; extra 'docker not found' skip accepted. No bloat, no fix round.

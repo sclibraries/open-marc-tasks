@@ -47,4 +47,8 @@ a change that alters it updates it in the same ticket.
   OUTPUT only on success, refuses OUTPUT equal to INPUT.
 - CI: the Python 3.9 job runs in the `python:3.9-slim` container (GitHub's
   runners no longer provide 3.9).
-- Not built yet: the reference and measurement tools, other commands, the importer.
+- Reference runner `tools/marcedit_reference.py` (OMT-003): runs MarcEdit for a
+  case and `regenerate`s `expected.mrc`; `tests/test_reference.py` reruns
+  MarcEdit for every case and fails on any difference (skips without MarcEdit
+  or Docker, as in CI).
+- Not built yet: other commands, the importer, the match-count measurement.
