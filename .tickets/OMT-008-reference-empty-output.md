@@ -1,6 +1,6 @@
 Title: Treat MarcEdit's empty "no changes" output as the input with backslash indicators blanked
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: small — developer tooling only; no library behavior changes
 Milestone: M2 — Commands
@@ -43,7 +43,8 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 1291de9, merged into main (owner OK 2026-11-16). Python 3.9 gate 65 passed, 1 skipped; host reference passed. Real-data measure 8/100 on the 92- and 221-record samples.
 
 Review:
-- (orchestrator fills in)
+- Shared `blank_backslash_indicators` helper; no duplicate rule. No fix round.
+- A raw-record sample then showed MarcEdit also replaces curly quotes and dashes; owner chose a per-task option (OMT-009).
