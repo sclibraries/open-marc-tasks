@@ -1,6 +1,6 @@
 Title: Add the MarcEdit reference runner and a check that conformance answers really come from MarcEdit
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — new developer tooling; no library behavior changes
 Milestone: M1 — Format and runner
