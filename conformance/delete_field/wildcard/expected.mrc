@@ -1,1 +1,1 @@
-00141    a2200061   4500001001900000245002700019856003300046synthetic-wildcard10aSynthetic local fields40uhttps://example.edu/resource
+00151    a2200061   4500001001900000245003700019856003300056synthetic-wildcard10aSynthetic local fields — Café40uhttps://example.edu/resource
