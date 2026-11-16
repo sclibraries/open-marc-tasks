@@ -20,6 +20,12 @@ INVALID_DOCUMENTS = [
     ("nondigit tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "abc"}]}, "step 2"),
     ("unknown setting", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "999", "case_sensitive": True}]}, "step 2"),
     ("step is not an object", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, "delete 999"]}, "step 2"),
+    ("add missing subfields", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0"}]}, "step 2"),
+    ("add bad indicator length", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": "  ", "ind2": "0", "subfields": [["a", "Topic"]]}]}, "step 2"),
+    ("add bad subfield code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["A", "Topic"]]}]}, "step 2"),
+    ("add unknown if_tag_exists", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "if_tag_exists": "unknown"}]}, "step 2"),
+    ("add Leader position 24", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "when": [{"leader": 24, "in": ["a"]}]}]}, "step 2"),
+    ("add empty condition in", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "when": [{"leader": 7, "in": []}]}]}, "step 2"),
 ]
 
 
