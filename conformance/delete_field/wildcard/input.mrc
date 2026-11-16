@@ -1,1 +1,1 @@
-00244    a2200097   4500001001900000245003700019949001500056999002100071999002100092856003300113synthetic-wildcard10aSynthetic local fields — Café  alocal copy  alocal marker one  alocal marker two40uhttps://example.edu/resource
+00234    a2200097   4500001001900000245002700019949001500046999002100061999002100082856003300103synthetic-wildcard10aSynthetic local fields  alocal copy  alocal marker one  alocal marker two40uhttps://example.edu/resource

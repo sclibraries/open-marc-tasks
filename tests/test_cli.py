@@ -9,7 +9,7 @@ from open_marc_tasks import records_match
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-WILDCARD_CASE = REPOSITORY_ROOT / "conformance" / "delete_field" / "wildcard"
+EXACT_TAG_CASE = REPOSITORY_ROOT / "conformance" / "delete_field" / "exact-tag"
 
 
 def synthetic_record():
@@ -53,9 +53,9 @@ def write_task(path, steps=None):
 
 
 def test_run_writes_matching_conformance_output_and_preserves_utf8_bytes(tmp_path):
-    task_path = WILDCARD_CASE / "task.json"
-    input_path = WILDCARD_CASE / "input.mrc"
-    expected_path = WILDCARD_CASE / "expected.mrc"
+    task_path = EXACT_TAG_CASE / "task.json"
+    input_path = EXACT_TAG_CASE / "input.mrc"
+    expected_path = EXACT_TAG_CASE / "expected.mrc"
     output_path = tmp_path / "output.mrc"
 
     result = run_omt(task_path, input_path, output_path)
@@ -63,7 +63,7 @@ def test_run_writes_matching_conformance_output_and_preserves_utf8_bytes(tmp_pat
     assert result.returncode == 0
     assert result.stdout == ""
     assert result.stderr == ""
-    utf8_value = "Café".encode("utf-8")
+    utf8_value = "Café archive".encode("utf-8")
     assert input_path.read_bytes().count(utf8_value) == 1
     assert output_path.read_bytes().count(utf8_value) == 1
     actual_records = read_records(output_path)
