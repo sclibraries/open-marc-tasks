@@ -1,6 +1,6 @@
 Title: Import MarcEdit DELETE and ADD lines into the open format, and measure how many tasks match MarcEdit
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — new behavior (importer, CLI subcommand, dev tool); no new dependencies
 Milestone: M2 — Commands
@@ -95,7 +95,7 @@ Verification:
   and the `tools/measure.py` run above; report both.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 1b4bfa4, merged into main (owner OK 2026-11-16). Python 3.9 gate 53 passed, 1 skipped; host reference and synthetic measure passed.
 
 Review:
-- (orchestrator fills in)
+- Real-data measurement (local): 5 of 100 task files fully translate; all 5 match MarcEdit once backslash indicators are treated as blanks (MarcEdit rewrites them). Owner chose to normalize like MarcEdit (OMT-006).

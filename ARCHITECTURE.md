@@ -49,4 +49,14 @@ a change that alters it updates it in the same ticket.
   case and `regenerate`s `expected.mrc`; `tests/test_reference.py` reruns
   MarcEdit for every case and fails on any difference (skips without MarcEdit
   or Docker, as in CI).
-- Not built yet: other commands, the importer, the match-count measurement.
+- Importer `open_marc_tasks/marcedit_import.py` and `omt import` (OMT-005):
+  translates MarcEdit `DELETE` (tag only, default flags) and `ADD` (options
+  100/101/108, and 106 with Leader-class conditions); lists every other line
+  with a reason and writes a task only when fully translated.
+- `tools/measure.py` (dev only): imports MarcEdit task folders, runs fully
+  translated tasks through the library and MarcEdit on a sample, reports
+  "X of Y task files match MarcEdit". Folders and sample are local paths;
+  nothing from them enters the repo.
+- Not built yet: the other MarcEdit commands (SUBFIELD_EDIT, REPLACE, build
+  field, DELETE by value, SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD,
+  INDICATOR).
