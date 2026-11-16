@@ -55,6 +55,7 @@ Leader positions 00–04 and 12–16 (including the record length and base addre
 ## Conformance
 
 Each `conformance/<command>/<case>/` directory contains `task.json`,
-`input.mrc`, `expected.mrc`, and `marcedit-task.txt`. Expected records are
-generated with the local MarcEdit reference copy. All public conformance data
-is synthetic and uses `example.edu` where a domain is needed.
+`input.mrc`, `expected.mrc`, and `marcedit-task.txt`. Regenerate expected
+records with the local MarcEdit reference copy using
+`python tools/marcedit_reference.py regenerate <case-dir>...`. All public
+conformance data is synthetic and uses `example.edu` where a domain is needed.
