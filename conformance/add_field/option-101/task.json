@@ -1,0 +1,20 @@
+{
+  "format_version": "0.1",
+  "name": "option-101",
+  "description": "Add only when the tag does not already occur.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "650",
+      "ind1": " ",
+      "ind2": "0",
+      "subfields": [
+        [
+          "a",
+          "Added topic"
+        ]
+      ],
+      "if_tag_exists": "skip"
+    }
+  ]
+}

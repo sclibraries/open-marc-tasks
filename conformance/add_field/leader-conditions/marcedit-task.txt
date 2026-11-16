@@ -1,0 +1,1 @@
+ADD	655	\7$aSynthetic genre.$2local	106	/=LDR.{8}[amt][m].+/

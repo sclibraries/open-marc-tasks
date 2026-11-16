@@ -1,0 +1,24 @@
+{
+  "format_version": "0.1",
+  "name": "option-108",
+  "description": "Skip an added field only when the same tag and value already exist.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "650",
+      "ind1": " ",
+      "ind2": "0",
+      "subfields": [
+        [
+          "a",
+          "Same heading"
+        ],
+        [
+          "2",
+          "local"
+        ]
+      ],
+      "if_tag_exists": "skip_if_identical"
+    }
+  ]
+}

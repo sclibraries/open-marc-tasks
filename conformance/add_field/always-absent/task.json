@@ -1,0 +1,23 @@
+{
+  "format_version": "0.1",
+  "name": "always-absent",
+  "description": "Add a new field where its tag is absent.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "506",
+      "ind1": "1",
+      "ind2": " ",
+      "subfields": [
+        [
+          "a",
+          "Added text"
+        ],
+        [
+          "5",
+          "MU"
+        ]
+      ]
+    }
+  ]
+}
