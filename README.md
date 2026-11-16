@@ -12,6 +12,17 @@ write the result to another file. For example:
 omt run tasks/delete-local-fields.json records/input.mrc records/output.mrc
 ```
 
+## Import MarcEdit tasks
+
+Import a tab-separated MarcEdit task file or a `.task` archive with:
+
+```sh
+omt import SOURCE OUT_DIR
+```
+
+The importer writes JSON for tasks it translates completely and reports
+unsupported lines for review. See [the import subset](spec/format.md#importing-marcedit-tasks).
+
 ## Developer: reference runs
 
 With a local MarcEdit copy in `reference/marcedit/`, regenerate expected

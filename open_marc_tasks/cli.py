@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import sys
 import tempfile
@@ -6,6 +7,7 @@ from pathlib import Path
 
 from pymarc import MARCReader
 
+from .marcedit_import import import_marcedit
 from .task import load_task, run_task
 
 
@@ -75,6 +77,33 @@ def _run(task_path, input_path, output_path):
                 pass
 
 
+def _import(source_path, output_dir):
+    result = import_marcedit(source_path)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    incomplete_names = {Path(item.source).stem for item in result.not_translated}
+    not_written = []
+
+    for task in result.tasks:
+        if task.name in incomplete_names:
+            not_written.append(task.name)
+            continue
+        output_path = output_dir / "{}.json".format(task.name)
+        output_path.write_text(
+            json.dumps(task.document, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    for item in result.not_translated:
+        print("{}:{}: {}".format(item.source, item.line_number, item.reason))
+
+    summary = "{} tasks, {} lines not translated".format(
+        len(result.tasks), len(result.not_translated)
+    )
+    if not_written:
+        summary += "; not written: {}".format(", ".join(not_written))
+    print(summary)
+
+
 def main(argv=None):
     parser = ArgumentParser(prog="omt")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -82,10 +111,16 @@ def main(argv=None):
     run_parser.add_argument("task")
     run_parser.add_argument("input")
     run_parser.add_argument("output")
+    import_parser = commands.add_parser("import")
+    import_parser.add_argument("source", type=Path)
+    import_parser.add_argument("out_dir", type=Path)
 
     try:
         arguments = parser.parse_args(argv)
-        _run(arguments.task, arguments.input, arguments.output)
+        if arguments.command == "run":
+            _run(arguments.task, arguments.input, arguments.output)
+        else:
+            _import(arguments.source, arguments.out_dir)
         return 0
     except Exception as error:
         message = " ".join(str(error).splitlines()).strip()
