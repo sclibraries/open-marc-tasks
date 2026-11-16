@@ -136,3 +136,21 @@ Each `conformance/<command>/<case>/` directory contains `task.json`,
 records with the local MarcEdit reference copy using
 `python tools/marcedit_reference.py regenerate <case-dir>...`. All public
 conformance data is synthetic and uses `example.edu` where a domain is needed.
+
+## Importing MarcEdit tasks
+
+`omt import SOURCE OUT_DIR` imports a tab-separated MarcEdit task file or a
+`.task` archive containing `.txt` task entries. It translates plain `DELETE`
+lines with default flags and empty match values, preserving tag patterns such
+as `9XX`. ADD options 100, 101, and 108 map to `if_tag_exists` values `add`,
+`skip`, and `skip_if_identical`. Option 106 uses `add` and supports only the
+Leader conditions `/=LDR.{N}[letters].+/`,
+`/=LDR.{N}[letters][letters].+/`, and `/=LDR.{N}x.+/`; commas in brackets
+separate allowed characters. ADD field text supports blank indicators (`\`),
+subfield markers (`$a`), and the `{dollar}` literal. Control-field ADD lines
+become `data` values. Descriptions come from `#DESCRIPTION#` lines.
+
+Unsupported lines are reported with their source and line number. A task is
+written only when every line has been translated, so partial imports cannot be
+run accidentally. Other MarcEdit commands, non-default DELETE settings,
+character mnemonics, and other ADD condition forms are not translated.

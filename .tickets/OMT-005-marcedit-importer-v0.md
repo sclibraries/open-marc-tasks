@@ -1,6 +1,6 @@
 Title: Import MarcEdit DELETE and ADD lines into the open format, and measure how many tasks match MarcEdit
 
-Status: Ready
+Status: In-Review
 Size: M
 Tier: normal — new behavior (importer, CLI subcommand, dev tool); no new dependencies
 Milestone: M2 — Commands
