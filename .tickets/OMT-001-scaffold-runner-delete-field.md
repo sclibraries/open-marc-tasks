@@ -1,6 +1,6 @@
 Title: Scaffold the package with format v0.1, the task runner, the matching rule, the conformance harness and delete_field
 
-Status: Ready
+Status: In-Review
 Size: M
 Tier: major — new project: first manifest and dependencies
 Milestone: M1 — Format and runner

@@ -1,0 +1,1 @@
+00141    a2200061   4500001002400000009002300024245003200047synthetic-control-exactsynthetic control data10aControl field deletion test

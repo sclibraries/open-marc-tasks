@@ -1,0 +1,8 @@
+{
+  "format_version": "0.1",
+  "name": "Internal X pattern has no match",
+  "description": "MarcEdit leaves the 009 and 029 fields unchanged for an internal X pattern.",
+  "steps": [
+    {"command": "delete_field", "tag": "0X9"}
+  ]
+}

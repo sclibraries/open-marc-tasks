@@ -1,0 +1,8 @@
+{
+  "format_version": "0.1",
+  "name": "Delete one exact tag",
+  "description": "Removes the synthetic 029 field while preserving the rest of the record.",
+  "steps": [
+    {"command": "delete_field", "tag": "029"}
+  ]
+}
