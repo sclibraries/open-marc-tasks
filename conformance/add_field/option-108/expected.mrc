@@ -1,0 +1,1 @@
+00121    a2200061   4500001001400000245002100014650002400035108-identical10aIdentical record 0aSame heading2local00192    a2200085   4500001001400000245002100014650002500035650002400060900002200084108-different10aDifferent record 0aOther heading2local 0aSame heading2local  aHigher-tag marker

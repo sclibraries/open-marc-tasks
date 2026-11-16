@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "control-field",
+  "description": "Add a control field using data rather than indicators or subfields.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "006",
+      "data": "m        "
+    }
+  ]
+}

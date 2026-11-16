@@ -1,0 +1,39 @@
+{
+  "format_version": "0.1",
+  "name": "leader-conditions",
+  "description": "Add when the Leader positions satisfy the MarcEdit condition.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "655",
+      "ind1": " ",
+      "ind2": "7",
+      "subfields": [
+        [
+          "a",
+          "Synthetic genre."
+        ],
+        [
+          "2",
+          "local"
+        ]
+      ],
+      "when": [
+        {
+          "leader": 6,
+          "in": [
+            "a",
+            "m",
+            "t"
+          ]
+        },
+        {
+          "leader": 7,
+          "in": [
+            "m"
+          ]
+        }
+      ]
+    }
+  ]
+}

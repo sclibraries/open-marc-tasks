@@ -1,0 +1,39 @@
+{
+  "format_version": "0.1",
+  "name": "always-present-order",
+  "description": "Add two fields with a tag already present.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "506",
+      "ind1": "1",
+      "ind2": " ",
+      "subfields": [
+        [
+          "a",
+          "First added"
+        ],
+        [
+          "5",
+          "MU"
+        ]
+      ]
+    },
+    {
+      "command": "add_field",
+      "tag": "506",
+      "ind1": "1",
+      "ind2": " ",
+      "subfields": [
+        [
+          "a",
+          "Second added"
+        ],
+        [
+          "5",
+          "MU"
+        ]
+      ]
+    }
+  ]
+}
