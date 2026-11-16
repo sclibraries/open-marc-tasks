@@ -1,6 +1,6 @@
 Title: Treat MarcEdit's empty "no changes" output as the input with backslash indicators blanked
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: small — developer tooling only; no library behavior changes
 Milestone: M2 — Commands
