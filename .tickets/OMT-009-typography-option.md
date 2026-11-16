@@ -1,6 +1,6 @@
 Title: Add a per-task option to normalize typography like MarcEdit, on for imported tasks
 
-Status: In-Progress
+Status: In-Review
 Size: S
 Tier: normal — changes record output when enabled; format gains an optional task property
 Milestone: M2 — Commands
