@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic add-always-102-0",
+  "description": "Synthetic edit_subfield conformance case.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "949",
+      "code": "a",
+      "action": "add",
+      "value": "Online"
+    }
+  ]
+}

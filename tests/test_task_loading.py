@@ -26,6 +26,9 @@ INVALID_DOCUMENTS = [
     ("add unknown if_tag_exists", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "if_tag_exists": "unknown"}]}, "step 2"),
     ("add Leader position 24", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "when": [{"leader": 24, "in": ["a"]}]}]}, "step 2"),
     ("add empty condition in", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "when": [{"leader": 7, "in": []}]}]}, "step 2"),
+    ("edit_subfield bad code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "A", "action": "add", "value": "Topic"}]}, "step 2"),
+    ("edit_subfield unknown action", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "change", "value": "Topic"}]}, "step 2"),
+    ("edit_subfield missing value", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "add"}]}, "step 2"),
 ]
 
 

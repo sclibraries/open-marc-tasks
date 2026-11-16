@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic prepend-start",
+  "description": "Synthetic edit_subfield conformance case.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "952",
+      "code": "a",
+      "action": "prepend",
+      "value": "START-"
+    }
+  ]
+}

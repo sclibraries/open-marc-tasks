@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic clear-values",
+  "description": "Synthetic edit_subfield conformance case.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "958",
+      "code": "a",
+      "action": "clear"
+    }
+  ]
+}

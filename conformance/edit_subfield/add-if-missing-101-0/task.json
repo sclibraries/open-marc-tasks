@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic add-if-missing-101-0",
+  "description": "Synthetic edit_subfield conformance case.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "956",
+      "code": "h",
+      "action": "add_if_missing",
+      "value": "Online"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic remove-matches",
+  "description": "Synthetic edit_subfield conformance case.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "957",
+      "code": "a",
+      "action": "replace",
+      "find": "needle",
+      "replace": ""
+    }
+  ]
+}
