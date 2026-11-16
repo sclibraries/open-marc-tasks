@@ -40,7 +40,9 @@ a change that alters it updates it in the same ticket.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it. Backslash indicators become blanks on every
-  record before steps run (OMT-006, owner decision 2026-11-16).
+  record before steps run (OMT-006, owner decision 2026-11-16). With the task
+  option `normalize_typography` (default false; set true by the importer),
+  curly quotes, dashes and ellipses are replaced like MarcEdit (OMT-009).
 - CLI `omt run TASK INPUT OUTPUT` (`open_marc_tasks/cli.py`, OMT-002): UTF-8
   input only (Leader/09 `a`), refuses empty, unreadable or truncated input and
   records left with no fields, writes through a temporary file and replaces

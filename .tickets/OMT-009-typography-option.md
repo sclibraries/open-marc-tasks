@@ -1,6 +1,6 @@
 Title: Add a per-task option to normalize typography like MarcEdit, on for imported tasks
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — changes record output when enabled; format gains an optional task property
 Milestone: M2 — Commands
@@ -54,7 +54,7 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 5e71ff9, merged into main (owner OK 2026-11-16). Python 3.9 gate 66 passed, 1 skipped; host reference passed.
 
 Review:
-- (orchestrator fills in)
+- Mapping characterized from MarcEdit. No fix round. Follow-up: reference runner's empty-output fill-in must also apply the typography mapping (OMT-010).
