@@ -38,7 +38,8 @@ a change that alters it updates it in the same ticket.
 - Conformance: `conformance/delete_field/` (4 cases) and `conformance/add_field/` (6 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
-  nothing; v0.1 follows it.
+  nothing; v0.1 follows it. Backslash indicators become blanks on every
+  record before steps run (OMT-006, owner decision 2026-11-16).
 - CLI `omt run TASK INPUT OUTPUT` (`open_marc_tasks/cli.py`, OMT-002): UTF-8
   input only (Leader/09 `a`), refuses empty, unreadable or truncated input and
   records left with no fields, writes through a temporary file and replaces

@@ -1,6 +1,6 @@
 Title: Treat backslash indicators as blanks, as MarcEdit does
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — changes record output; no new dependencies
 Milestone: M2 — Commands
@@ -50,7 +50,7 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 3fbdfd8, merged into main (owner OK 2026-11-16). Python 3.9 gate 53 passed, 1 skipped; host reference passed. Real-data measure 5/100.
 
 Review:
-- (orchestrator fills in)
+- MarcEdit blanks backslash indicators on every record, changed or not; subfield values untouched. No fix round.
