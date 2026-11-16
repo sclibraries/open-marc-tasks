@@ -162,6 +162,12 @@ def load_task(path: Union[str, Path]) -> Task:
 
 def run_task(task: Task, records: Iterable[Record]) -> Iterator[Record]:
     for record in records:
+        for field in record.get_fields():
+            if field.indicators is not None and "\\" in field.indicators:
+                field.indicators = tuple(
+                    " " if indicator == "\\" else indicator
+                    for indicator in field.indicators
+                )
         for step in task.steps:
             _, runner = COMMANDS[step["command"]]
             runner(record, step)

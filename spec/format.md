@@ -26,6 +26,12 @@ each step in order to each record in place, and yields records in their input
 order. Records are Unicode; MARC-8 conversion and file input/output are outside
 this version.
 
+## Record handling
+
+Before running task steps, `run_task` replaces each backslash data-field
+indicator with a blank on every input record, including records no step changes.
+Backslashes in subfield values are unchanged.
+
 ## Command: `delete_field`
 
 A step has the form:
