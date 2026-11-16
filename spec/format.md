@@ -2,7 +2,8 @@
 
 ## Task object
 
-A task is a UTF-8 JSON object with these required properties:
+A task is a UTF-8 JSON object. `format_version`, `name`, `description`, and
+`steps` are required; `normalize_typography` is optional.
 
 | Property | Type | Meaning |
 |---|---|---|
@@ -10,6 +11,7 @@ A task is a UTF-8 JSON object with these required properties:
 | `name` | string | A human-readable task name. |
 | `description` | string | A human-readable description. |
 | `steps` | array | Commands to apply in order to each record. |
+| `normalize_typography` | boolean | Whether to apply MarcEdit's observed typography normalization to every record before task steps. Defaults to `false`. |
 
 The JSON Schema for this object is `task.schema.json`. Unknown task properties,
 commands, and command settings are errors. A task file is data and is never
@@ -31,6 +33,13 @@ this version.
 Before running task steps, `run_task` replaces each backslash data-field
 indicator with a blank on every input record, including records no step changes.
 Backslashes in subfield values are unchanged.
+
+When `normalize_typography` is `true`, `run_task` also normalizes control-field
+data and data-field subfield values on every record before running task steps,
+including records no step changes. It maps `“` and `”` to `"`, `‘` and `’` to
+`'`, `—` and `–` to `-`, and `…` to `...`. A no-break space (U+00A0) is unchanged.
+No other characters are normalized by this option. Its default is `false` so
+tasks that omit it do not change record text.
 
 ## Command: `delete_field`
 
