@@ -1,0 +1,16 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic typography normalization",
+  "description": "Normalizes the probed typography on all records.",
+  "normalize_typography": true,
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "245",
+      "code": "a",
+      "action": "replace",
+      "find": "TOKEN",
+      "replace": " “double” ‘single’ — em dash – en dash … ellipsis NBSP"
+    }
+  ]
+}

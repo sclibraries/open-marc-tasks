@@ -200,6 +200,7 @@ def _import_text(text: str, source: str, name: str) -> Tuple[ImportedTask, List[
                 "format_version": "0.1",
                 "name": name,
                 "description": description,
+                "normalize_typography": True,
                 "steps": steps,
             },
         ),

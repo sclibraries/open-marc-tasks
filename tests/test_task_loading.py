@@ -10,6 +10,7 @@ from open_marc_tasks import TaskError, load_task, run_task
 
 VALID_STEP = {"command": "delete_field", "tag": "999"}
 INVALID_DOCUMENTS = [
+    ("non-boolean normalize_typography", {"format_version": "0.1", "name": "x", "description": "x", "normalize_typography": "yes", "steps": [VALID_STEP]}, None),
     ("wrong version", {"format_version": "9.9", "name": "x", "description": "x", "steps": [VALID_STEP]}, None),
     ("missing command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"tag": "999"}]}, "step 2"),
     ("unknown command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "unknown"}]}, "step 2"),
