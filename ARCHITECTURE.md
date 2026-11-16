@@ -41,5 +41,10 @@ a change that alters it updates it in the same ticket.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it.
-- Not built yet: the `omt` CLI (OMT-002), the reference and measurement tools,
-  other commands, the importer.
+- CLI `omt run TASK INPUT OUTPUT` (`open_marc_tasks/cli.py`, OMT-002): UTF-8
+  input only (Leader/09 `a`), refuses empty, unreadable or truncated input and
+  records left with no fields, writes through a temporary file and replaces
+  OUTPUT only on success, refuses OUTPUT equal to INPUT.
+- CI: the Python 3.9 job runs in the `python:3.9-slim` container (GitHub's
+  runners no longer provide 3.9).
+- Not built yet: the reference and measurement tools, other commands, the importer.

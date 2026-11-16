@@ -1,6 +1,6 @@
 Title: Add the omt run command with safe input and output handling, and fix the Python 3.9 CI job
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new user-facing behavior (CLI); no new dependencies
 Milestone: M1 — Format and runner
@@ -56,7 +56,7 @@ Verification:
 - The Python 3.9 gate in AGENTS.md "Build and test", run from the worktree.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 2d814d1 (one fix round), merged into main (owner OK 2026-11-16). Python 3.9 gate 30 passed. Private handoffs in the coordination repo.
 
 Review:
-- (orchestrator fills in)
+- Fix round restored MarcEdit-made fixtures the first round had edited (the ticket named a case without non-ASCII data). No bloat.
