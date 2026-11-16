@@ -14,14 +14,80 @@
     }
   },
   "$defs": {
+    "condition": {
+      "type": "object",
+      "required": ["leader", "in"],
+      "additionalProperties": false,
+      "properties": {
+        "leader": {"type": "integer", "minimum": 0, "maximum": 23},
+        "in": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1, "maxLength": 1}
+        }
+      }
+    },
     "step": {
+      "oneOf": [
+        {"$ref": "#/$defs/delete_field_step"},
+        {"$ref": "#/$defs/add_field_step"}
+      ]
+    },
+    "delete_field_step": {
       "type": "object",
       "required": ["command", "tag"],
       "additionalProperties": false,
       "properties": {
         "command": {"const": "delete_field"},
-        "tag": {"type": "string", "maxLength": 3, "pattern": "^[0-9X]{3}$"}
+        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9X]{3}$"}
       }
+    },
+    "add_field_step": {
+      "type": "object",
+      "required": ["command", "tag"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "add_field"},
+        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
+        "data": {"type": "string"},
+        "ind1": {"type": "string", "minLength": 1, "maxLength": 1},
+        "ind2": {"type": "string", "minLength": 1, "maxLength": 1},
+        "subfields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
+              {"type": "string"}
+            ],
+            "items": false
+          }
+        },
+        "if_tag_exists": {"enum": ["add", "skip", "skip_if_identical"]},
+        "when": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/condition"}
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["data"],
+          "properties": {"tag": {"pattern": "^00[0-9]$"}},
+          "not": {"anyOf": [{"required": ["ind1"]}, {"required": ["ind2"]}, {"required": ["subfields"]}]}
+        },
+        {
+          "required": ["ind1", "ind2", "subfields"],
+          "not": {
+            "anyOf": [
+              {"required": ["data"]},
+              {"required": ["tag"], "properties": {"tag": {"pattern": "^00[0-9]$"}}}
+            ]
+          }
+        }
+      ]
     }
   }
 }

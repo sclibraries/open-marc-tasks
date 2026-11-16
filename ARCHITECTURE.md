@@ -30,14 +30,12 @@ a change that alters it updates it in the same ticket.
 
 ## Status
 
-- Format v0.1 with one command, `delete_field` (OMT-001, 2026-11-16).
+- Format v0.1 with `delete_field` (OMT-001) and `add_field` (OMT-004), both added 2026-11-16.
 - `load_task` (plain-Python validation, `TaskError` with step numbers),
   `run_task` (modifies records in place, yields them in order) and
   `records_match` live in `open_marc_tasks/task.py` and `match.py`. Commands
-  are dispatched by name in `task.py`; a dispatch table is due with the
-  second command.
-- Conformance: `conformance/delete_field/` (4 cases), expected output from
-  MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
+  are dispatched by name through the per-command table in `task.py`.
+- Conformance: `conformance/delete_field/` (4 cases) and `conformance/add_field/` (6 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it.
