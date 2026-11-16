@@ -1,0 +1,8 @@
+{
+  "format_version": "0.1",
+  "name": "Normalize backslash indicators",
+  "description": "MarcEdit blanks backslash data-field indicators while deleting tag 900 when present.",
+  "steps": [
+    {"command": "delete_field", "tag": "900"}
+  ]
+}
