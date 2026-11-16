@@ -34,7 +34,8 @@ a change that alters it updates it in the same ticket.
 - `load_task` (plain-Python validation, `TaskError` with step numbers),
   `run_task` (modifies records in place, yields them in order) and
   `records_match` live in `open_marc_tasks/task.py` and `match.py`. Commands
-  are dispatched by name through the per-command table in `task.py`.
+  are dispatched by name through the table in `task.py`; each command module
+  (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
 - Conformance: `conformance/delete_field/` (4 cases) and `conformance/add_field/` (6 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
@@ -58,6 +59,7 @@ a change that alters it updates it in the same ticket.
   translated tasks through the library and MarcEdit on a sample, reports
   "X of Y task files match MarcEdit". Folders and sample are local paths;
   nothing from them enters the repo.
-- Not built yet: the other MarcEdit commands (SUBFIELD_EDIT, REPLACE, build
+- `edit_subfield` (OMT-007): every non-regex SUBFIELD_EDIT form; `0|2` (regex) is not translated yet.
+- Not built yet: the other MarcEdit commands (REPLACE, SUBFIELD_EDIT regex, build
   field, DELETE by value, SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD,
   INDICATOR).

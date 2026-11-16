@@ -1,6 +1,6 @@
 Title: Add the edit_subfield command for MarcEdit SUBFIELD_EDIT, with importer mapping
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — new command behavior; no new dependencies
 Milestone: M2 — Commands
@@ -69,7 +69,8 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 8e613e8 (one fix round), merged into main (owner OK 2026-11-16). Python 3.9 gate 65 passed, 1 skipped; host reference passed.
 
 Review:
-- (orchestrator fills in)
+- Round 1 stopped on the regex form (ticket wording too broad) after characterizing every form; fix round built all non-regex forms. `0|2` (regex) stays not translated until REPLACE.
+- Real-data measure: 8 tasks fully translate; 3 show as differing only because of a reference-runner artifact (OMT-008).
