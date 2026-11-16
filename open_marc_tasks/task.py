@@ -31,7 +31,7 @@ def blank_backslash_indicators(record: Record) -> None:
             )
 
 
-def _normalize_typography(record: Record) -> None:
+def normalize_typography(record: Record) -> None:
     for field in record.get_fields():
         if field.is_control_field():
             field.data = field.data.translate(_TYPOGRAPHY_TRANSLATION)
@@ -142,7 +142,7 @@ def run_task(task: Task, records: Iterable[Record]) -> Iterator[Record]:
     for record in records:
         blank_backslash_indicators(record)
         if task.normalize_typography:
-            _normalize_typography(record)
+            normalize_typography(record)
         for step in task.steps:
             _, runner = COMMANDS[step["command"]]
             runner(record, step)
