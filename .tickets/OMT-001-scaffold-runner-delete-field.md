@@ -1,6 +1,6 @@
 Title: Scaffold the package with format v0.1, the task runner, the matching rule, the conformance harness and delete_field
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: major — new project: first manifest and dependencies
 Milestone: M1 — Format and runner
@@ -115,7 +115,8 @@ Plan check (2026-11-16, OMT-001 01-verify, BLOCKING) answered:
 - More than five real findings, so the ticket was split (CLI → OMT-002) per the tier rules.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 32dffb9, merged into main as df1d64a (owner OK 2026-11-16). Python 3.9 gate 22 passed with pymarc 5.3.1 and 5.1.2. Expected outputs from MarcEdit 7.6. Private handoff in the coordination repo.
 
 Review:
-- (orchestrator fills in)
+- All acceptance tests met; one extra conformance case (exact-control-tag), justified. No bloat, no fix round.
+- MarcEdit ignores an X before a later digit (0X9 deletes nothing); v0.1 follows it. Proposed: the format rejects internal X and the importer reports such lines (importer ticket).
