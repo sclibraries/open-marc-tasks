@@ -1,6 +1,6 @@
 Title: Apply MarcEdit's typography mapping in the reference runner's empty-output fill-in
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: small — developer tooling only; no library behavior changes
 Milestone: M2 — Commands
