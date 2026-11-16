@@ -1,6 +1,6 @@
 Title: Add the add_field command with MarcEdit's placement, its skip options and Leader conditions
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — new command behavior; no new dependencies
 Milestone: M2 — Commands
@@ -77,7 +77,8 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head d6c8e50, merged into main (owner OK 2026-11-16). Python 3.9 gate 36 passed, 1 skipped; host reference test passed against MarcEdit 7.6.
 
 Review:
-- (orchestrator fills in)
+- Placement rules for options 100/101/108 characterized from MarcEdit and specified. No fix round.
+- Notes: no '07 = s' Leader case; move validators into command modules in the next command ticket.
