@@ -30,7 +30,8 @@
     "step": {
       "oneOf": [
         {"$ref": "#/$defs/delete_field_step"},
-        {"$ref": "#/$defs/add_field_step"}
+        {"$ref": "#/$defs/add_field_step"},
+        {"$ref": "#/$defs/edit_subfield_step"}
       ]
     },
     "delete_field_step": {
@@ -85,6 +86,61 @@
               {"required": ["data"]},
               {"required": ["tag"], "properties": {"tag": {"pattern": "^00[0-9]$"}}}
             ]
+          }
+        }
+      ]
+    },
+    "edit_subfield_step": {
+      "type": "object",
+      "required": ["command", "tag", "code", "action"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "edit_subfield"},
+        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
+        "code": {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
+        "action": {"enum": ["add", "add_if_missing", "replace", "replace_first", "append", "prepend", "clear"]},
+        "value": {"type": "string"},
+        "find": {"type": "string", "minLength": 1},
+        "replace": {"type": "string"},
+        "when": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/condition"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"action": {"enum": ["add", "add_if_missing", "append", "prepend"]}},
+            "required": ["action"]
+          },
+          "then": {
+            "required": ["value"],
+            "not": {"anyOf": [{"required": ["find"]}, {"required": ["replace"]}]}
+          }
+        },
+        {
+          "if": {
+            "properties": {"action": {"enum": ["replace", "replace_first"]}},
+            "required": ["action"]
+          },
+          "then": {
+            "required": ["find", "replace"],
+            "not": {"required": ["value"]}
+          }
+        },
+        {
+          "if": {
+            "properties": {"action": {"const": "clear"}},
+            "required": ["action"]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {"required": ["value"]},
+                {"required": ["find"]},
+                {"required": ["replace"]}
+              ]
+            }
           }
         }
       ]

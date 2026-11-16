@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic append-end",
+  "description": "Synthetic edit_subfield conformance case.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "951",
+      "code": "a",
+      "action": "append",
+      "value": "-END"
+    }
+  ]
+}

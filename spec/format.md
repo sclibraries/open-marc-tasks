@@ -127,6 +127,47 @@ example, the following requires both conditions to hold:
 }
 ```
 
+## Command: `edit_subfield`
+
+A step edits subfields of data fields with one exact tag:
+
+```json
+{"command": "edit_subfield", "tag": "949", "code": "h", "action": "add", "value": "Online"}
+```
+
+`tag` is three ASCII digits. `code` is one lowercase ASCII letter or digit.
+For each matching data field, the command applies the action to every matching
+subfield. Repeated fields with the same tag are processed. If no field has the
+tag, no change is made. The optional `when` setting uses the Leader conditions
+defined above; all conditions must hold.
+
+| `action` | Required settings | Behavior |
+|---|---|---|
+| `add` | `value` | Append a new subfield with `code` and `value` to every matching field, even if it already has that code. |
+| `add_if_missing` | `value` | Append one new subfield only to matching fields that have no subfield with `code`. Existing values are unchanged. |
+| `replace` | non-empty `find`, `replace` | Replace every literal, case-sensitive occurrence of `find` in every matching subfield value. `replace` may be empty, which removes the matched text. |
+| `replace_first` | non-empty `find`, `replace` | Replace only the first literal, case-insensitive occurrence of `find` in each matching subfield value. `replace` may be empty. |
+| `append` | `value` | Append `value` to every matching subfield value. |
+| `prepend` | `value` | Prepend `value` to every matching subfield value. |
+| `clear` | none | Set every matching subfield value to the empty string, leaving the subfields in place. |
+
+The observed MarcEdit 7.6 `SUBFIELD_EDIT` forms map as follows:
+
+| Find | Replace | Flags | `edit_subfield` settings |
+|---|---|---|---|
+| empty | text | `102|0` | `action: "add"`, `value: replace` |
+| literal text | text | `0|0` | `action: "replace"`, `find`, `replace` |
+| `^e` | text | `0|0` | `action: "append"`, `value: replace` |
+| `^b` | text | `0|0` | `action: "prepend"`, `value: replace` |
+| empty | text | `101|0` | `action: "add_if_missing"`, `value: replace` |
+| literal text | empty | `0|0` | `action: "replace"`, `find`, `replace: ""` |
+| empty | empty | `0|0` | `action: "clear"` |
+| literal text | text | `0|1` | `action: "replace_first"`, `find`, `replace` (case-insensitive) |
+
+MarcEdit's `0|2` form treats `find` as a regular expression. It is not supported
+by this command or importer; the importer reports it as not translated with
+`SUBFIELD_EDIT regular expressions are not supported yet`.
+
 ## Record matching
 
 `records_match(a, b)` compares records without changing either input. It
@@ -155,6 +196,10 @@ Leader conditions `/=LDR.{N}[letters].+/`,
 separate allowed characters. ADD field text supports blank indicators (`\`),
 subfield markers (`$a`), and the `{dollar}` literal. Control-field ADD lines
 become `data` values. Descriptions come from `#DESCRIPTION#` lines.
+
+The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above.
+Regex `SUBFIELD_EDIT` forms are not translated and are reported with the reason
+`SUBFIELD_EDIT regular expressions are not supported yet`.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be

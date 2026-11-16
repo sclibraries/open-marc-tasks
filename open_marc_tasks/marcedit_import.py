@@ -141,6 +141,36 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, str(error)
         return step, ""
 
+    if command == "SUBFIELD_EDIT":
+        if len(columns) != 6:
+            return None, "malformed SUBFIELD_EDIT line"
+        _, tag, code, find, replacement, flags = columns
+        if len(tag) != 3 or any(char not in "0123456789" for char in tag):
+            return None, "invalid SUBFIELD_EDIT tag"
+        if len(code) != 1 or code not in "abcdefghijklmnopqrstuvwxyz0123456789":
+            return None, "invalid SUBFIELD_EDIT subfield code"
+        if flags == "0|2":
+            return None, "SUBFIELD_EDIT regular expressions are not supported yet"
+
+        step = {"command": "edit_subfield", "tag": tag, "code": code}
+        if flags == "102|0" and find == "" and replacement:
+            step.update({"action": "add", "value": replacement})
+        elif flags == "101|0" and find == "" and replacement:
+            step.update({"action": "add_if_missing", "value": replacement})
+        elif flags == "0|0" and find == "^e" and replacement:
+            step.update({"action": "append", "value": replacement})
+        elif flags == "0|0" and find == "^b" and replacement:
+            step.update({"action": "prepend", "value": replacement})
+        elif flags == "0|0" and find == "" and replacement == "":
+            step["action"] = "clear"
+        elif flags == "0|0" and find:
+            step.update({"action": "replace", "find": find, "replace": replacement})
+        elif flags == "0|1" and find and replacement:
+            step.update({"action": "replace_first", "find": find, "replace": replacement})
+        else:
+            return None, "unsupported SUBFIELD_EDIT settings"
+        return step, ""
+
     return None, "unknown MarcEdit command"
 
 
