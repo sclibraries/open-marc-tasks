@@ -1,7 +1,7 @@
 {
   "format_version": "0.1",
-  "name": "Delete 0 digit 9 tags",
-  "description": "Removes a control field and a data field, and leaves a record without a match unchanged.",
+  "name": "Internal X pattern has no match",
+  "description": "MarcEdit leaves the 009 and 029 fields unchanged for an internal X pattern.",
   "steps": [
     {"command": "delete_field", "tag": "0X9"}
   ]

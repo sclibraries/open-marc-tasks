@@ -20,7 +20,7 @@
       "additionalProperties": false,
       "properties": {
         "command": {"const": "delete_field"},
-        "tag": {"type": "string", "pattern": "^[0-9X]{3}$"}
+        "tag": {"type": "string", "maxLength": 3, "pattern": "^[0-9X]{3}$"}
       }
     }
   }
