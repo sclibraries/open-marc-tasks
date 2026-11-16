@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import pytest
@@ -16,8 +17,12 @@ def read_records(path):
         return list(MARCReader(source, to_unicode=True, utf8_handling="strict"))
 
 
-@pytest.mark.skipif(not MARCEDIT_DIR.is_dir(), reason="reference/marcedit not found")
 def test_expected_outputs_match_fresh_marcedit_runs(tmp_path):
+    if not MARCEDIT_DIR.is_dir():
+        pytest.skip("reference/marcedit not found")
+    if shutil.which("docker") is None:
+        pytest.skip("docker not found")
+
     from tools.marcedit_reference import run_marcedit
 
     cases = sorted(path for path in CONFORMANCE_ROOT.glob("*/*") if path.is_dir())

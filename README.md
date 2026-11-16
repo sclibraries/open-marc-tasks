@@ -11,3 +11,15 @@ write the result to another file. For example:
 ```sh
 omt run tasks/delete-local-fields.json records/input.mrc records/output.mrc
 ```
+
+## Developer: reference runs
+
+With a local MarcEdit copy in `reference/marcedit/`, regenerate expected
+outputs with:
+
+```sh
+python tools/marcedit_reference.py regenerate conformance/delete_field/*
+```
+
+Check the committed answers against fresh MarcEdit runs with
+`python3 -m pytest -q tests/test_reference.py`.
