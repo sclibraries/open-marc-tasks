@@ -16,6 +16,15 @@ class Task(NamedTuple):
     steps: List[Dict[str, Any]]
 
 
+def blank_backslash_indicators(record: Record) -> None:
+    for field in record.get_fields():
+        if field.indicators is not None and "\\" in field.indicators:
+            field.indicators = tuple(
+                " " if indicator == "\\" else indicator
+                for indicator in field.indicators
+            )
+
+
 def _unknown_settings(step: Dict[str, Any], allowed: set, number: int) -> None:
     unknown = set(step) - allowed
     if unknown:
@@ -109,12 +118,7 @@ def load_task(path: Union[str, Path]) -> Task:
 
 def run_task(task: Task, records: Iterable[Record]) -> Iterator[Record]:
     for record in records:
-        for field in record.get_fields():
-            if field.indicators is not None and "\\" in field.indicators:
-                field.indicators = tuple(
-                    " " if indicator == "\\" else indicator
-                    for indicator in field.indicators
-                )
+        blank_backslash_indicators(record)
         for step in task.steps:
             _, runner = COMMANDS[step["command"]]
             runner(record, step)
