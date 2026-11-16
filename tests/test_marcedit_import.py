@@ -147,6 +147,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "format_version": "0.1",
         "name": "Synthetic task",
         "description": "Synthetic description",
+        "normalize_typography": True,
         "steps": [step],
     }
     task_path = tmp_path / "task.json"

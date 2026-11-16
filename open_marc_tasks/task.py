@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, NamedTuple, Union
 
-from pymarc import Record
+from pymarc import Record, Subfield
 
 
 class TaskError(ValueError):
@@ -13,7 +13,13 @@ class Task(NamedTuple):
     format_version: str
     name: str
     description: str
+    normalize_typography: bool
     steps: List[Dict[str, Any]]
+
+
+_TYPOGRAPHY_TRANSLATION = str.maketrans(
+    {"“": '"', "”": '"', "‘": "'", "’": "'", "—": "-", "–": "-", "…": "..."}
+)
 
 
 def blank_backslash_indicators(record: Record) -> None:
@@ -23,6 +29,17 @@ def blank_backslash_indicators(record: Record) -> None:
                 " " if indicator == "\\" else indicator
                 for indicator in field.indicators
             )
+
+
+def _normalize_typography(record: Record) -> None:
+    for field in record.get_fields():
+        if field.is_control_field():
+            field.data = field.data.translate(_TYPOGRAPHY_TRANSLATION)
+        else:
+            field.subfields = [
+                Subfield(subfield.code, subfield.value.translate(_TYPOGRAPHY_TRANSLATION))
+                for subfield in field.subfields
+            ]
 
 
 def _unknown_settings(step: Dict[str, Any], allowed: set, number: int) -> None:
@@ -82,8 +99,9 @@ def load_task(path: Union[str, Path]) -> Task:
         raise TaskError("task must be a JSON object")
 
     required = {"format_version", "name", "description", "steps"}
+    optional = {"normalize_typography"}
     missing = required - set(document)
-    unknown = set(document) - required
+    unknown = set(document) - required - optional
     if missing:
         raise TaskError("missing task property: {}".format(sorted(missing)[0]))
     if unknown:
@@ -96,6 +114,9 @@ def load_task(path: Union[str, Path]) -> Task:
         raise TaskError("task description must be a string")
     if not isinstance(document["steps"], list):
         raise TaskError("task steps must be an array")
+    normalize_typography = document.get("normalize_typography", False)
+    if not isinstance(normalize_typography, bool):
+        raise TaskError("normalize_typography must be a boolean")
 
     for number, step in enumerate(document["steps"], start=1):
         if not isinstance(step, dict):
@@ -112,6 +133,7 @@ def load_task(path: Union[str, Path]) -> Task:
         document["format_version"],
         document["name"],
         document["description"],
+        normalize_typography,
         document["steps"],
     )
 
@@ -119,6 +141,8 @@ def load_task(path: Union[str, Path]) -> Task:
 def run_task(task: Task, records: Iterable[Record]) -> Iterator[Record]:
     for record in records:
         blank_backslash_indicators(record)
+        if task.normalize_typography:
+            _normalize_typography(record)
         for step in task.steps:
             _, runner = COMMANDS[step["command"]]
             runner(record, step)
