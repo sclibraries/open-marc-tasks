@@ -1,11 +1,19 @@
 import argparse
-from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
+from pathlib import Path
 
+from pymarc import MARCReader
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+if str(REPOSITORY_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT))
+
+from open_marc_tasks.task import blank_backslash_indicators
+
+
 IMAGE = "mcr.microsoft.com/dotnet/runtime-deps:8.0"
 
 
@@ -52,7 +60,11 @@ def run_marcedit(tasks_file: Path, input_mrc: Path, output_mrc: Path, marcedit_d
         )
 
         if generated_output.stat().st_size == 0:
-            shutil.copyfile(input_copy, output_mrc)
+            with input_copy.open("rb") as source, output_mrc.open("wb") as destination:
+                reader = MARCReader(source, to_unicode=True, utf8_handling="strict")
+                for record in reader:
+                    blank_backslash_indicators(record)
+                    destination.write(record.as_marc())
         else:
             shutil.copyfile(generated_output, output_mrc)
 
