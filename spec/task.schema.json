@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Open MARC Task v0.1",
+  "type": "object",
+  "required": ["format_version", "name", "description", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "format_version": {"const": "0.1"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "steps": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/step"}
+    }
+  },
+  "$defs": {
+    "step": {
+      "type": "object",
+      "required": ["command", "tag"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "delete_field"},
+        "tag": {"type": "string", "pattern": "^[0-9X]{3}$"}
+      }
+    }
+  }
+}

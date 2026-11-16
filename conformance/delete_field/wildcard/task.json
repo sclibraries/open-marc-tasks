@@ -1,0 +1,8 @@
+{
+  "format_version": "0.1",
+  "name": "Delete local tags by wildcard",
+  "description": "Removes every 9XX field while preserving 856.",
+  "steps": [
+    {"command": "delete_field", "tag": "9XX"}
+  ]
+}

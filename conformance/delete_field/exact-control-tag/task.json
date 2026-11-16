@@ -1,0 +1,8 @@
+{
+  "format_version": "0.1",
+  "name": "Delete an exact control tag",
+  "description": "Removes a synthetic 009 control field.",
+  "steps": [
+    {"command": "delete_field", "tag": "009"}
+  ]
+}

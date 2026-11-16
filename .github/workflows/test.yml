@@ -1,0 +1,23 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python-version: "3.9"
+            pymarc: "pymarc==5.1.2"
+          - python-version: "3.13"
+            pymarc: "pymarc>=5.1.2,<6"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e ".[test]" "${{ matrix.pymarc }}"
+      - run: python -m pytest -q

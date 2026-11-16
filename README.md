@@ -1,2 +1,4 @@
-# open-marc-tasks
-An open, documented task format and a pymarc library for batch-editing MARC records, with an importer for MarcEdit task files.
+# Open MARC Tasks
+
+Open MARC Tasks is a portable JSON format and Python library for running batch
+edits on MARC records. See the [format and runner specification](spec/format.md).

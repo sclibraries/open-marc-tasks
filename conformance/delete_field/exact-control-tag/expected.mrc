@@ -1,0 +1,1 @@
+00106    a2200049   4500001002400000245003200024synthetic-control-exact10aControl field deletion test
