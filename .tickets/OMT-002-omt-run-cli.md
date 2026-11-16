@@ -1,6 +1,6 @@
 Title: Add the omt run command with safe input and output handling, and fix the Python 3.9 CI job
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — new user-facing behavior (CLI); no new dependencies
 Milestone: M1 — Format and runner
