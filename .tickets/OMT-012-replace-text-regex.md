@@ -1,6 +1,6 @@
 Title: Add regex mode to replace_text with a portable regex dialect
 
-Status: Ready
+Status: In-Progress
 Size: M
 Tier: major — format contract: regex dialect and replacement syntax other implementations must follow
 Milestone: M2 — Commands
