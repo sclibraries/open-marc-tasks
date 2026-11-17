@@ -1,6 +1,6 @@
 Title: Add the field text form and plain replace_text (MarcEdit plain REPLACE)
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: major — format contract: defines the field text form other implementations must follow
 Milestone: M2 — Commands
@@ -127,7 +127,7 @@ Plan check (2026-11-17, OMT-011 01-verify, BLOCKING) answered:
 - More than five real findings, so the ticket was split (regex → OMT-012).
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 254a596, merged into main (owner OK 2026-11-17). Python 3.9 gate 84 passed, 1 skipped; host reference passed. Measure 15/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Text form and escapes characterized from MarcEdit; deliberate lossless deviation on literal "{dollar}" text, documented. No fix round.
