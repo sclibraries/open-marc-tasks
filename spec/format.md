@@ -333,9 +333,11 @@ Regex `REPLACE` lines with find flags `2`, an empty condition, replace flags
 `0`, and final flag `False` map to `replace_text` with `regex: true`. They may
 also use a bare Leader condition in one of the forms `=LDR.{N}[letters].+`,
 `=LDR.{N}[letters][letters].+`, or `=LDR.{N}x.+`, mapped to the corresponding
-zero-based Leader positions. Unlike ADD option 106, these conditions have no
-slash delimiters. In regex find or replace text, `{n}`, `{n,}`, and `{n,m}`
-are quantifiers, not character mnemonics; any other `{name}` is unsupported.
+zero-based Leader positions. Conditional lines use replace flags `2` in the
+sixth column; the sixth column is `0` only when the condition is empty. Unlike
+ADD option 106, REPLACE conditions have no slash delimiters. In regex find or
+replace text, `{n}`, `{n,}`, and `{n,m}` are quantifiers, not character
+mnemonics; any other `{name}` is unsupported.
 Regex patterns and replacements that fail the task loader's `replace_text`
 rules are reported as not translated with the loader's reason. Other REPLACE
 flags, final flag `True`, `0|1`, and non-Leader conditions are not translated.

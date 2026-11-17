@@ -194,7 +194,7 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
         _, find, replacement, find_flags, condition, replace_flags, case_sensitive = columns
         if (
             find_flags not in ("0", "2")
-            or replace_flags != "0"
+            or replace_flags != ("2" if condition else "0")
             or case_sensitive != "False"
             or (find_flags == "0" and condition)
         ):

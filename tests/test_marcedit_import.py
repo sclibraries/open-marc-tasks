@@ -89,7 +89,7 @@ from open_marc_tasks.task import load_task
             },
         ),
         (
-            "REPLACE\tfind\treplace\t2\t=LDR.{8}[e,f,g,k].+\t0\tFalse",
+            "REPLACE\tfind\treplace\t2\t=LDR.{8}[e,f,g,k].+\t2\tFalse",
             {
                 "command": "replace_text",
                 "find": "find",
@@ -99,7 +99,7 @@ from open_marc_tasks.task import load_task
             },
         ),
         (
-            "REPLACE\tfind\treplace\t2\t=LDR.{8}[a,c,d,i,j,m,o,p,r,t][c,m,s,i].+\t0\tFalse",
+            "REPLACE\tfind\treplace\t2\t=LDR.{8}[a,c,d,i,j,m,o,p,r,t][c,m,s,i].+\t2\tFalse",
             {
                 "command": "replace_text",
                 "find": "find",
@@ -220,6 +220,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "REPLACE\t(?=a)a\treplacement\t2\t\t0\tFalse",
         "REPLACE\tfind{eacute}\treplacement\t2\t\t0\tFalse",
         "REPLACE\tfind\treplacement\t2\t=008.+\t0\tFalse",
+        "REPLACE\tfind\treplacement\t2\t=LDR.{8}g.+\t0\tFalse",
         "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
         "TASK_LIST\tSynthetic task list",
         "MYSTERY\tSynthetic unknown command",
