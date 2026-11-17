@@ -80,6 +80,47 @@ from open_marc_tasks.task import load_task
             },
         ),
         (
+            "REPLACE\t(=008.{25}).{1}(.+)\t$1o$2\t2\t\t0\tFalse",
+            {
+                "command": "replace_text",
+                "find": "(=008.{25}).{1}(.+)",
+                "replace": "$1o$2",
+                "regex": True,
+            },
+        ),
+        (
+            "REPLACE\tfind\treplace\t2\t=LDR.{8}[e,f,g,k].+\t2\tFalse",
+            {
+                "command": "replace_text",
+                "find": "find",
+                "replace": "replace",
+                "regex": True,
+                "when": [{"leader": 6, "in": ["e", "f", "g", "k"]}],
+            },
+        ),
+        (
+            "REPLACE\tfind\treplace\t2\t=LDR.{8}[a,c,d,i,j,m,o,p,r,t][c,m,s,i].+\t2\tFalse",
+            {
+                "command": "replace_text",
+                "find": "find",
+                "replace": "replace",
+                "regex": True,
+                "when": [
+                    {"leader": 6, "in": ["a", "c", "d", "i", "j", "m", "o", "p", "r", "t"]},
+                    {"leader": 7, "in": ["c", "m", "s", "i"]},
+                ],
+            },
+        ),
+        (
+            "REPLACE\t\\w{1,3}\tx\t2\t\t0\tFalse",
+            {
+                "command": "replace_text",
+                "find": r"\w{1,3}",
+                "replace": "x",
+                "regex": True,
+            },
+        ),
+        (
             "ADD\t500\t\\\\$aCost {dollar} 5\t100\t",
             {
                 "command": "add_field",
@@ -165,6 +206,9 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "DELETE\t245\t$aSynthetic match\t0\tFalse\tFalse\tFalse\tFalse\tFalse",
         "DELETE\t245\t\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+//",
+        "ADD\t655\t\\7$aSynthetic genre\t106\t=LDR.{8}g.+",
+        "ADD\t655\t\\7$aSynthetic genre\t106\t/=LDR.{8}g.+",
+        "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}g.+//",
         "ADD\t650\t\\0$aSynthetic topic\t999\t",
         "ADD\t650\t\\0$aCaf{eacute}\t100\t",
         "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|2",
@@ -172,6 +216,11 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "REPLACE\tbefore\tafter\t0\t/=LDR.{6}a.+/\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t\t0\tTrue",
         "REPLACE\tbefore\tafter\t0|1\t\t",
+        "REPLACE\tfind\t$&\t2\t\t0\tFalse",
+        "REPLACE\t(?=a)a\treplacement\t2\t\t0\tFalse",
+        "REPLACE\tfind{eacute}\treplacement\t2\t\t0\tFalse",
+        "REPLACE\tfind\treplacement\t2\t=008.+\t0\tFalse",
+        "REPLACE\tfind\treplacement\t2\t=LDR.{8}g.+\t0\tFalse",
         "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
         "TASK_LIST\tSynthetic task list",
         "MYSTERY\tSynthetic unknown command",
