@@ -1,0 +1,1 @@
+00259    a2200097   4500001002700000600002700027650001900054690003000073691003100103245002700134SYNTHETIC-DELETE-INDICATOR 6aMatching personal name 6aMatching topic16aDifferent first indicator 7aDifferent second indicator 6aOutside 6XX tag family

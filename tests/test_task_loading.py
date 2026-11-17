@@ -20,6 +20,8 @@ INVALID_DOCUMENTS = [
     ("lowercase tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "9xx"}]}, "step 2"),
     ("nondigit tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "abc"}]}, "step 2"),
     ("unknown setting", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "999", "case_sensitive": True}]}, "step 2"),
+    ("delete_field non-string match", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "650", "match": 1}]}, "step 2"),
+    ("delete_field non-boolean match_regex", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "650", "match": "x", "match_regex": "yes"}]}, "step 2"),
     ("step is not an object", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, "delete 999"]}, "step 2"),
     ("add missing subfields", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0"}]}, "step 2"),
     ("add bad indicator length", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": "  ", "ind2": "0", "subfields": [["a", "Topic"]]}]}, "step 2"),
@@ -88,6 +90,19 @@ REGEX_INVALID_DOCUMENTS.extend(
     )
     for replacement in ("$12", "$0", "$&", "${1}")
 )
+REGEX_INVALID_DOCUMENTS.append(
+    (
+        "delete_field invalid regex pattern",
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "delete_field", "tag": "650", "match": "(?=a)", "match_regex": True},
+            ]
+        ),
+        "step 2",
+        True,
+    )
+)
 INVALID_TASK_CASES = [
     (name, document, step_number, False)
     for name, document, step_number in INVALID_DOCUMENTS
@@ -128,6 +143,12 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert "setting replace" in str(error.value)
     if name == "replace_text non-boolean regex":
         assert "regex" in str(error.value)
+    if name == "delete_field non-string match":
+        assert "match" in str(error.value)
+    if name == "delete_field non-boolean match_regex":
+        assert "match_regex" in str(error.value)
+    if name == "delete_field invalid regex pattern":
+        assert "special groups are not supported" in str(error.value)
     if schema_valid:
         jsonschema.validate(document, task_schema)
     else:

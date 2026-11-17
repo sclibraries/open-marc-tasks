@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic match-regex-end-anchor",
+  "description": "Synthetic delete_field conformance case.",
+  "steps": [
+    {
+      "command": "delete_field",
+      "tag": "856",
+      "match": "^=856  40\\$uhttps:\\/\\/example\\.edu\\/journal\\/.+$",
+      "match_regex": true
+    }
+  ]
+}

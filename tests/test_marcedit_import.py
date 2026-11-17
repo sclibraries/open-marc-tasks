@@ -20,6 +20,22 @@ from open_marc_tasks.task import load_task
             {"command": "delete_field", "tag": "9XX"},
         ),
         (
+            "DELETE\t655\tElectronic books\t0\tFalse\tFalse\tFalse\tFalse\tFalse",
+            {"command": "delete_field", "tag": "655", "match": "Electronic books"},
+        ),
+        (
+            "DELETE\t856\t" r"^=856  40\$uhttps:\/\/example\.edu\/journal\/.+$" "\t2\tFalse\tFalse\tFalse\tFalse\tFalse",
+            {"command": "delete_field", "tag": "856", "match": r"^=856  40\$uhttps:\/\/example\.edu\/journal\/.+$", "match_regex": True},
+        ),
+        (
+            "DELETE\t655\tElectronic books\t0\tFalse\tTrue\tFalse\tFalse\tFalse",
+            {"command": "delete_field", "tag": "655", "match": "Electronic books", "delete_nonmatches": True},
+        ),
+        (
+            "DELETE\t856\t" r"^=856  40\$uhttps:\/\/example\.edu\/journal\/.+$" "\t2\tFalse\tTrue\tFalse\tFalse\tFalse",
+            {"command": "delete_field", "tag": "856", "match": r"^=856  40\$uhttps:\/\/example\.edu\/journal\/.+$", "match_regex": True, "delete_nonmatches": True},
+        ),
+        (
             "ADD\t506\t1\\$aSynthetic text\t100\t",
             {
                 "command": "add_field",
@@ -203,7 +219,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
 @pytest.mark.parametrize(
     "line",
     [
-        "DELETE\t245\t$aSynthetic match\t0\tFalse\tFalse\tFalse\tFalse\tFalse",
+        "DELETE\t245\t$aSynthetic match\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "DELETE\t245\t\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+//",
         "ADD\t655\t\\7$aSynthetic genre\t106\t=LDR.{8}g.+",

@@ -30,13 +30,14 @@ a change that alters it updates it in the same ticket.
 
 ## Status
 
-- Format v0.1 with `delete_field` (OMT-001) and `add_field` (OMT-004), both added 2026-11-16.
+- Format v0.1 with `delete_field` (OMT-001; OMT-014 adds optional field-text
+  matching) and `add_field` (OMT-004), both added 2026-11-16.
 - `load_task` (plain-Python validation, `TaskError` with step numbers),
   `run_task` (modifies records in place, yields them in order) and
   `records_match` live in `open_marc_tasks/task.py` and `match.py`. Commands
   are dispatched by name through the table in `task.py`; each command module
   (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
-- Conformance: `conformance/delete_field/` (4 cases), `conformance/add_field/` (6 cases), and `conformance/replace_text/` (10 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
+- Conformance: `conformance/delete_field/` (9 cases), `conformance/add_field/` (6 cases), and `conformance/replace_text/` (10 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it. Backslash indicators become blanks on every
@@ -53,11 +54,12 @@ a change that alters it updates it in the same ticket.
   case and `regenerate`s `expected.mrc`; `tests/test_reference.py` reruns
   MarcEdit for every case and fails on any difference (skips without MarcEdit
   or Docker, as in CI).
-- Importer `open_marc_tasks/marcedit_import.py` and `omt import` (OMT-005):
-  translates MarcEdit `DELETE` (tag only, default flags) and `ADD` (options
-  100/101/108, and 106 with Leader-class conditions), plus plain `REPLACE`
-  (OMT-011); lists every other line with a reason and writes a task only when
-  fully translated.
+- Importer `open_marc_tasks/marcedit_import.py` and `omt import` (OMT-005;
+  DELETE match forms extended by OMT-014):
+  translates MarcEdit `DELETE` (tag-only and field-text matching forms) and
+  `ADD` (options 100/101/108, and 106 with Leader-class conditions), plus
+  plain `REPLACE` (OMT-011); lists every other line with a reason and writes a
+  task only when fully translated.
 - `tools/measure.py` (dev only): imports MarcEdit task folders, runs fully
   translated tasks through the library and MarcEdit on a sample, reports
   "X of Y task files match MarcEdit". Folders and sample are local paths;
@@ -67,5 +69,5 @@ a change that alters it updates it in the same ticket.
   literal, case-sensitive text; regex mode uses the portable dialect in
   `spec/format.md`. Regex REPLACE importing remains out of scope (OMT-013).
 - Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex, build
-  field, DELETE by value, SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD,
+  field, SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD,
   INDICATOR).

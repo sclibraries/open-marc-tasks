@@ -1,6 +1,6 @@
 Title: Let delete_field delete only fields whose text matches, and import MarcEdit DELETE with a match value
 
-Status: Ready
+Status: In-Review
 Size: S
 Tier: normal — extends an existing command; reuses the field text form and regex dialect
 Milestone: M2 — Commands

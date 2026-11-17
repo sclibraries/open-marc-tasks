@@ -1,0 +1,1 @@
+00205    a2200073   4500001002300000856003900023856003200062856003700094SYNTHETIC-DELETE-REGEX40uhttps://example.edu/journal/record40uhttps://example.edu/journal40uhttps://example.edu/other/record

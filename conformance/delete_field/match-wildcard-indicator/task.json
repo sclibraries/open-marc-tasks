@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic match-wildcard-indicator",
+  "description": "Synthetic delete_field conformance case.",
+  "steps": [
+    {
+      "command": "delete_field",
+      "tag": "6XX",
+      "match": "\\6"
+    }
+  ]
+}
