@@ -3,6 +3,9 @@ import zipfile
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
+from .commands.replace_text import validate as validate_replace_text
+from .task import TaskError
+
 
 class ImportedTask(NamedTuple):
     name: str
@@ -23,11 +26,12 @@ class ImportResult(NamedTuple):
 
 _DELETE_FLAGS = ["False"] * 5
 _CONDITION_BRACKETS = re.compile(
-    r"/=LDR\.\{([0-9]+)\}\[([A-Za-z]+(?:,[A-Za-z]+)*)\]"
-    r"(?:\[([A-Za-z]+(?:,[A-Za-z]+)*)\])?\.\+/"
+    r"=LDR\.\{([0-9]+)\}\[([A-Za-z]+(?:,[A-Za-z]+)*)\]"
+    r"(?:\[([A-Za-z]+(?:,[A-Za-z]+)*)\])?\.\+"
 )
-_CONDITION_SINGLE = re.compile(r"/=LDR\.\{([0-9]+)\}([A-Za-z])\.\+/")
+_CONDITION_SINGLE = re.compile(r"=LDR\.\{([0-9]+)\}([A-Za-z])\.\+")
 _MNEMONIC = re.compile(r"\{([^{}]*)\}")
+_REGEX_QUANTIFIER = re.compile(r"[0-9]+(?:,[0-9]*)?\Z")
 _SUBFIELD = re.compile(r"\$([a-z0-9])")
 _FIELD_TEXT_ESCAPES = {"dollar", "lcub", "rcub", "bsol"}
 
@@ -41,7 +45,9 @@ def _condition_values(values: str) -> List[str]:
     return result
 
 
-def _condition(condition: str) -> List[Dict[str, object]]:
+def _leader_condition(
+    condition: str, unsupported_message: str
+) -> List[Dict[str, object]]:
     match = _CONDITION_BRACKETS.fullmatch(condition)
     if match:
         offset = int(match.group(1))
@@ -64,7 +70,17 @@ def _condition(condition: str) -> List[Dict[str, object]]:
             raise ValueError("Leader condition position is out of range")
         return [{"leader": offset - 2, "in": [match.group(2)]}]
 
-    raise ValueError("unsupported ADD condition")
+    raise ValueError(unsupported_message)
+
+
+def _condition(condition: str) -> List[Dict[str, object]]:
+    if len(condition) < 2 or not condition.startswith("/") or not condition.endswith("/"):
+        raise ValueError("unsupported ADD condition")
+    return _leader_condition(condition[1:-1], "unsupported ADD condition")
+
+
+def _replace_condition(condition: str) -> List[Dict[str, object]]:
+    return _leader_condition(condition, "unsupported REPLACE condition")
 
 
 def _field(tag: str, text: str) -> Dict[str, object]:
@@ -177,18 +193,41 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, "malformed REPLACE line"
         _, find, replacement, find_flags, condition, replace_flags, case_sensitive = columns
         if (
-            find_flags != "0"
-            or condition
+            find_flags not in ("0", "2")
             or replace_flags != "0"
             or case_sensitive != "False"
+            or (find_flags == "0" and condition)
         ):
             return None, "unsupported REPLACE settings"
         if not find:
             return None, "REPLACE find must be non-empty"
+
+        step = {"command": "replace_text", "find": find, "replace": replacement}
+        if find_flags == "2":
+            if condition:
+                try:
+                    step["when"] = _replace_condition(condition)
+                except ValueError as error:
+                    return None, str(error)
+
+            mnemonics = _MNEMONIC.findall(find) + _MNEMONIC.findall(replacement)
+            if any(
+                mnemonic and not _REGEX_QUANTIFIER.fullmatch(mnemonic)
+                for mnemonic in mnemonics
+            ):
+                return None, "unsupported REPLACE character mnemonic"
+
+            step["regex"] = True
+            try:
+                validate_replace_text(step, 1)
+            except TaskError as error:
+                return None, str(error)
+            return step, ""
+
         mnemonics = _MNEMONIC.findall(find + replacement)
         if any(mnemonic and mnemonic not in _FIELD_TEXT_ESCAPES for mnemonic in mnemonics):
             return None, "unsupported REPLACE character mnemonic"
-        return {"command": "replace_text", "find": find, "replace": replacement}, ""
+        return step, ""
 
     return None, "unknown MarcEdit command"
 
