@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic empty-control-data",
+  "description": "Synthetic plain field text replacement case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "=001  Remove\\me",
+      "replace": "=001  "
+    }
+  ]
+}

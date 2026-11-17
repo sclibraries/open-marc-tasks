@@ -1,0 +1,1 @@
+00103    a2200049   4500001002400000856002900024synthetic-856-proxy-add40uhttps://example.edu/file

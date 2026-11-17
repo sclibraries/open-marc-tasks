@@ -1,0 +1,1 @@
+00093    a2200049   4500001002700000500001600027synthetic-subfield-reorder10bBetaaAlpha

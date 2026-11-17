@@ -32,7 +32,8 @@
       "oneOf": [
         {"$ref": "#/$defs/delete_field_step"},
         {"$ref": "#/$defs/add_field_step"},
-        {"$ref": "#/$defs/edit_subfield_step"}
+        {"$ref": "#/$defs/edit_subfield_step"},
+        {"$ref": "#/$defs/replace_text_step"}
       ]
     },
     "delete_field_step": {
@@ -145,6 +146,20 @@
           }
         }
       ]
+    },
+    "replace_text_step": {
+      "type": "object",
+      "required": ["command", "find", "replace"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "replace_text"},
+        "find": {"type": "string", "minLength": 1},
+        "replace": {"type": "string"},
+        "when": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/condition"}
+        }
+      }
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic 856-proxy-remove",
+  "description": "Synthetic plain field text replacement case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "https://proxy.example.edu/login?url=",
+      "replace": ""
+    }
+  ]
+}

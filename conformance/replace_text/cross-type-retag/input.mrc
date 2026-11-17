@@ -1,0 +1,1 @@
+00110    a2200061   4500001002100000001001300021245001400034synthetic-cross-typeControl text10aData text

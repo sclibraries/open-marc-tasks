@@ -36,7 +36,7 @@ a change that alters it updates it in the same ticket.
   `records_match` live in `open_marc_tasks/task.py` and `match.py`. Commands
   are dispatched by name through the table in `task.py`; each command module
   (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
-- Conformance: `conformance/delete_field/` (4 cases) and `conformance/add_field/` (6 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
+- Conformance: `conformance/delete_field/` (4 cases), `conformance/add_field/` (6 cases), and `conformance/replace_text/` (10 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it. Backslash indicators become blanks on every
@@ -55,13 +55,17 @@ a change that alters it updates it in the same ticket.
   or Docker, as in CI).
 - Importer `open_marc_tasks/marcedit_import.py` and `omt import` (OMT-005):
   translates MarcEdit `DELETE` (tag only, default flags) and `ADD` (options
-  100/101/108, and 106 with Leader-class conditions); lists every other line
-  with a reason and writes a task only when fully translated.
+  100/101/108, and 106 with Leader-class conditions), plus plain `REPLACE`
+  (OMT-011); lists every other line with a reason and writes a task only when
+  fully translated.
 - `tools/measure.py` (dev only): imports MarcEdit task folders, runs fully
   translated tasks through the library and MarcEdit on a sample, reports
   "X of Y task files match MarcEdit". Folders and sample are local paths;
   nothing from them enters the repo.
 - `edit_subfield` (OMT-007): every non-regex SUBFIELD_EDIT form; `0|2` (regex) is not translated yet.
-- Not built yet: the other MarcEdit commands (REPLACE, SUBFIELD_EDIT regex, build
+- Field text form and plain `replace_text` (OMT-011): replaces literal,
+  case-sensitive text in each field's rendered form; regex REPLACE remains out
+  of scope.
+- Not built yet: regex REPLACE, SUBFIELD_EDIT regex, build
   field, DELETE by value, SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD,
   INDICATOR).

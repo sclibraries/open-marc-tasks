@@ -1,0 +1,2 @@
+REPLACE	=001  Control\text	=500  10$aControl text	0		0	False
+REPLACE	=245  10$aData text	=001  Data\text	0		0	False

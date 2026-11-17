@@ -131,6 +131,10 @@ from open_marc_tasks.task import load_task
             "SUBFIELD_EDIT\t959\ta\tneedle\tREPL\t0|1",
             {"command": "edit_subfield", "tag": "959", "code": "a", "action": "replace_first", "find": "needle", "replace": "REPL"},
         ),
+        (
+            "REPLACE\tbefore\tafter\t0\t\t0\tFalse",
+            {"command": "replace_text", "find": "before", "replace": "after"},
+        ),
     ],
 )
 def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step):
@@ -164,6 +168,11 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "ADD\t650\t\\0$aSynthetic topic\t999\t",
         "ADD\t650\t\\0$aCaf{eacute}\t100\t",
         "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|2",
+        "REPLACE\tbefore.*\tafter\t0|2\t\t0\tFalse",
+        "REPLACE\tbefore\tafter\t0\t/=LDR.{6}a.+/\t0\tFalse",
+        "REPLACE\tbefore\tafter\t0\t\t0\tTrue",
+        "REPLACE\tbefore\tafter\t0|1\t\t",
+        "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
         "TASK_LIST\tSynthetic task list",
         "MYSTERY\tSynthetic unknown command",
     ],

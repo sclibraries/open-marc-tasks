@@ -1,0 +1,1 @@
+00142    a2200049   4500001002700000856006500027synthetic-856-proxy-remove40uhttps://proxy.example.edu/login?url=https://example.edu/file

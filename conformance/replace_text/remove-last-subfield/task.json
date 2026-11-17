@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic remove-last-subfield",
+  "description": "Synthetic plain field text replacement case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "=500  10$aRemove me",
+      "replace": "=500  10"
+    }
+  ]
+}
