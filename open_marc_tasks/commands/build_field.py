@@ -22,7 +22,7 @@ def validate(step: Dict[str, Any], number: int) -> None:
         raise TaskError("step {} setting field must be a string".format(number))
 
     mode = step.get("mode", "add")
-    if mode not in ("add", "add_if_missing"):
+    if mode not in ("add", "add_if_missing", "replace"):
         raise TaskError("step {} setting mode is invalid".format(number))
     if "when" in step:
         _validate_conditions(step["when"], number)
@@ -43,8 +43,8 @@ def validate(step: Dict[str, Any], number: int) -> None:
 
     if x_count > 1:
         raise TaskError("step {} setting field supports only one [x] placeholder".format(number))
-    if x_count and mode == "add_if_missing":
-        raise TaskError("step {} setting mode add_if_missing cannot use [x]".format(number))
+    if x_count and mode in ("add_if_missing", "replace"):
+        raise TaskError("step {} setting mode {} cannot use [x]".format(number, mode))
 
     try:
         parse_field(_PLACEHOLDER.sub("", field))
@@ -78,7 +78,11 @@ def run(record: Record, step: Dict[str, Any]) -> None:
 
     template = step["field"]
     tag = template[1:4]
-    if step.get("mode", "add") == "add_if_missing" and record.get_fields(tag):
+    mode = step.get("mode", "add")
+    if mode == "add_if_missing" and record.get_fields(tag):
+        return
+    replace_targets = record.get_fields(tag) if mode == "replace" else []
+    if mode == "replace" and not replace_targets:
         return
 
     x_placeholder = next(
@@ -107,9 +111,25 @@ def run(record: Record, step: Dict[str, Any]) -> None:
                 return _subfield_text(expansion, code) if expansion is not None else ""
             return _source_text(record, source_tag, code)
 
-        built = parse_field(_PLACEHOLDER.sub(substitute, template))
-        if built.is_control_field() or any(item.value for item in built.subfields):
+        expanded_template = _PLACEHOLDER.sub(substitute, template)
+        built = parse_field(expanded_template)
+        if mode == "replace":
+            if not built.is_control_field() and not any(
+                item.value for item in built.subfields
+            ):
+                raise TextFormError("replace result has no non-empty subfields")
+            built_fields.append(built)
+            built_fields.extend(
+                parse_field(expanded_template) for _ in replace_targets[1:]
+            )
+        elif built.is_control_field() or any(item.value for item in built.subfields):
             built_fields.append(built)
 
-    if built_fields:
+    if mode == "replace":
+        replacements = iter(built_fields)
+        record.fields = [
+            next(replacements) if field.tag == tag else field
+            for field in record.fields
+        ]
+    elif built_fields:
         insert_fields(record, built_fields)

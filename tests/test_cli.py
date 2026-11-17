@@ -5,7 +5,7 @@ import subprocess
 import pytest
 from pymarc import Field, MARCReader, Record, Subfield
 
-from open_marc_tasks import records_match
+from open_marc_tasks import TaskError, load_task, records_match, run_task
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -85,6 +85,7 @@ def test_run_writes_matching_conformance_output_and_preserves_utf8_bytes(tmp_pat
         ("invalid UTF-8", 1, "record 1"),
         ("input is output", None, "same file"),
         ("all fields deleted", 1, "record 1"),
+        ("empty build_field replacement", 2, "record 2 step 2"),
     ],
 )
 def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_number, message):
@@ -115,10 +116,32 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
                 {"command": "delete_field", "tag": "245"},
             ],
         )
+    elif case == "empty build_field replacement":
+        write_task(
+            task_path,
+            steps=[
+                {"command": "delete_field", "tag": "998"},
+                {"command": "build_field", "field": "=950  \\\\$a{999$a}", "mode": "replace"},
+            ],
+        )
+        first = Record(force_utf8=True)
+        first.add_field(Field(tag="001", data="synthetic-1"))
+        first.add_field(Field(tag="950", indicators=[" ", " "], subfields=[Subfield("a", "old-1")]))
+        first.add_field(Field(tag="999", indicators=[" ", " "], subfields=[Subfield("a", "source")]))
+        second = Record(force_utf8=True)
+        second.add_field(Field(tag="001", data="synthetic-2"))
+        second.add_field(Field(tag="950", indicators=[" ", " "], subfields=[Subfield("a", "old-2")]))
+        input_path.write_bytes(first.as_marc() + second.as_marc())
 
-    if output_path != input_path:
+    if output_path != input_path and case != "empty build_field replacement":
         output_path.write_bytes(b"existing output must survive")
-    original_output = output_path.read_bytes()
+    original_output = output_path.read_bytes() if output_path.exists() else None
+
+    if case == "empty build_field replacement":
+        with input_path.open("rb") as source:
+            input_records = list(MARCReader(source, to_unicode=True, utf8_handling="strict"))
+        with pytest.raises(TaskError, match="record 2 step 2"):
+            list(run_task(load_task(task_path), input_records))
 
     result = run_omt(task_path, input_path, output_path)
 
@@ -130,4 +153,7 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
     assert message in error_lines[0]
     if record_number is not None:
         assert "record {}".format(record_number) in error_lines[0]
-    assert output_path.read_bytes() == original_output
+    if original_output is None:
+        assert not output_path.exists()
+    else:
+        assert output_path.read_bytes() == original_output

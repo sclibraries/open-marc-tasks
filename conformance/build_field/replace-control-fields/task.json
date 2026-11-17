@@ -1,0 +1,17 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field replace case",
+  "description": "Exercises MarcEdit-compatible replace behavior on synthetic fields.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=001  {003}",
+      "mode": "replace"
+    },
+    {
+      "command": "build_field",
+      "field": "=003  {999$a}",
+      "mode": "replace"
+    }
+  ]
+}

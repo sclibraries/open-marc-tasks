@@ -173,6 +173,7 @@ as a field. `mode` is optional and defaults to `"add"`:
 |---|---|
 | `"add"` | Add the built field or fields. |
 | `"add_if_missing"` | Add only when the record has no field with the template's tag. |
+| `"replace"` | Replace every existing field with the template's tag in place. If the tag is absent, make no change. |
 
 The optional `when` setting uses the Leader conditions defined above. All
 conditions must hold for the step to run.
@@ -191,11 +192,12 @@ for each source field with tag `NNN` that contains subfield `c`, in source
 order, using that source field's first `$c` value. If none contains `$c`, it
 builds one field with that placeholder empty. `{x}` cannot be used with
 `"add_if_missing"`. Other placeholders keep their normal first-value behavior
-for each output field. All source values are read before adding any built
-fields, including when a source tag equals the template tag.
+for each output field. `{x}` cannot be used with `"replace"`. All source
+values are read before adding or replacing fields, including when a source tag
+equals the template tag.
 
 Substitution uses the source values' field text form, then the completed
-template is parsed once as a field. A value's `$`, braces, backslashes,
+template is parsed as a field. A value's `$`, braces, backslashes,
 non-ASCII characters, and supplementary characters are substituted as text;
 text-form escapes introduced by a source value are not expanded as
 placeholders. `{lcub}001{rcub}{001}`, for example, inserts `{001}` followed by
@@ -205,13 +207,23 @@ subfield value inserted into a control field retains its characters, with
 template backslashes decoded as control-field blanks when the result is
 parsed.
 
-Built fields use the `add_field` tag-order placement: before the first field
-whose tag is equal to or greater than the built field's tag. Multiple fields
-from `{x}` are inserted together in source order. `"add_if_missing"` checks
-for any field with the template's tag before building fields. A data field is
-added only when at least one subfield value is non-empty; spaces count as
-content, and empty subfields are kept when another subfield has content. A
-control field is added even when its data is empty.
+For `"add"` and `"add_if_missing"`, built fields use the `add_field` tag-order
+placement: before the first field whose tag is equal to or greater than the
+built field's tag. Multiple fields from `{x}` are inserted together in source
+order. `"add_if_missing"` checks for any field with the template's tag before
+building fields. A data field is added only when at least one subfield value
+is non-empty; spaces count as content, and empty subfields are kept when
+another subfield has content. A control field is added even when its data is
+empty.
+
+With `"replace"`, each existing field with the template's tag is replaced at
+its current position by a separately built field. Repeated target fields are
+all replaced, using the same source-placeholder rules above. A control field
+is replaced even when its data is empty. A data-field result must have at
+least one non-empty subfield value; otherwise the step raises a run-time error
+that names the record and step. This prevents a task from silently dropping
+the output when MarcEdit produces an empty file for an all-empty data-field
+replace.
 
 ## Command: `edit_subfield`
 

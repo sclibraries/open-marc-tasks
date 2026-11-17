@@ -68,8 +68,7 @@ a change that alters it updates it in the same ticket.
 - Field text form and `replace_text` (OMT-011, OMT-012): plain mode replaces
   literal, case-sensitive text; regex mode uses the portable dialect in
   `spec/format.md`. Regex REPLACE importing remains out of scope (OMT-013).
-- `build_field` (OMT-015): add and add-if-missing from field text templates,
-  including the two MarcEdit `buildnewfield` add forms; OMT-016 adds replace.
+- `build_field` (OMT-015, OMT-016): add, add-if-missing and replace from field
+  text templates, including the observed MarcEdit `buildnewfield` forms.
 - Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex,
-  `build_field` replace mode (OMT-016), SUBFIELD_REMOVE, COPY, TASK_LIST,
-  SORTBY, EDITFIELD, INDICATOR.
+  SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD, INDICATOR.

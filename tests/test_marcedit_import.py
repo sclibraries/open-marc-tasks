@@ -200,6 +200,10 @@ from open_marc_tasks.task import load_task
             "buildnewfield\t=035  \\\\$a{001}\tFalse\tFalse\tTrue\tFalse",
             {"command": "build_field", "field": "=035  \\\\$a{001}", "mode": "add_if_missing"},
         ),
+        (
+            "buildnewfield\t=035  \\\\$a{001}\tFalse\tTrue\tFalse\tFalse",
+            {"command": "build_field", "field": "=035  \\\\$a{001}", "mode": "replace"},
+        ),
     ],
 )
 def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step):
@@ -227,7 +231,6 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
 @pytest.mark.parametrize(
     "line",
     [
-        "buildnewfield\t=035  \\\\$a{001}\tFalse\tTrue\tFalse\tFalse",
         "buildnewfield\t=035  \\\\$a{001}\tTrue\tFalse\tFalse\tTrue",
         "buildnewfield\t=035  \\\\$a{001}\tFalse\tTrue\tTrue\tFalse",
         "buildnewfield\t=035  \\$a{eacute}\tFalse\tFalse\tFalse\tTrue",

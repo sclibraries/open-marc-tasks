@@ -1,0 +1,2 @@
+buildnewfield	=001  {003}	False	True	False	False
+buildnewfield	=003  {999$a}	False	True	False	False
