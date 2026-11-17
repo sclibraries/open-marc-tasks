@@ -1,6 +1,6 @@
 Title: Add remove_subfield and import MarcEdit SUBFIELD_REMOVE (whole-subfield and text forms)
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new command with plain settings; no new syntax
 Milestone: M2 — Commands
@@ -77,7 +77,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 86395ac, merged into main (owner OK 2026-11-17). Python 3.9 gate 167 passed, 1 skipped; host reference passed. Measure 26/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Remove all / if_contains / remove_text match MarcEdit; 9|… left untranslated pending owner decision; …|2 later. No fix round.
