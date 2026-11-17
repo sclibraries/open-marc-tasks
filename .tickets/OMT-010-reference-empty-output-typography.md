@@ -1,6 +1,6 @@
 Title: Apply MarcEdit's typography mapping in the reference runner's empty-output fill-in
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: small — developer tooling only; no library behavior changes
 Milestone: M2 — Commands
@@ -39,7 +39,7 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head fb51d5a, merged into main (owner OK 2026-11-17). Python 3.9 gate 66 passed, 1 skipped; host reference passed. Measure 8/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- 7 lines, reuses the library helper. No fix round.
