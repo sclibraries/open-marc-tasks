@@ -1,0 +1,1 @@
+buildnewfield	=856  40$uhttps://proxy.example.edu/?url={856$u[x]}$y{035$a}/{035$a}	False	False	False	True

@@ -192,6 +192,14 @@ from open_marc_tasks.task import load_task
             "REPLACE\tbefore\tafter\t0\t\t0\tFalse",
             {"command": "replace_text", "find": "before", "replace": "after"},
         ),
+        (
+            "buildnewfield\t=035  9\\$a({003}){001}\tFalse\tFalse\tFalse\tTrue",
+            {"command": "build_field", "field": "=035  9\\$a({003}){001}", "mode": "add"},
+        ),
+        (
+            "buildnewfield\t=035  \\\\$a{001}\tFalse\tFalse\tTrue\tFalse",
+            {"command": "build_field", "field": "=035  \\\\$a{001}", "mode": "add_if_missing"},
+        ),
     ],
 )
 def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step):
@@ -219,6 +227,12 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
 @pytest.mark.parametrize(
     "line",
     [
+        "buildnewfield\t=035  \\\\$a{001}\tFalse\tTrue\tFalse\tFalse",
+        "buildnewfield\t=035  \\\\$a{001}\tTrue\tFalse\tFalse\tTrue",
+        "buildnewfield\t=035  \\\\$a{001}\tFalse\tTrue\tTrue\tFalse",
+        "buildnewfield\t=035  \\$a{eacute}\tFalse\tFalse\tFalse\tTrue",
+        "buildnewfield\t=035  \\$a{001$a[x]}{002$a[x]}\tFalse\tFalse\tFalse\tTrue",
+        "buildnewfield\t=901  \\\\$a{001$a[x]}\tFalse\tFalse\tTrue\tFalse",
         "DELETE\t245\t$aSynthetic match\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "DELETE\t245\t\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+//",

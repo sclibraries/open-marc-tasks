@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from pymarc import Field, Record, Subfield
 
@@ -56,6 +56,18 @@ def _identical(left: Field, right: Field) -> bool:
     ] == [(subfield.code, subfield.value) for subfield in right.subfields]
 
 
+def insert_fields(
+    record: Record, fields: List[Field], position: Optional[int] = None
+) -> None:
+    if position is None:
+        tag = fields[0].tag
+        position = next(
+            (index for index, current in enumerate(record.fields) if current.tag >= tag),
+            len(record.fields),
+        )
+    record.fields[position:position] = fields
+
+
 def add_field(record: Record, settings: Dict[str, Any]) -> None:
     """Add a validated data or control field in MarcEdit tag order."""
     if not conditions_match(record, settings.get("when", [])):
@@ -81,16 +93,12 @@ def add_field(record: Record, settings: Dict[str, Any]) -> None:
     ):
         return
 
+    position = None
     if policy == "skip_if_identical" and existing:
         position = max(
             index for index, current in enumerate(record.fields) if current.tag == tag
         ) + 1
-    else:
-        position = next(
-            (index for index, current in enumerate(record.fields) if current.tag >= tag),
-            len(record.fields),
-        )
-    record.fields.insert(position, field)
+    insert_fields(record, [field], position)
 
 
 def run(record: Record, step: Dict[str, Any]) -> None:

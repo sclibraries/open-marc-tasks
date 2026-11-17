@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field first-subfield-and-missing",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=852  0\\$h{050$a} {050$b}",
+      "mode": "add"
+    }
+  ]
+}

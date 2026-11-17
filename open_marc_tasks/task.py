@@ -77,6 +77,8 @@ def _validate_conditions(conditions: Any, number: int) -> None:
 
 from .commands.add_field import run as run_add_field
 from .commands.add_field import validate as validate_add_field
+from .commands.build_field import run as run_build_field
+from .commands.build_field import validate as validate_build_field
 from .commands.delete_field import run as run_delete_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_subfield import run as run_edit_subfield
@@ -88,6 +90,7 @@ from .commands.replace_text import validate as validate_replace_text
 COMMANDS = {
     "delete_field": (validate_delete_field, run_delete_field),
     "add_field": (validate_add_field, run_add_field),
+    "build_field": (validate_build_field, run_build_field),
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
     "replace_text": (validate_replace_text, run_replace_text),
 }

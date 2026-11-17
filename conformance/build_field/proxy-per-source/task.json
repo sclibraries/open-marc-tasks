@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field proxy-per-source",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=856  40$uhttps://proxy.example.edu/?url={856$u[x]}$y{035$a}/{035$a}",
+      "mode": "add"
+    }
+  ]
+}

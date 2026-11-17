@@ -1,0 +1,32 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field empty-results",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=901  \\\\$a{956$z}",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=902  \\\\$a ",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=903  \\\\$aP",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=904  \\\\$a$bQ",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=009  {950$a}",
+      "mode": "add"
+    }
+  ]
+}

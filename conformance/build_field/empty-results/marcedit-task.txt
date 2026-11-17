@@ -1,0 +1,5 @@
+buildnewfield	=901  \\$a{956$z}	False	False	False	True
+buildnewfield	=902  \\$a 	False	False	False	True
+buildnewfield	=903  \\$aP	False	False	False	True
+buildnewfield	=904  \\$a$bQ	False	False	False	True
+buildnewfield	=009  {950$a}	False	False	False	True
