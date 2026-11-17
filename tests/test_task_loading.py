@@ -41,6 +41,10 @@ INVALID_DOCUMENTS = [
     ("remove_subfield control tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "001", "code": "a"}]}, "step 2"),
     ("remove_subfield both filters", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "if_contains": "x", "remove_text": "y"}]}, "step 2"),
     ("remove_subfield empty remove_text", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": ""}]}, "step 2"),
+    ("copy_field bad to_tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "90X"}]}, "step 2"),
+    ("copy_field non-boolean move", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "857", "move": "true"}]}, "step 2"),
+    ("copy_field empty if_contains", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "857", "if_contains": ""}]}, "step 2"),
+    ("copy_field data-to-control", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "001"}]}, "step 2"),
 ]
 
 
@@ -138,6 +142,15 @@ INVALID_TASK_CASES.extend(
     )
 )
 
+INVALID_TASK_CASES.append(
+    (
+        "copy_field equal tags",
+        task_document([VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "856"}]),
+        "step 2",
+        True,
+    )
+)
+
 
 @pytest.fixture
 def task_schema():
@@ -188,6 +201,14 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
     }
     if name in remove_subfield_errors:
         assert remove_subfield_errors[name] in str(error.value)
+    copy_field_errors = {
+        "copy_field bad to_tag": "setting to_tag",
+        "copy_field non-boolean move": "setting move",
+        "copy_field empty if_contains": "if_contains must be a non-empty string",
+        "copy_field data-to-control": "cannot copy a data field to a control tag",
+    }
+    if name in copy_field_errors:
+        assert copy_field_errors[name] in str(error.value)
     if schema_valid:
         jsonschema.validate(document, task_schema)
     else:

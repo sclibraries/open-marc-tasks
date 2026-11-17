@@ -47,6 +47,10 @@ def _matches(field_tag: str, tag_pattern: str) -> bool:
     return field_tag.startswith(prefix)
 
 
+def _matches_text(field, match: str) -> bool:
+    return match in render_field(field)
+
+
 def delete_field(
     record: Record,
     tag: str,
@@ -62,9 +66,10 @@ def delete_field(
             return True
         if match is None:
             return False
-        text = render_field(field)
         matches_text = (
-            pattern.search(text) is not None if pattern is not None else match in text
+            pattern.search(render_field(field)) is not None
+            if pattern is not None
+            else _matches_text(field, match)
         )
         return matches_text if delete_nonmatches else not matches_text
 

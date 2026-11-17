@@ -209,6 +209,22 @@ from open_marc_tasks.task import load_task
             {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": "${}"},
         ),
         (
+            "COPY\t856\t857\tfalse\t\t\tfalse\t",
+            {"command": "copy_field", "from_tag": "856", "to_tag": "857"},
+        ),
+        (
+            "COPY\t035\t935\ttrue\t\t\tfalse\t",
+            {"command": "copy_field", "from_tag": "035", "to_tag": "935", "move": True},
+        ),
+        (
+            "COPY\t856\t857\tfalse\t$3JSTOR\t\tfalse\t",
+            {"command": "copy_field", "from_tag": "856", "to_tag": "857", "if_contains": "$3JSTOR"},
+        ),
+        (
+            "COPY\t856\t857\tfalse\t{dollar}\t\tfalse\t",
+            {"command": "copy_field", "from_tag": "856", "to_tag": "857", "if_contains": "{dollar}"},
+        ),
+        (
             "REPLACE\tbefore\tafter\t0\t\t0\tFalse",
             {"command": "replace_text", "find": "before", "replace": "after"},
         ),
@@ -271,6 +287,13 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "SUBFIELD_REMOVE\t001\ta\t\t107|0",
         "SUBFIELD_REMOVE\t856\tz\t{bsol}\t0|0",
         "SUBFIELD_REMOVE\t856\tz\t{eacute}\t0|0",
+        "COPY\t856\t857\tfalse\t\tX\tfalse\t",
+        "COPY\t856\t857\tfalse\t\t\ttrue\t",
+        "COPY\t856\t857\tfalse\t\t\tfalse\tX",
+        "COPY\t856\t857\tfalse\t{eacute}\t\tfalse\t",
+        "COPY\t001\t035\tfalse\tabc\t\tfalse\t",
+        "COPY\t001\t005\tfalse\t\t\tfalse\t",
+        "COPY\t856\t001\tfalse\t\t\tfalse\t",
         "REPLACE\tbefore.*\tafter\t0|2\t\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t/=LDR.{6}a.+/\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t\t0\tTrue",

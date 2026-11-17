@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic copy_field copy-earlier-repeated",
+  "description": "Copies both source fields to an earlier tag after existing destination fields.",
+  "steps": [
+    {
+      "command": "copy_field",
+      "from_tag": "945",
+      "to_tag": "040"
+    }
+  ]
+}

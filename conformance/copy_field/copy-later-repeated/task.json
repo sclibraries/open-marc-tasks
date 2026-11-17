@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic copy_field copy-later-repeated",
+  "description": "Copies both source fields in order to a later tag.",
+  "steps": [
+    {
+      "command": "copy_field",
+      "from_tag": "945",
+      "to_tag": "949"
+    }
+  ]
+}

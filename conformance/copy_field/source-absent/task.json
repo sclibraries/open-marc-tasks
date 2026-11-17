@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic copy_field source-absent",
+  "description": "Leaves a record unchanged when the source tag is absent.",
+  "steps": [
+    {
+      "command": "copy_field",
+      "from_tag": "856",
+      "to_tag": "857"
+    }
+  ]
+}

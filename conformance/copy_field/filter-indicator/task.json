@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic copy_field filter-indicator",
+  "description": "Copies only a field whose rendered text has first indicator 9.",
+  "steps": [
+    {
+      "command": "copy_field",
+      "from_tag": "035",
+      "to_tag": "935",
+      "if_contains": "9\\"
+    }
+  ]
+}

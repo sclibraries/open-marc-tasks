@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 from .commands.build_field import validate as validate_build_field
+from .commands.copy_field import validate as validate_copy_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import validate as validate_remove_subfield
@@ -38,6 +39,7 @@ _REGEX_QUANTIFIER = re.compile(r"[0-9]+(?:,[0-9]*)?\Z")
 _SUBFIELD = re.compile(r"\$([a-z0-9])")
 _FIELD_TEXT_ESCAPES = {"dollar", "lcub", "rcub", "bsol"}
 _SUBFIELD_REMOVE_ESCAPES = {"dollar": "$", "lcub": "{", "rcub": "}"}
+_COPY_MATCH_ESCAPES = {"dollar", "lcub", "rcub"}
 
 
 def _condition_values(values: str) -> List[str]:
@@ -126,6 +128,34 @@ def _field(tag: str, text: str) -> Dict[str, object]:
 def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
     columns = line.split("\t")
     command = columns[0]
+
+    if command == "COPY":
+        if len(columns) != 8:
+            return None, "malformed COPY line"
+        _, from_tag, to_tag, move, match, column6, column7, column8 = columns
+        if column6 or column7 != "false" or column8:
+            return None, "unsupported COPY settings"
+        if move not in ("false", "true"):
+            return None, "unsupported COPY move setting"
+        if from_tag.startswith("00") and to_tag.startswith("00"):
+            return None, "COPY between control fields is not supported yet"
+        if from_tag.startswith("00") and match:
+            return None, "filtered COPY from control fields is not supported yet"
+
+        mnemonics = _MNEMONIC.findall(match)
+        if any(mnemonic not in _COPY_MATCH_ESCAPES for mnemonic in mnemonics):
+            return None, "unsupported COPY match mnemonic"
+
+        step = {"command": "copy_field", "from_tag": from_tag, "to_tag": to_tag}
+        if move == "true":
+            step["move"] = True
+        if match:
+            step["if_contains"] = match
+        try:
+            validate_copy_field(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
 
     if command == "buildnewfield":
         if len(columns) != 6:

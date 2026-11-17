@@ -1,6 +1,6 @@
 Title: Add copy_field and import MarcEdit COPY
 
-Status: Ready
+Status: In-Review
 Size: S
 Tier: normal — new command with plain settings; reuses existing placement, text form and match rules
 Milestone: M2 — Commands
