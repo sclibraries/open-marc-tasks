@@ -80,9 +80,13 @@ def _leader_condition(
 
 
 def _condition(condition: str) -> List[Dict[str, object]]:
-    if len(condition) < 2 or not condition.startswith("/") or not condition.endswith("/"):
+    opening = len(condition) - len(condition.lstrip("/"))
+    closing = len(condition) - len(condition.rstrip("/"))
+    if not 1 <= opening <= 3 or opening != closing:
         raise ValueError("unsupported ADD condition")
-    return _leader_condition(condition[1:-1], "unsupported ADD condition")
+    return _leader_condition(
+        condition[opening:-closing], "unsupported ADD condition"
+    )
 
 
 def _replace_condition(condition: str) -> List[Dict[str, object]]:
