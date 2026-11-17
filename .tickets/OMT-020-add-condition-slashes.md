@@ -1,6 +1,6 @@
 Title: Import ADD Leader conditions written with doubled or tripled slashes
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — importer mapping only
 Milestone: M2 — Commands
