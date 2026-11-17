@@ -1,0 +1,22 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field text-form-one-pass",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=901  \\\\$a{500$a}",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=009  {500$a}",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=902  \\\\$a{lcub}001{rcub}{001}",
+      "mode": "add"
+    }
+  ]
+}

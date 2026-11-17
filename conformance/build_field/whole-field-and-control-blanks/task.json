@@ -1,0 +1,17 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field whole-field-and-control-blanks",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=901  \\\\$a{956}",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=902  \\\\$a{001}",
+      "mode": "add"
+    }
+  ]
+}

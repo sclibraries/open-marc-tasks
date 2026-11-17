@@ -1,0 +1,17 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field x-filter-and-self-tag",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=901  \\\\$aP{950$a[x]}",
+      "mode": "add"
+    },
+    {
+      "command": "build_field",
+      "field": "=035  \\\\$aX{035$a[x]}",
+      "mode": "add"
+    }
+  ]
+}

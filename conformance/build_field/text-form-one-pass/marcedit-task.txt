@@ -1,0 +1,3 @@
+buildnewfield	=901  \\$a{500$a}	False	False	False	True
+buildnewfield	=009  {500$a}	False	False	False	True
+buildnewfield	=902  \\$a{lcub}001{rcub}{001}	False	False	False	True

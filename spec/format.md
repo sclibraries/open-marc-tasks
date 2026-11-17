@@ -153,6 +153,66 @@ example, the following requires both conditions to hold:
 }
 ```
 
+## Command: `build_field`
+
+`build_field` builds a field from a text-form template and source fields:
+
+```json
+{
+  "command": "build_field",
+  "field": "=035  9\\$a({003}){001}",
+  "mode": "add"
+}
+```
+
+`field` is a field text form as defined in [Field text form](#field-text-form),
+with placeholders. After replacing placeholders with empty text, it must parse
+as a field. `mode` is optional and defaults to `"add"`:
+
+| Value | Behavior |
+|---|---|
+| `"add"` | Add the built field or fields. |
+| `"add_if_missing"` | Add only when the record has no field with the template's tag. |
+
+The optional `when` setting uses the Leader conditions defined above. All
+conditions must hold for the step to run.
+
+The supported placeholders are `{NNN}`, `{NNN$c}`, and `{NNN$c[x]}`, where
+`NNN` is a three-digit tag and `c` is one lowercase ASCII letter or digit.
+`{NNN}` inserts the first matching field's body in field text form: control
+data with blanks shown as `\`, or a data field's two indicators and
+`$`-subfields. `{NNN$c}` inserts the first `$c` value found among fields with
+that tag. If the source field or subfield is missing, the placeholder becomes
+empty. A text-form escape such as `{dollar}`, `{lcub}`, `{rcub}`, or `{bsol}`
+is literal and is not a placeholder. Any other brace expression is invalid.
+
+There may be at most one `{NNN$c[x]}` placeholder. It builds one output field
+for each source field with tag `NNN` that contains subfield `c`, in source
+order, using that source field's first `$c` value. If none contains `$c`, it
+builds one field with that placeholder empty. `{x}` cannot be used with
+`"add_if_missing"`. Other placeholders keep their normal first-value behavior
+for each output field. All source values are read before adding any built
+fields, including when a source tag equals the template tag.
+
+Substitution uses the source values' field text form, then the completed
+template is parsed once as a field. A value's `$`, braces, backslashes,
+non-ASCII characters, and supplementary characters are substituted as text;
+text-form escapes introduced by a source value are not expanded as
+placeholders. `{lcub}001{rcub}{001}`, for example, inserts `{001}` followed by
+the 001 value. Control-field blanks display as `\` in field text form, so a
+control value `a b` inserted into a data subfield becomes `a\b`. A data
+subfield value inserted into a control field retains its characters, with
+template backslashes decoded as control-field blanks when the result is
+parsed.
+
+Built fields use the `add_field` tag-order placement: before the first field
+whose tag is equal to or greater than the built field's tag. Multiple fields
+from `{x}` are inserted together in source order. `"add_if_missing"` checks
+for any field with the template's tag before building fields. A data field is
+added only when at least one subfield value is non-empty; spaces count as
+content, and empty subfields are kept when another subfield has content. A
+control field is added even when its data is empty.
+
 ## Command: `edit_subfield`
 
 A step edits subfields of data fields with one exact tag:

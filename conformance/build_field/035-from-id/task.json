@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field 035-from-id",
+  "description": "Checks MARC field building behavior with synthetic records.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=035  9\\$a({003}){001}",
+      "mode": "add"
+    }
+  ]
+}

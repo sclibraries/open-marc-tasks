@@ -3,6 +3,7 @@ import zipfile
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
+from .commands.build_field import validate as validate_build_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.replace_text import validate as validate_replace_text
 from .task import TaskError
@@ -123,6 +124,30 @@ def _field(tag: str, text: str) -> Dict[str, object]:
 def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
     columns = line.split("\t")
     command = columns[0]
+
+    if command == "buildnewfield":
+        if len(columns) != 6:
+            return None, "malformed buildnewfield line"
+        _, field, f1, f2, f3, f4 = columns
+        if f1 != "False":
+            return None, "buildnewfield f1 is not supported"
+
+        flags = (f2, f3, f4)
+        if flags == ("False", "False", "True"):
+            mode = "add"
+        elif flags == ("False", "True", "False"):
+            mode = "add_if_missing"
+        elif flags == ("True", "False", "False"):
+            return None, "buildnewfield replace mode is not supported yet"
+        else:
+            return None, "unsupported buildnewfield flags"
+
+        step = {"command": "build_field", "field": field, "mode": mode}
+        try:
+            validate_build_field(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
 
     if command == "DELETE":
         if len(columns) != 9:

@@ -32,6 +32,7 @@
       "oneOf": [
         {"$ref": "#/$defs/delete_field_step"},
         {"$ref": "#/$defs/add_field_step"},
+        {"$ref": "#/$defs/build_field_step"},
         {"$ref": "#/$defs/edit_subfield_step"},
         {"$ref": "#/$defs/replace_text_step"}
       ]
@@ -104,6 +105,20 @@
           }
         }
       ]
+    },
+    "build_field_step": {
+      "type": "object",
+      "required": ["command", "field"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "build_field"},
+        "field": {"type": "string"},
+        "mode": {"enum": ["add", "add_if_missing"], "default": "add"},
+        "when": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/condition"}
+        }
+      }
     },
     "edit_subfield_step": {
       "type": "object",
