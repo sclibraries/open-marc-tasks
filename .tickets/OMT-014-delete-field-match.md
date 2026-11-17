@@ -1,6 +1,6 @@
 Title: Let delete_field delete only fields whose text matches, and import MarcEdit DELETE with a match value
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — extends an existing command; reuses the field text form and regex dialect
 Milestone: M2 — Commands
@@ -61,7 +61,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head ed99beb, merged into main (owner OK 2026-11-17). Python 3.9 gate 134 passed, 1 skipped; host reference passed. Measure 20/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Match compared against the whole field line, case-sensitive substring; regex anchors on that line; f2=True deletes non-matching fields. Five MarcEdit-generated cases. No fix round.
