@@ -48,6 +48,19 @@ def _task_file(source_path, imported_task, temporary_dir):
     return task_path
 
 
+def _has_empty_option_9(source_path):
+    return any(
+        len(columns) == 5
+        and columns[0] == "SUBFIELD_REMOVE"
+        and columns[3] == ""
+        and columns[4] == "9|0"
+        for columns in (
+            line.split("\t")
+            for line in source_path.read_text(encoding="utf-8").splitlines()
+        )
+    )
+
+
 def _measure_task(display_name, source_path, imported_task, records_path, failures):
     if failures:
         print("{}: not translated ({} lines)".format(display_name, len(failures)))
@@ -75,8 +88,14 @@ def _measure_task(display_name, source_path, imported_task, records_path, failur
             records_match(actual, expected)
             for actual, expected in zip(library_records, reference_records)
         )
+        if matches:
+            label = "match"
+        elif _has_empty_option_9(task_source):
+            label = "differs (deliberate: SUBFIELD_REMOVE option 9)"
+        else:
+            label = "differs"
 
-    print("{}: {}".format(display_name, "match" if matches else "differs"))
+    print("{}: {}".format(display_name, label))
     return matches
 
 

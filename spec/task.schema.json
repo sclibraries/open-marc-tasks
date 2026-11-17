@@ -81,6 +81,15 @@
           "then": {
             "properties": {"to_tag": {"not": {"pattern": "^00[0-9]$"}}}
           }
+        },
+        {
+          "if": {
+            "properties": {"from_tag": {"pattern": "^00[0-9]$"}},
+            "required": ["from_tag"]
+          },
+          "then": {
+            "properties": {"to_tag": {"not": {"pattern": "^00[0-9]$"}}}
+          }
         }
       ]
     },

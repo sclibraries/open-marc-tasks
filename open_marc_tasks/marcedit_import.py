@@ -275,11 +275,11 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, "SUBFIELD_REMOVE tag must be a data-field tag"
         if len(code) != 1 or code not in "abcdefghijklmnopqrstuvwxyz0123456789":
             return None, "invalid SUBFIELD_REMOVE subfield code"
-        if flags.startswith("9|"):
-            return None, "SUBFIELD_REMOVE option 9 is waiting on an owner decision"
+        if flags.startswith("9|") and value:
+            return None, "option 9 with a value is not supported"
         if flags.endswith("|2"):
             return None, "SUBFIELD_REMOVE regular expressions are not supported yet"
-        if flags not in ("107|0", "0|0"):
+        if flags not in ("107|0", "0|0", "9|0"):
             return None, "unsupported SUBFIELD_REMOVE settings"
 
         mnemonics = _MNEMONIC.findall(value)

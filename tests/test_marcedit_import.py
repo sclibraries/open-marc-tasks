@@ -197,6 +197,10 @@ from open_marc_tasks.task import load_task
             {"command": "remove_subfield", "tag": "856", "code": "z"},
         ),
         (
+            "SUBFIELD_REMOVE\t945\tb\t\t9|0",
+            {"command": "remove_subfield", "tag": "945", "code": "b"},
+        ),
+        (
             "SUBFIELD_REMOVE\t856\tz\tOCoLC\t107|0",
             {"command": "remove_subfield", "tag": "856", "code": "z", "if_contains": "OCoLC"},
         ),
@@ -324,6 +328,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
     assert item.text == line
     if line.startswith("SUBFIELD_EDIT"):
         assert item.reason == "SUBFIELD_EDIT regular expressions are not supported yet"
+    elif line.startswith("SUBFIELD_REMOVE") and "\t9|" in line:
+        assert item.reason == "option 9 with a value is not supported"
     else:
         assert item.reason and "\n" not in item.reason
 
