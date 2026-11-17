@@ -1,0 +1,19 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic build_field replace case",
+  "description": "Exercises MarcEdit-compatible replace behavior on synthetic fields.",
+  "steps": [
+    {
+      "command": "build_field",
+      "field": "=950  \\\\$a{950$a}",
+      "mode": "replace"
+    },
+    {
+      "command": "edit_subfield",
+      "tag": "950",
+      "code": "a",
+      "action": "append",
+      "value": "!"
+    }
+  ]
+}

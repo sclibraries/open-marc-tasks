@@ -31,7 +31,7 @@ INVALID_DOCUMENTS = [
     ("add empty condition in", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_field", "tag": "650", "ind1": " ", "ind2": "0", "subfields": [["a", "Topic"]], "when": [{"leader": 7, "in": []}]}]}, "step 2"),
     ("build_field missing field", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "build_field"}]}, "step 2"),
     ("build_field non-string field", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "build_field", "field": 1}]}, "step 2"),
-    ("build_field unknown mode", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "build_field", "field": "=901  \\\\$aX", "mode": "replace"}]}, "step 2"),
+    ("build_field invalid mode", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "build_field", "field": "=901  \\\\$aX", "mode": "replace_all"}]}, "step 2"),
     ("edit_subfield bad code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "A", "action": "add", "value": "Topic"}]}, "step 2"),
     ("edit_subfield unknown action", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "change", "value": "Topic"}]}, "step 2"),
     ("edit_subfield missing value", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "add"}]}, "step 2"),
@@ -128,6 +128,7 @@ INVALID_TASK_CASES.extend(
         ("build_field unsupported mnemonic", "=901  \\\\$a{eacute}", {}),
         ("build_field two x placeholders", "=901  \\\\$a{001$a[x]}{002$a[x]}", {}),
         ("build_field x with add_if_missing", "=901  \\\\$a{001$a[x]}", {"mode": "add_if_missing"}),
+        ("build_field x with replace", "=901  \\\\$a{001$a[x]}", {"mode": "replace"}),
         ("build_field placeholder tag is not three digits", "=901  \\\\$a{01$a}", {}),
         ("build_field bad template subfield code", "=901  \\\\$Atext", {}),
     )
@@ -165,10 +166,11 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
     build_field_errors = {
         "build_field missing field": "missing setting: field",
         "build_field non-string field": "setting field",
-        "build_field unknown mode": "setting mode",
+        "build_field invalid mode": "setting mode",
         "build_field unsupported mnemonic": "unsupported placeholder",
         "build_field two x placeholders": "only one",
         "build_field x with add_if_missing": "add_if_missing",
+        "build_field x with replace": "replace",
         "build_field placeholder tag is not three digits": "three digits",
         "build_field bad template subfield code": "invalid subfield code",
     }

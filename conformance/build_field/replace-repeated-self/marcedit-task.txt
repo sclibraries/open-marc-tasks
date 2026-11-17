@@ -1,0 +1,2 @@
+buildnewfield	=950  \\$a{950$a}	False	True	False	False
+SUBFIELD_EDIT	950	a	^e	!	0|0

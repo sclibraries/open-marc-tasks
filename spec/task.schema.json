@@ -113,7 +113,7 @@
       "properties": {
         "command": {"const": "build_field"},
         "field": {"type": "string"},
-        "mode": {"enum": ["add", "add_if_missing"], "default": "add"},
+        "mode": {"enum": ["add", "add_if_missing", "replace"], "default": "add"},
         "when": {
           "type": "array",
           "items": {"$ref": "#/$defs/condition"}

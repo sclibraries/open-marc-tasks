@@ -138,7 +138,7 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
         elif flags == ("False", "True", "False"):
             mode = "add_if_missing"
         elif flags == ("True", "False", "False"):
-            return None, "buildnewfield replace mode is not supported yet"
+            mode = "replace"
         else:
             return None, "unsupported buildnewfield flags"
 
