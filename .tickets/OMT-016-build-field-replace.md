@@ -1,6 +1,6 @@
 Title: Add build_field replace mode and import MarcEdit buildnewfield replace lines
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — adds one mode to an existing command
 Milestone: M2 — Commands
@@ -71,7 +71,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 259c7b5, merged into main (owner OK 2026-11-17). Python 3.9 gate 152 passed, 1 skipped; host reference passed. Measure 21/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Replace in place with separate field objects, sources read first; all-empty data result errors with record and step. All 163 buildnewfield lines translate. No fix round.
