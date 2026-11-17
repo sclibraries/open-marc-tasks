@@ -1,6 +1,6 @@
 Title: Import MarcEdit regex REPLACE lines, including their Leader conditions
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — importer behavior; no format change
 Milestone: M2 — Commands
