@@ -1,6 +1,6 @@
 Title: Add regex mode to replace_text with a portable regex dialect
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: major — format contract: regex dialect and replacement syntax other implementations must follow
 Milestone: M2 — Commands
@@ -117,7 +117,7 @@ Plan check (2026-11-17, OMT-012 01-verify, BLOCKING) answered:
 - 10: counts confirmed (syntactic coverage only).
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 8099d70, merged into main (owner OK 2026-11-17). Python 3.9 gate 115 passed, 1 skipped; host reference passed.
 
 Review:
-- (orchestrator fills in)
+- Own dialect parser; nine MarcEdit-generated cases; byte-level MarcEdit difference documented. No fix round.
