@@ -234,10 +234,11 @@ replace.
 ```
 
 `from_tag` and `to_tag` are three ASCII digits and must differ. A data field
-cannot be copied to a control tag (`00X`). A control field can be copied to a
-data tag. `move` is an optional boolean that defaults to `false`; when true,
-the selected source fields are removed after their copies are made. If no
-source field is selected, the record is unchanged.
+cannot be copied to a control tag (`00X`), and a control field cannot be copied
+to another control tag. A control field can be copied to a data tag. `move` is
+an optional boolean that defaults to `false`; when true, the selected source
+fields are removed after their copies are made. If no source field is selected,
+the record is unchanged.
 
 `if_contains` is an optional non-empty string. A source field is selected when
 its complete rendered field text line contains this string as a case-sensitive
@@ -265,9 +266,9 @@ non-empty matches on data-field sources. The field-text match escapes
 filtered control-field sources are reported as not translated: MarcEdit 7.6
 did not produce a copy for the synthetic filtered control-field probes, so
 their match behavior is not defined here. Control-to-control COPY lines are
-also not imported; the synthetic reference output encoded copied values as
-data-like control fields and interleaved repeated copies with the old target
-fields, so this form remains undefined.
+not imported because MarcEdit's synthetic reference output encoded copied
+values as data-like control fields and interleaved repeated copies with the old
+target fields; these mappings are rejected when a task is loaded.
 
 ## Command: `edit_subfield`
 
@@ -486,9 +487,14 @@ Regex `SUBFIELD_EDIT` forms are not translated and are reported with the reason
 options `107|0` or `0|0` map to `remove_subfield` without a filter. With a
 non-empty value, `107|0` maps to `if_contains`, and `0|0` maps to `remove_text`.
 The value mnemonics `{dollar}`, `{lcub}`, and `{rcub}` become their literal
-characters. Option `9|…` is not translated while awaiting an owner decision;
-regex options ending in `|2`, other options, control-field tags, and unsupported
-character mnemonics are reported as not translated.
+characters. **Difference from MarcEdit.** An empty-value `9|0` line maps to
+`remove_subfield` without a filter, intentionally clearing barcode, material
+type, and holdings-prefix subfields before copies are built; MarcEdit 7.6 makes
+no change because an empty option-9 value matches nothing. Option `9|…` with a
+non-empty value is reported as not translated with the reason
+`option 9 with a value is not supported`; regex options ending in `|2`, other
+options, control-field tags, and unsupported character mnemonics are also
+reported as not translated.
 
 The plain `REPLACE` form with seven tab-separated columns, flags `0`, an empty
 condition, flags `0`, and final flag `False` maps to `replace_text`. Other

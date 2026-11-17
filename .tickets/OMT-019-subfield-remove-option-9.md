@@ -1,6 +1,6 @@
 Title: Import SUBFIELD_REMOVE option 9 with an empty value as remove-all, and reject control-to-control copy_field
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — importer mapping (owner decision) plus one load-time rejection
 Milestone: M2 — Commands
