@@ -1,6 +1,6 @@
 Title: Add copy_field and import MarcEdit COPY
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new command with plain settings; reuses existing placement, text form and match rules
 Milestone: M2 — Commands
@@ -79,7 +79,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 0a2323c, merged into main (owner OK 2026-11-17). Python 3.9 gate 183 passed, 1 skipped; host reference passed. Measure 26/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Placement follows MarcEdit (data copies after existing same-tag fields, control→data before); all 68 COPY lines translate. Control→control branch to be rejected at load in a follow-up. No fix round.
