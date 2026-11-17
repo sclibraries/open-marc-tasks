@@ -1,6 +1,6 @@
 Title: Add build_field (fields built from other fields' data) and import MarcEdit buildnewfield add forms
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: major — format contract: placeholder syntax and build modes other implementations must follow
 Milestone: M2 — Commands
@@ -141,7 +141,7 @@ Plan check (2026-11-17, OMT-015 01-verify, BLOCKING) answered:
 - 14, 15: confirmed; census boundary named in Why; `parse_field` stays strict.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head e0ce6eb, merged into main (owner OK 2026-11-17). Python 3.9 gate 150 passed, 1 skipped; host reference passed. Measure 21/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- One-pass text-form substitution with unchanged parse_field; [x] inserts in source order via shared add_field placement; buildnewfield untranslated 163 → 30 (replace, OMT-016). No fix round.
