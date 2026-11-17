@@ -193,7 +193,8 @@ records with the local MarcEdit reference copy using
 `python tools/marcedit_reference.py regenerate <case-dir>...`. All public
 conformance data is synthetic and uses `example.edu` where a domain is needed.
 If MarcEdit writes an empty output for a no-change task, use the input records
-with backslash indicators blanked, matching MarcEdit's written output.
+with backslash indicators blanked and typography normalized, matching MarcEdit's
+written output.
 
 ## Importing MarcEdit tasks
 

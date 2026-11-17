@@ -11,7 +11,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from open_marc_tasks.task import blank_backslash_indicators
+from open_marc_tasks.task import blank_backslash_indicators, normalize_typography
 
 
 IMAGE = "mcr.microsoft.com/dotnet/runtime-deps:8.0"
@@ -64,6 +64,7 @@ def run_marcedit(tasks_file: Path, input_mrc: Path, output_mrc: Path, marcedit_d
                 reader = MARCReader(source, to_unicode=True, utf8_handling="strict")
                 for record in reader:
                     blank_backslash_indicators(record)
+                    normalize_typography(record)
                     destination.write(record.as_marc())
         else:
             shutil.copyfile(generated_output, output_mrc)
