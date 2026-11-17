@@ -1,0 +1,1 @@
+REPLACE	^(=245  10\$a)	$1X	2		0	False

@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-replacement-trailing-backslash",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=245  10\\$a)(abc)$",
+      "replace": "$1$2\\",
+      "regex": true
+    }
+  ]
+}

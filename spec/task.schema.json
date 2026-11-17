@@ -155,6 +155,7 @@
         "command": {"const": "replace_text"},
         "find": {"type": "string", "minLength": 1},
         "replace": {"type": "string"},
+        "regex": {"type": "boolean", "default": false},
         "when": {
           "type": "array",
           "items": {"$ref": "#/$defs/condition"}

@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-greedy-capture",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^=245  10\\$a(.+)(.+)$",
+      "replace": "=245  10$a$1|$2",
+      "regex": true
+    }
+  ]
+}

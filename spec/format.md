@@ -221,13 +221,62 @@ A plain-mode step has this form:
 ```
 
 `find` is a non-empty string; `replace` is a string and may be empty. The
-optional `when` setting uses the Leader conditions defined above. For each
-record where all conditions hold, fields are visited in record order. Each
-field is rendered in the field text form, and every non-overlapping literal
-occurrence of `find` is replaced from left to right. Matching is
+optional `regex` setting is a boolean that defaults to `false`. With `regex:
+false`, `find` and `replace` are literal text, including regex punctuation,
+backslashes, and dollar signs. The optional `when` setting uses the Leader
+conditions defined above.
+
+For each record where all conditions hold, fields are visited in record order.
+Each field is rendered in the field text form. Plain mode replaces every
+non-overlapping literal occurrence of `find` from left to right. Matching is
 case-sensitive. If the text changes, it is parsed back into a field at the
 same position. An invalid result raises an error naming the one-based record
 and step numbers.
+
+With `regex: true`, `find` uses the following portable dialect:
+
+- Matching uses Unicode code points in each field's text form separately.
+  Each field is treated as one string, even when its content contains LF; `^`
+  matches its start and `$` its exact end. Matching is case-sensitive.
+  MarcEdit 7.6 processes UTF-8 regex text as bytes, so its results can differ
+  when a pattern consumes non-ASCII text. This format never splits a Unicode
+  character.
+- Ordinary characters match themselves. The literal escapes are `\.`, `\/`,
+  `\?`, `\$`, `\\`, `\(`, `\)`, `\[`, `\]`, `\+`, `\*`, `\{`, `\}`,
+  `\|`, `\^`, and `\-`. The escapes `\d`, `\w`, and `\s` match ASCII
+  `[0-9]`, `[A-Za-z0-9_]`, and `[ \t\n\r\f\v]`, respectively. A dot
+  matches any code point except LF. `^` and `$` are anchors, parentheses
+  create groups, `|` separates alternatives, and quantifiers have the forms
+  below. `/` and `-` are literal outside character classes, whether escaped
+  or not. An unescaped `]` or unmatched `}` is invalid.
+- A character class uses square brackets, may begin with `^` to negate the
+  class, and may contain literal characters, escaped characters, the three
+  ASCII classes above, and character ranges such as `a-z`. Class subtraction
+  and intersection are not supported. Parentheses inside a class are literal.
+- Parentheses create capturing groups, numbered from left to right. `|`
+  separates alternatives. Greedy `*`, `+`, `?`, `{n}`, `{n,}`, and `{n,m}`
+  quantifiers are supported, where `n` and `m` are non-negative integers and
+  `n` must not exceed `m`. `^` matches the start of the field text form and `$`
+  matches only its exact end, not the position before a trailing newline.
+- Matching is leftmost, uses the first alternative that can match, and uses
+  greedy quantifiers with backtracking. Every non-overlapping match is
+  replaced from left to right.
+- The pattern must be valid and must not be able to match an empty string.
+  Lookaround, non-capturing or inline-flag groups, lazy or possessive
+  quantifiers, backreferences, unsupported escapes, malformed expressions,
+  and class operations are rejected when the task is loaded. `TaskError`
+  identifies the one-based step number.
+
+Regex-mode replacements use `$1` through `$9` to insert the corresponding
+capturing group. A group that did not participate inserts an empty string. A
+reference to a group number not present in the pattern remains literal text.
+All other characters, including backslashes and a dollar sign not followed by
+`1` through `9`, are literal. `$0`, multi-digit group references, and the .NET
+replacement forms `$$`, `$+`, `$&`, `${...}`, `` $` ``, `$'`, and `$_` are
+rejected when the task is loaded. Captured text is inserted once and is not
+interpreted again as replacement syntax. The resulting field text is parsed
+under the field-text rules above, so literal syntax inserted by a replacement
+is interpreted there; `{dollar}` encodes a dollar sign within a field value.
 
 Replacement runs after the record handling above. In particular,
 backslash-indicator conversion happens first, and typography is normalized

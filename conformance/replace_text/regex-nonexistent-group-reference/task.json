@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-nonexistent-group-reference",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=245  10\\$a)(A)$",
+      "replace": "$1$2$9",
+      "regex": true
+    }
+  ]
+}

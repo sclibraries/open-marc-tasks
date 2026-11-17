@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-008-position-edit",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "(=008.{25}).{1}(.+)",
+      "replace": "$1o$2",
+      "regex": true
+    }
+  ]
+}
