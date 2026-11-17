@@ -59,6 +59,23 @@ MarcEdit 7.6 does not treat an `X` before a later digit as a wildcard: its
 behavior, a pattern with an `X` followed by a digit is valid task data but
 matches no fields. An exact tag such as `009` can delete a control field.
 
+`match` is an optional string. By default, a matching-tag field is deleted
+when its rendered field text contains `match`. Matching is a case-sensitive
+substring search over the entire field text line, including `=TAG  ` and the
+body described in [Field text form](#field-text-form). For example,
+`"match": "\\\\$a(OCoLC)"` matches a subfield prefix after blank indicators.
+Without `match`, every field with a matching tag is deleted.
+
+`match_regex` is an optional boolean that defaults to `false`. When true,
+`match` is a regular expression in the dialect defined for `replace_text`; it
+is searched against each whole field text line. `^` and `$` anchor the start
+and exact end of that line. A regex that is invalid or can match empty text is
+rejected when the task is loaded.
+
+`delete_nonmatches` is an optional boolean that defaults to `false`. When true,
+the command deletes matching-tag fields whose field text does not match
+`match`, and keeps fields whose text does match. It requires `match`.
+
 ## Conditions
 
 A command that supports conditions may have an optional `when` array. Each
@@ -308,10 +325,15 @@ written output.
 ## Importing MarcEdit tasks
 
 `omt import SOURCE OUT_DIR` imports a tab-separated MarcEdit task file or a
-`.task` archive containing `.txt` task entries. It translates plain `DELETE`
-lines with default flags and empty match values, preserving tag patterns such
-as `9XX`. ADD options 100, 101, and 108 map to `if_tag_exists` values `add`,
-`skip`, and `skip_if_identical`. Option 106 uses `add` and supports only the
+`.task` archive containing `.txt` task entries. It translates tag-only `DELETE`
+lines with default settings and lines with a non-empty match when column A is
+`0` (plain substring) or `2` (regex). DELETE matching uses the whole field text
+line, including `=TAG  `. MarcEdit's second boolean flag (`f2`) maps to
+`delete_nonmatches`; the other boolean flags must be `False`. Tag-only DELETE
+lines translate only with A=`0` and all boolean flags `False`. Tag patterns
+such as `9XX` are preserved. ADD options 100, 101, and 108 map to
+`if_tag_exists` values `add`, `skip`, and `skip_if_identical`. Option 106 uses
+`add` and supports only the
 Leader conditions `/=LDR.{N}[letters].+/`,
 `/=LDR.{N}[letters][letters].+/`, and `/=LDR.{N}x.+/`; commas in brackets
 separate allowed characters. ADD field text supports blank indicators (`\`),
@@ -344,5 +366,5 @@ flags, final flag `True`, `0|1`, and non-Leader conditions are not translated.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be
-run accidentally. Other MarcEdit commands, non-default DELETE settings,
-character mnemonics, and other ADD condition forms are not translated.
+run accidentally. Other MarcEdit commands, DELETE options outside the forms
+above, character mnemonics, and other ADD condition forms are not translated.

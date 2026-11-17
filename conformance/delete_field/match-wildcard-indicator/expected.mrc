@@ -1,0 +1,1 @@
+00189    a2200073   4500001002700000690003000027691003100057245002700088SYNTHETIC-DELETE-INDICATOR16aDifferent first indicator 7aDifferent second indicator 6aOutside 6XX tag family

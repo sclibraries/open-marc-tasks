@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic match-delete-nonmatches",
+  "description": "Synthetic delete_field conformance case.",
+  "steps": [
+    {
+      "command": "delete_field",
+      "tag": "655",
+      "match": "Electronic books",
+      "delete_nonmatches": true
+    }
+  ]
+}

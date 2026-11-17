@@ -42,8 +42,21 @@
       "additionalProperties": false,
       "properties": {
         "command": {"const": "delete_field"},
-        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9X]{3}$"}
-      }
+        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9X]{3}$"},
+        "match": {"type": "string"},
+        "match_regex": {"type": "boolean", "default": false},
+        "delete_nonmatches": {"type": "boolean", "default": false}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"match_regex": {"const": true}}, "required": ["match_regex"]},
+          "then": {"required": ["match"]}
+        },
+        {
+          "if": {"properties": {"delete_nonmatches": {"const": true}}, "required": ["delete_nonmatches"]},
+          "then": {"required": ["match"]}
+        }
+      ]
     },
     "add_field_step": {
       "type": "object",

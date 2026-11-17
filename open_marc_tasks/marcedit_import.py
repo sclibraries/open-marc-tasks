@@ -3,6 +3,7 @@ import zipfile
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
+from .commands.delete_field import validate as validate_delete_field
 from .commands.replace_text import validate as validate_replace_text
 from .task import TaskError
 
@@ -126,14 +127,33 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
     if command == "DELETE":
         if len(columns) != 9:
             return None, "malformed DELETE line"
-        if columns[2] != "":
-            return None, "DELETE match values are not supported"
-        if columns[3] != "0" or columns[4:] != _DELETE_FLAGS:
-            return None, "non-default DELETE flags are not supported"
         tag = columns[1]
         if len(tag) != 3 or any(char not in "0123456789X" for char in tag):
             return None, "invalid DELETE tag"
-        return {"command": "delete_field", "tag": tag}, ""
+        match = columns[2]
+        flags = columns[4:]
+        if not match:
+            if columns[3] != "0" or flags != _DELETE_FLAGS:
+                return None, "non-default DELETE flags are not supported"
+            return {"command": "delete_field", "tag": tag}, ""
+        if (
+            columns[3] not in ("0", "2")
+            or flags[0] != "False"
+            or flags[1] not in ("False", "True")
+            or flags[2:] != _DELETE_FLAGS[2:]
+        ):
+            return None, "unsupported DELETE settings"
+
+        step = {"command": "delete_field", "tag": tag, "match": match}
+        if columns[3] == "2":
+            step["match_regex"] = True
+        if flags[1] == "True":
+            step["delete_nonmatches"] = True
+        try:
+            validate_delete_field(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
 
     if command == "ADD":
         if len(columns) != 5:
