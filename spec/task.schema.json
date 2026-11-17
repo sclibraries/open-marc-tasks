@@ -34,6 +34,7 @@
         {"$ref": "#/$defs/add_field_step"},
         {"$ref": "#/$defs/build_field_step"},
         {"$ref": "#/$defs/edit_subfield_step"},
+        {"$ref": "#/$defs/remove_subfield_step"},
         {"$ref": "#/$defs/replace_text_step"}
       ]
     },
@@ -171,6 +172,27 @@
                 {"required": ["replace"]}
               ]
             }
+          }
+        }
+      ]
+    },
+    "remove_subfield_step": {
+      "type": "object",
+      "required": ["command", "tag", "code"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "remove_subfield"},
+        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
+        "code": {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
+        "if_contains": {"type": "string", "minLength": 1},
+        "remove_text": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {"not": {"required": ["if_contains", "remove_text"]}},
+        {
+          "not": {
+            "properties": {"tag": {"pattern": "^00[0-9]$"}},
+            "required": ["tag"]
           }
         }
       ]

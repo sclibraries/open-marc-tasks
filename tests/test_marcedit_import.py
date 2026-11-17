@@ -189,6 +189,26 @@ from open_marc_tasks.task import load_task
             {"command": "edit_subfield", "tag": "959", "code": "a", "action": "replace_first", "find": "needle", "replace": "REPL"},
         ),
         (
+            "SUBFIELD_REMOVE\t856\tz\t\t107|0",
+            {"command": "remove_subfield", "tag": "856", "code": "z"},
+        ),
+        (
+            "SUBFIELD_REMOVE\t856\tz\t\t0|0",
+            {"command": "remove_subfield", "tag": "856", "code": "z"},
+        ),
+        (
+            "SUBFIELD_REMOVE\t856\tz\tOCoLC\t107|0",
+            {"command": "remove_subfield", "tag": "856", "code": "z", "if_contains": "OCoLC"},
+        ),
+        (
+            "SUBFIELD_REMOVE\t856\tz\t(OCoLC)\t0|0",
+            {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": "(OCoLC)"},
+        ),
+        (
+            "SUBFIELD_REMOVE\t856\tz\t{dollar}{lcub}{rcub}\t0|0",
+            {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": "${}"},
+        ),
+        (
             "REPLACE\tbefore\tafter\t0\t\t0\tFalse",
             {"command": "replace_text", "find": "before", "replace": "after"},
         ),
@@ -245,6 +265,12 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "ADD\t650\t\\0$aSynthetic topic\t999\t",
         "ADD\t650\t\\0$aCaf{eacute}\t100\t",
         "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|2",
+        "SUBFIELD_REMOVE\t856\tz\tOCoLC\t9|0",
+        "SUBFIELD_REMOVE\t856\tz\tOCoLC\t0|2",
+        "SUBFIELD_REMOVE\t856\tz\tOCoLC\t3|1",
+        "SUBFIELD_REMOVE\t001\ta\t\t107|0",
+        "SUBFIELD_REMOVE\t856\tz\t{bsol}\t0|0",
+        "SUBFIELD_REMOVE\t856\tz\t{eacute}\t0|0",
         "REPLACE\tbefore.*\tafter\t0|2\t\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t/=LDR.{6}a.+/\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t\t0\tTrue",

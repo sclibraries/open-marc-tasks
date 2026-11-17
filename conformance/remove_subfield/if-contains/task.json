@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic remove subfield if-contains",
+  "description": "Exercises remove_subfield behavior with synthetic MARC data.",
+  "steps": [
+    {
+      "command": "remove_subfield",
+      "tag": "856",
+      "code": "z",
+      "if_contains": "OCoLC"
+    }
+  ]
+}

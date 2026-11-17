@@ -85,6 +85,8 @@ from .commands.edit_subfield import run as run_edit_subfield
 from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.replace_text import run as run_replace_text
 from .commands.replace_text import validate as validate_replace_text
+from .commands.remove_subfield import run as run_remove_subfield
+from .commands.remove_subfield import validate as validate_remove_subfield
 
 
 COMMANDS = {
@@ -93,6 +95,7 @@ COMMANDS = {
     "build_field": (validate_build_field, run_build_field),
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
     "replace_text": (validate_replace_text, run_replace_text),
+    "remove_subfield": (validate_remove_subfield, run_remove_subfield),
 }
 
 
