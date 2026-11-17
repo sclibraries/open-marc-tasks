@@ -235,11 +235,12 @@ and step numbers.
 
 With `regex: true`, `find` uses the following portable dialect:
 
-- Matching uses Unicode code points in each field's text form separately. A
-  field text form is one line; `^` matches its start and `$` its exact end.
-  Matching is case-sensitive. MarcEdit 7.6 processes UTF-8 regex text as
-  bytes, so its results can differ when a pattern consumes non-ASCII text.
-  This format never splits a Unicode character.
+- Matching uses Unicode code points in each field's text form separately.
+  Each field is treated as one string, even when its content contains LF; `^`
+  matches its start and `$` its exact end. Matching is case-sensitive.
+  MarcEdit 7.6 processes UTF-8 regex text as bytes, so its results can differ
+  when a pattern consumes non-ASCII text. This format never splits a Unicode
+  character.
 - Ordinary characters match themselves. The literal escapes are `\.`, `\/`,
   `\?`, `\$`, `\\`, `\(`, `\)`, `\[`, `\]`, `\+`, `\*`, `\{`, `\}`,
   `\|`, `\^`, and `\-`. The escapes `\d`, `\w`, and `\s` match ASCII
