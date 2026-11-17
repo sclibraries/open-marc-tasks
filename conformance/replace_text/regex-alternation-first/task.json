@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-alternation-first",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=245  10\\$a)(a|ab)",
+      "replace": "$1$2X",
+      "regex": true
+    }
+  ]
+}

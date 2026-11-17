@@ -44,14 +44,78 @@ def task_document(steps=None, format_version="0.1"):
     }
 
 
+REGEX_INVALID_DOCUMENTS = [
+    (
+        "replace_text invalid regex pattern {}".format(pattern),
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "replace_text", "find": pattern, "replace": "x", "regex": True},
+            ]
+        ),
+        "step 2",
+        True,
+    )
+    for pattern in (
+        "(?=a)",
+        "(?i)a",
+        "a+?",
+        "a++",
+        "(?>a)",
+        "a{,3}",
+        r"(a)\1",
+        r"\bx",
+        "[a-z-[aeiou]]",
+        "[a&&b]",
+        "[",
+        "(",
+        "a{3,1}",
+        "x*",
+        "a*|b",
+    )
+]
+REGEX_INVALID_DOCUMENTS.extend(
+    (
+        "replace_text invalid regex replacement {}".format(replacement),
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "replace_text", "find": "(a)", "replace": replacement, "regex": True},
+            ]
+        ),
+        "step 2",
+        True,
+    )
+    for replacement in ("$12", "$0", "$&", "${1}")
+)
+INVALID_TASK_CASES = [
+    (name, document, step_number, False)
+    for name, document, step_number in INVALID_DOCUMENTS
+] + [
+    (
+        "replace_text non-boolean regex",
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "replace_text", "find": "a", "replace": "b", "regex": "yes"},
+            ]
+        ),
+        "step 2",
+        False,
+    )
+] + REGEX_INVALID_DOCUMENTS
+
+
 @pytest.fixture
 def task_schema():
     schema_path = Path(__file__).resolve().parents[1] / "spec" / "task.schema.json"
     return json.loads(schema_path.read_text(encoding="utf-8"))
 
 
-@pytest.mark.parametrize("name,document,step_number", INVALID_DOCUMENTS)
-def test_invalid_tasks_are_rejected_by_loader_and_schema(tmp_path, task_schema, name, document, step_number):
+@pytest.mark.parametrize("name,document,step_number,schema_valid", INVALID_TASK_CASES)
+def test_invalid_tasks_are_rejected_by_loader_and_schema(
+    tmp_path, task_schema, name, document, step_number, schema_valid
+):
     task_path = tmp_path / (name.replace(" ", "-") + ".json")
     task_path.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(TaskError) as error:
@@ -62,8 +126,70 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(tmp_path, task_schema, 
         assert "setting find" in str(error.value)
     if name == "replace_text non-string replace":
         assert "setting replace" in str(error.value)
-    with pytest.raises(jsonschema.ValidationError):
+    if name == "replace_text non-boolean regex":
+        assert "regex" in str(error.value)
+    if schema_valid:
         jsonschema.validate(document, task_schema)
+    else:
+        with pytest.raises(jsonschema.ValidationError):
+            jsonschema.validate(document, task_schema)
+
+
+@pytest.mark.parametrize(
+    "pattern", [r"\(\?i\)", r"\\b", "[+?]", "[(]x"]
+)
+def test_regex_dialect_accepts_escaped_and_in_class_metacharacters(
+    tmp_path, task_schema, pattern
+):
+    document = task_document(
+        [{"command": "replace_text", "find": pattern, "replace": "x", "regex": True}]
+    )
+    task_path = tmp_path / "task.json"
+    task_path.write_text(json.dumps(document), encoding="utf-8")
+
+    jsonschema.validate(document, task_schema)
+    assert load_task(task_path).steps[0]["regex"] is True
+
+
+@pytest.mark.parametrize(
+    "tag,value,find,replacement,regex,expected",
+    [
+        ("245", "٣", r"^=245  10\$a\d$", "X", True, "٣"),
+        ("245", "é", r"^=245  10\$a\w$", "X", True, "é"),
+        ("245", " ", r"^=245  10\$a\s$", "X", True, " "),
+        ("245", "é", r"^(=245  10\$a).$", "$1X", True, "X"),
+        ("245", "𐐀", r"^(=245  10\$a).$", "$1X", True, "X"),
+        ("245", "abc\n", r"^(=245  10\$a)(abc)$", "$1$2X", True, "abc\n"),
+        ("001", "a.b(", "a.b(", "$1", False, "$1"),
+    ],
+)
+def test_replace_text_uses_portable_regex_character_and_plain_literal_semantics(
+    tmp_path, tag, value, find, replacement, regex, expected
+):
+    task_path = tmp_path / "task.json"
+    task_path.write_text(
+        json.dumps(
+            task_document(
+                [{"command": "replace_text", "find": find, "replace": replacement, "regex": regex}]
+            )
+        ),
+        encoding="utf-8",
+    )
+    record = Record()
+    if tag.startswith("00"):
+        record.add_field(Field(tag=tag, data=value))
+    else:
+        record.add_field(
+            Field(tag=tag, indicators=["1", "0"], subfields=[Subfield("a", value)])
+        )
+
+    result = list(run_task(load_task(task_path), [record]))
+
+    if tag.startswith("00"):
+        actual = result[0][tag].data
+    else:
+        actual = result[0][tag]["a"]
+    assert actual == expected
 
 
 @pytest.mark.parametrize("contents", ['{"format_version":', None])

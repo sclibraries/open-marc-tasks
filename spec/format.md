@@ -244,12 +244,14 @@ With `regex: true`, `find` uses the following portable dialect:
   `\?`, `\$`, `\\`, `\(`, `\)`, `\[`, `\]`, `\+`, `\*`, `\{`, `\}`,
   `\|`, `\^`, and `\-`. The escapes `\d`, `\w`, and `\s` match ASCII
   `[0-9]`, `[A-Za-z0-9_]`, and `[ \t\n\r\f\v]`, respectively. A dot
-  matches any code point except LF. `/` and `-` are also literal outside
-  character classes, whether escaped or not.
+  matches any code point except LF. `^` and `$` are anchors, parentheses
+  create groups, `|` separates alternatives, and quantifiers have the forms
+  below. `/` and `-` are literal outside character classes, whether escaped
+  or not. An unescaped `]` or unmatched `}` is invalid.
 - A character class uses square brackets, may begin with `^` to negate the
   class, and may contain literal characters, escaped characters, the three
   ASCII classes above, and character ranges such as `a-z`. Class subtraction
-  and intersection are not supported.
+  and intersection are not supported. Parentheses inside a class are literal.
 - Parentheses create capturing groups, numbered from left to right. `|`
   separates alternatives. Greedy `*`, `+`, `?`, `{n}`, `{n,}`, and `{n,m}`
   quantifiers are supported, where `n` and `m` are non-negative integers and
@@ -271,7 +273,9 @@ All other characters, including backslashes and a dollar sign not followed by
 `1` through `9`, are literal. `$0`, multi-digit group references, and the .NET
 replacement forms `$$`, `$+`, `$&`, `${...}`, `` $` ``, `$'`, and `$_` are
 rejected when the task is loaded. Captured text is inserted once and is not
-interpreted again as replacement syntax.
+interpreted again as replacement syntax. The resulting field text is parsed
+under the field-text rules above, so literal syntax inserted by a replacement
+is interpreted there; `{dollar}` encodes a dollar sign within a field value.
 
 Replacement runs after the record handling above. In particular,
 backslash-indicator conversion happens first, and typography is normalized

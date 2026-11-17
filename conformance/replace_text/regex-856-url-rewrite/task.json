@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-856-url-rewrite",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=856  40\\$u)https://example\\.edu/(.+)$",
+      "replace": "$1https://proxy.example.edu/login?url=https://example.edu/$2",
+      "regex": true
+    }
+  ]
+}

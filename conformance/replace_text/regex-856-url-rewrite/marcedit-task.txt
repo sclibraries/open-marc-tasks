@@ -1,0 +1,1 @@
+REPLACE	^(=856  40\$u)https://example\.edu/(.+)$	$1https://proxy.example.edu/login?url=https://example.edu/$2	2		0	False

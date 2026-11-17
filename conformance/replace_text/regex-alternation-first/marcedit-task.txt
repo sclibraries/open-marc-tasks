@@ -1,0 +1,1 @@
+REPLACE	^(=245  10\$a)(a|ab)	$1$2X	2		0	False

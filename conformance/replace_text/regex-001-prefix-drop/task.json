@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-001-prefix-drop",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=001  )(\\w{1,3})(.+)$",
+      "replace": "$1$3",
+      "regex": true
+    }
+  ]
+}
