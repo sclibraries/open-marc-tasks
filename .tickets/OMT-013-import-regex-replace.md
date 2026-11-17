@@ -1,6 +1,6 @@
 Title: Import MarcEdit regex REPLACE lines, including their Leader conditions
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — importer behavior; no format change
 Milestone: M2 — Commands
@@ -56,7 +56,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head ceafac6 (one fix round), merged into main (owner OK 2026-11-17). Python 3.9 gate 127 passed, 1 skipped. REPLACE untranslated 288 → 6.
 
 Review:
-- (orchestrator fills in)
+- Round 1 used sixth column 0 for conditional lines (real files use 2); caught by the real-task measurement and fixed.
