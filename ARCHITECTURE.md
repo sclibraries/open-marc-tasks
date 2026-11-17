@@ -65,10 +65,11 @@ a change that alters it updates it in the same ticket.
   "X of Y task files match MarcEdit". Folders and sample are local paths;
   nothing from them enters the repo.
 - `edit_subfield` (OMT-007): every non-regex SUBFIELD_EDIT form; `0|2` (regex) is not translated yet.
+- `remove_subfield` (OMT-017): whole-subfield removal, `if_contains`, and `remove_text`; imports the observed `SUBFIELD_REMOVE` options `107|0` and `0|0`.
 - Field text form and `replace_text` (OMT-011, OMT-012): plain mode replaces
   literal, case-sensitive text; regex mode uses the portable dialect in
   `spec/format.md`. Regex REPLACE importing remains out of scope (OMT-013).
 - `build_field` (OMT-015, OMT-016): add, add-if-missing and replace from field
   text templates, including the observed MarcEdit `buildnewfield` forms.
-- Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex,
-  SUBFIELD_REMOVE, COPY, TASK_LIST, SORTBY, EDITFIELD, INDICATOR.
+- Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex, COPY,
+  TASK_LIST, SORTBY, EDITFIELD, INDICATOR.

@@ -37,6 +37,10 @@ INVALID_DOCUMENTS = [
     ("edit_subfield missing value", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "add"}]}, "step 2"),
     ("replace_text empty find", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "replace_text", "find": "", "replace": "x"}]}, "step 2"),
     ("replace_text non-string replace", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "replace_text", "find": "x", "replace": 1}]}, "step 2"),
+    ("remove_subfield bad code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "Z"}]}, "step 2"),
+    ("remove_subfield control tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "001", "code": "a"}]}, "step 2"),
+    ("remove_subfield both filters", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "if_contains": "x", "remove_text": "y"}]}, "step 2"),
+    ("remove_subfield empty remove_text", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": ""}]}, "step 2"),
 ]
 
 
@@ -176,6 +180,14 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
     }
     if name in build_field_errors:
         assert build_field_errors[name] in str(error.value)
+    remove_subfield_errors = {
+        "remove_subfield bad code": "setting code",
+        "remove_subfield control tag": "data-field tag",
+        "remove_subfield both filters": "cannot both be set",
+        "remove_subfield empty remove_text": "remove_text must be a non-empty string",
+    }
+    if name in remove_subfield_errors:
+        assert remove_subfield_errors[name] in str(error.value)
     if schema_valid:
         jsonschema.validate(document, task_schema)
     else:

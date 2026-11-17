@@ -266,6 +266,28 @@ MarcEdit's `0|2` form treats `find` as a regular expression. It is not supported
 by this command or importer; the importer reports it as not translated with
 `SUBFIELD_EDIT regular expressions are not supported yet`.
 
+## Command: `remove_subfield`
+
+A step removes subfields with one exact tag and code:
+
+```json
+{"command": "remove_subfield", "tag": "856", "code": "z"}
+```
+
+`tag` is three ASCII digits and must identify a data field (`010` through
+`999`). `code` is one lowercase ASCII letter or digit. The optional
+`if_contains` and `remove_text` settings are non-empty strings and cannot both
+be present.
+
+Without either setting, every matching subfield is removed. With
+`if_contains`, each matching subfield whose value contains that case-sensitive
+literal substring is removed. These whole-subfield forms apply to all matching
+fields. A data field left with no subfields is deleted.
+
+With `remove_text`, every case-sensitive occurrence of the literal text is
+removed from each matching subfield value. The subfield remains even when its
+value becomes empty. If no field or subfield matches, no change is made.
+
 ## Field text form
 
 The `replace_text` command edits the text form of one field. It is one line:
@@ -415,6 +437,14 @@ become `data` values. Descriptions come from `#DESCRIPTION#` lines.
 The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above.
 Regex `SUBFIELD_EDIT` forms are not translated and are reported with the reason
 `SUBFIELD_EDIT regular expressions are not supported yet`.
+
+`SUBFIELD_REMOVE` lines have five tab-separated columns. Empty-value forms with
+options `107|0` or `0|0` map to `remove_subfield` without a filter. With a
+non-empty value, `107|0` maps to `if_contains`, and `0|0` maps to `remove_text`.
+The value mnemonics `{dollar}`, `{lcub}`, and `{rcub}` become their literal
+characters. Option `9|…` is not translated while awaiting an owner decision;
+regex options ending in `|2`, other options, control-field tags, and unsupported
+character mnemonics are reported as not translated.
 
 The plain `REPLACE` form with seven tab-separated columns, flags `0`, an empty
 condition, flags `0`, and final flag `False` maps to `replace_text`. Other

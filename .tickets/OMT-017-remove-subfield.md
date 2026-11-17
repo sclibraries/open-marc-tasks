@@ -1,6 +1,6 @@
 Title: Add remove_subfield and import MarcEdit SUBFIELD_REMOVE (whole-subfield and text forms)
 
-Status: Ready
+Status: In-Review
 Size: S
 Tier: normal — new command with plain settings; no new syntax
 Milestone: M2 — Commands

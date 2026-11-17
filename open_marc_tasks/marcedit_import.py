@@ -6,6 +6,7 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from .commands.build_field import validate as validate_build_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.replace_text import validate as validate_replace_text
+from .commands.remove_subfield import validate as validate_remove_subfield
 from .task import TaskError
 
 
@@ -36,6 +37,7 @@ _MNEMONIC = re.compile(r"\{([^{}]*)\}")
 _REGEX_QUANTIFIER = re.compile(r"[0-9]+(?:,[0-9]*)?\Z")
 _SUBFIELD = re.compile(r"\$([a-z0-9])")
 _FIELD_TEXT_ESCAPES = {"dollar", "lcub", "rcub", "bsol"}
+_SUBFIELD_REMOVE_ESCAPES = {"dollar": "$", "lcub": "{", "rcub": "}"}
 
 
 def _condition_values(values: str) -> List[str]:
@@ -231,6 +233,40 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             step.update({"action": "replace_first", "find": find, "replace": replacement})
         else:
             return None, "unsupported SUBFIELD_EDIT settings"
+        return step, ""
+
+    if command == "SUBFIELD_REMOVE":
+        if len(columns) != 5:
+            return None, "malformed SUBFIELD_REMOVE line"
+        _, tag, code, value, flags = columns
+        if len(tag) != 3 or not tag.isascii() or not tag.isdigit():
+            return None, "invalid SUBFIELD_REMOVE tag"
+        if tag.startswith("00"):
+            return None, "SUBFIELD_REMOVE tag must be a data-field tag"
+        if len(code) != 1 or code not in "abcdefghijklmnopqrstuvwxyz0123456789":
+            return None, "invalid SUBFIELD_REMOVE subfield code"
+        if flags.startswith("9|"):
+            return None, "SUBFIELD_REMOVE option 9 is waiting on an owner decision"
+        if flags.endswith("|2"):
+            return None, "SUBFIELD_REMOVE regular expressions are not supported yet"
+        if flags not in ("107|0", "0|0"):
+            return None, "unsupported SUBFIELD_REMOVE settings"
+
+        mnemonics = _MNEMONIC.findall(value)
+        if any(mnemonic and mnemonic not in _SUBFIELD_REMOVE_ESCAPES for mnemonic in mnemonics):
+            return None, "unsupported SUBFIELD_REMOVE character mnemonic"
+        value = _MNEMONIC.sub(
+            lambda match: _SUBFIELD_REMOVE_ESCAPES.get(match.group(1), match.group(0)),
+            value,
+        )
+
+        step = {"command": "remove_subfield", "tag": tag, "code": code}
+        if value:
+            step["if_contains" if flags == "107|0" else "remove_text"] = value
+        try:
+            validate_remove_subfield(step, 1)
+        except TaskError as error:
+            return None, str(error)
         return step, ""
 
     if command == "REPLACE":
