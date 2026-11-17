@@ -60,7 +60,9 @@ def _run(task_path, input_path, output_path):
                         raise CLIError(
                             "record {} is not UTF-8; convert to UTF-8 first".format(record_number)
                         )
-                    for result in run_task(task, (record,)):
+                    for result in run_task(
+                        task, (record,), record_number_start=record_number
+                    ):
                         if not result.fields:
                             raise CLIError(
                                 "record {} has no fields left after the task".format(record_number)

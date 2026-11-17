@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic literal-dollar",
+  "description": "Synthetic plain field text replacement case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "{dollar}5",
+      "replace": "{dollar}6"
+    }
+  ]
+}

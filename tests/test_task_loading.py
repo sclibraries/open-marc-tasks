@@ -30,6 +30,8 @@ INVALID_DOCUMENTS = [
     ("edit_subfield bad code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "A", "action": "add", "value": "Topic"}]}, "step 2"),
     ("edit_subfield unknown action", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "change", "value": "Topic"}]}, "step 2"),
     ("edit_subfield missing value", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_subfield", "tag": "650", "code": "a", "action": "add"}]}, "step 2"),
+    ("replace_text empty find", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "replace_text", "find": "", "replace": "x"}]}, "step 2"),
+    ("replace_text non-string replace", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "replace_text", "find": "x", "replace": 1}]}, "step 2"),
 ]
 
 
@@ -56,6 +58,10 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(tmp_path, task_schema, 
         load_task(task_path)
     if step_number:
         assert step_number in str(error.value)
+    if name == "replace_text empty find":
+        assert "setting find" in str(error.value)
+    if name == "replace_text non-string replace":
+        assert "setting replace" in str(error.value)
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(document, task_schema)
 
@@ -88,3 +94,27 @@ def test_run_task_consumes_generator_once_and_mutates_records_in_order(tmp_path)
     assert [record["001"].data for record in result] == ["one", "two", "three"]
     assert all(record.get_fields("999") == [] for record in records)
     assert all(record["245"]["a"] == "Café archive" for record in records)
+
+
+def test_replace_text_preserves_unrelated_typography_by_default(tmp_path):
+    task_path = tmp_path / "task.json"
+    task_path.write_text(
+        json.dumps(
+            task_document(
+                [{"command": "replace_text", "find": "TOKEN", "replace": "Changed"}]
+            )
+        ),
+        encoding="utf-8",
+    )
+    record = Record()
+    record.add_field(
+        Field(
+            tag="245",
+            indicators=["1", "0"],
+            subfields=[Subfield("a", "“Quoted” — dash NBSP TOKEN")],
+        )
+    )
+
+    result = list(run_task(load_task(task_path), [record]))
+
+    assert result[0]["245"]["a"] == "“Quoted” — dash NBSP Changed"

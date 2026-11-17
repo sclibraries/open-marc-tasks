@@ -177,6 +177,66 @@ MarcEdit's `0|2` form treats `find` as a regular expression. It is not supported
 by this command or importer; the importer reports it as not translated with
 `SUBFIELD_EDIT regular expressions are not supported yet`.
 
+## Field text form
+
+The `replace_text` command edits the text form of one field. It is one line:
+`=` followed by a three-digit tag, two spaces, and the body. The Leader is not
+part of this form.
+
+For a control field (tag `001` through `009`), the body is its data. For a data
+field, the body starts with indicator 1 and indicator 2, followed by each
+subfield in order as `$`, its one-character code, and its value. A blank
+indicator is written as `\`. In a control-field body, each blank is also
+written as `\`.
+
+The field text escapes are `{dollar}` for a literal dollar sign, `{lcub}` for
+`{`, `{rcub}` for `}`, and `{bsol}` for a literal backslash in control-field
+data. A literal backslash in a data-field subfield value is written as itself.
+The special text `{dollar}` in a value is therefore written
+`{lcub}dollar{rcub}`. Unmatched braces and unknown brace text are literal in
+field values. The parser decodes recognized escapes once, from left to right;
+it does not scan decoded characters again. This preserves literal escape-like
+text such as `{dollar}`. MarcEdit 7.6 writes that literal text with the same
+brace escapes but decodes it to `$` when it reparses a changed field; v0.1
+uses one-pass decoding to preserve the original value.
+
+On parsing a changed field text, the tag must be exactly three ASCII digits
+and the line must start with `=` and the two-space separator. Tags `001`
+through `009` produce control fields, whose body decodes `\` to a blank.
+Other tags produce data fields and require two indicator characters. In those
+two positions, `\` decodes to a blank. After the indicators, the body is zero
+or more subfields, each beginning with `$` and followed by a lowercase ASCII
+letter or digit code; its value runs up to the next `$` or the end of the
+body. Values may be empty. An empty control-field body, a data field with no
+subfields, repeated subfields, and trailing spaces are valid. Retagging
+between control and data field forms is allowed. A parsed replacement stays
+at the original field position.
+
+## Command: `replace_text`
+
+A plain-mode step has this form:
+
+```json
+{"command": "replace_text", "find": "old", "replace": "new"}
+```
+
+`find` is a non-empty string; `replace` is a string and may be empty. The
+optional `when` setting uses the Leader conditions defined above. For each
+record where all conditions hold, fields are visited in record order. Each
+field is rendered in the field text form, and every non-overlapping literal
+occurrence of `find` is replaced from left to right. Matching is
+case-sensitive. If the text changes, it is parsed back into a field at the
+same position. An invalid result raises an error naming the one-based record
+and step numbers.
+
+Replacement runs after the record handling above. In particular,
+backslash-indicator conversion happens first, and typography is normalized
+first only when `normalize_typography` is true. With its default `false`,
+unrelated curly quotes, dashes, and no-break spaces are preserved. MarcEdit
+7.6 also normalizes curly quotes, dashes, and ellipses during a plain REPLACE
+with its default setting; v0.1 follows `normalize_typography` instead. A
+no-break space is unchanged by either behavior.
+
 ## Record matching
 
 `records_match(a, b)` compares records without changing either input. It
@@ -212,6 +272,13 @@ become `data` values. Descriptions come from `#DESCRIPTION#` lines.
 The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above.
 Regex `SUBFIELD_EDIT` forms are not translated and are reported with the reason
 `SUBFIELD_EDIT regular expressions are not supported yet`.
+
+The plain `REPLACE` form with seven tab-separated columns, flags `0`, an empty
+condition, flags `0`, and final flag `False` maps to `replace_text`. Other
+REPLACE options and conditions, and find or replace text containing an
+unsupported character mnemonic such as `{eacute}`, are reported as not
+translated with their source and line number. Character mnemonics are not
+field-text escapes.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be

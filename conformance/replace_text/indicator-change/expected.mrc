@@ -1,0 +1,1 @@
+00099    a2200049   4500001002700000852002200027synthetic-indicator-change8 aSynthetic library

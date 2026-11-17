@@ -1,0 +1,1 @@
+00104    a2200049   4500001004100000245001300041synthetic-all-occurrences-case-sensitive10aab ab AB

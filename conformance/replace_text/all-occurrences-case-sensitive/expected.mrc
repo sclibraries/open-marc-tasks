@@ -1,0 +1,1 @@
+00102    a2200049   4500001004100000245001100041synthetic-all-occurrences-case-sensitive10aX X AB

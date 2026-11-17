@@ -1,0 +1,1 @@
+00106    a2200049   4500001002700000856002900027synthetic-856-proxy-remove40uhttps://example.edu/file

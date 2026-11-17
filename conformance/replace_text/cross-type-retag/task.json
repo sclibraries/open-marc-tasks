@@ -1,0 +1,17 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic cross-type-retag",
+  "description": "Synthetic plain field text replacement case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "=001  Control\\text",
+      "replace": "=500  10$aControl text"
+    },
+    {
+      "command": "replace_text",
+      "find": "=245  10$aData text",
+      "replace": "=001  Data\\text"
+    }
+  ]
+}

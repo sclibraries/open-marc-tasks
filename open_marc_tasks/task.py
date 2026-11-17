@@ -4,6 +4,8 @@ from typing import Any, Dict, Iterable, Iterator, List, NamedTuple, Union
 
 from pymarc import Record, Subfield
 
+from .text_form import TextFormError
+
 
 class TaskError(ValueError):
     """Raised when a task file cannot be read or validated."""
@@ -79,12 +81,15 @@ from .commands.delete_field import run as run_delete_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_subfield import run as run_edit_subfield
 from .commands.edit_subfield import validate as validate_edit_subfield
+from .commands.replace_text import run as run_replace_text
+from .commands.replace_text import validate as validate_replace_text
 
 
 COMMANDS = {
     "delete_field": (validate_delete_field, run_delete_field),
     "add_field": (validate_add_field, run_add_field),
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
+    "replace_text": (validate_replace_text, run_replace_text),
 }
 
 
@@ -138,12 +143,19 @@ def load_task(path: Union[str, Path]) -> Task:
     )
 
 
-def run_task(task: Task, records: Iterable[Record]) -> Iterator[Record]:
-    for record in records:
+def run_task(
+    task: Task, records: Iterable[Record], record_number_start: int = 1
+) -> Iterator[Record]:
+    for record_number, record in enumerate(records, start=record_number_start):
         blank_backslash_indicators(record)
         if task.normalize_typography:
             normalize_typography(record)
-        for step in task.steps:
+        for step_number, step in enumerate(task.steps, start=1):
             _, runner = COMMANDS[step["command"]]
-            runner(record, step)
+            try:
+                runner(record, step)
+            except TextFormError as error:
+                raise TaskError(
+                    "record {} step {}: {}".format(record_number, step_number, error)
+                ) from error
         yield record

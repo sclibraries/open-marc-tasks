@@ -1,0 +1,1 @@
+REPLACE	https://proxy.example.edu/login?url=		0		0	False

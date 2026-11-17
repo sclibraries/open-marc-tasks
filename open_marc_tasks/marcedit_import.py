@@ -29,6 +29,7 @@ _CONDITION_BRACKETS = re.compile(
 _CONDITION_SINGLE = re.compile(r"/=LDR\.\{([0-9]+)\}([A-Za-z])\.\+/")
 _MNEMONIC = re.compile(r"\{([^{}]*)\}")
 _SUBFIELD = re.compile(r"\$([a-z0-9])")
+_FIELD_TEXT_ESCAPES = {"dollar", "lcub", "rcub", "bsol"}
 
 
 def _condition_values(values: str) -> List[str]:
@@ -170,6 +171,24 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
         else:
             return None, "unsupported SUBFIELD_EDIT settings"
         return step, ""
+
+    if command == "REPLACE":
+        if len(columns) != 7:
+            return None, "malformed REPLACE line"
+        _, find, replacement, find_flags, condition, replace_flags, case_sensitive = columns
+        if (
+            find_flags != "0"
+            or condition
+            or replace_flags != "0"
+            or case_sensitive != "False"
+        ):
+            return None, "unsupported REPLACE settings"
+        if not find:
+            return None, "REPLACE find must be non-empty"
+        mnemonics = _MNEMONIC.findall(find + replacement)
+        if any(mnemonic and mnemonic not in _FIELD_TEXT_ESCAPES for mnemonic in mnemonics):
+            return None, "unsupported REPLACE character mnemonic"
+        return {"command": "replace_text", "find": find, "replace": replacement}, ""
 
     return None, "unknown MarcEdit command"
 

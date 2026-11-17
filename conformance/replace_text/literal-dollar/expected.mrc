@@ -1,0 +1,1 @@
+00087    a2200049   4500001002500000500001200025synthetic-literal-dollar  aCost $6

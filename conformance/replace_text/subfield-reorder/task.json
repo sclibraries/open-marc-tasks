@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic subfield-reorder",
+  "description": "Synthetic plain field text replacement case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "$aAlpha$bBeta",
+      "replace": "$bBeta$aAlpha"
+    }
+  ]
+}
