@@ -23,6 +23,9 @@ def validate(step: Dict[str, Any], number: int) -> None:
     if tags["from_tag"] == tags["to_tag"]:
         raise TaskError("step {} setting from_tag must differ from to_tag".format(number))
 
+    if tags["from_tag"].startswith("00") and tags["to_tag"].startswith("00"):
+        raise TaskError("step {} cannot copy control fields to control tags".format(number))
+
     move = step.get("move", False)
     if not isinstance(move, bool):
         raise TaskError("step {} setting move must be a boolean".format(number))
@@ -52,8 +55,6 @@ def run(record: Record, step: Dict[str, Any]) -> None:
             parse_field("={}  \\\\$a{}".format(to_tag, render_field(field)[6:]))
             for field in source_fields
         ]
-    elif from_tag.startswith("00"):
-        copied_fields = [Field(tag=to_tag, data=field.data) for field in source_fields]
     else:
         copied_fields = [
             Field(

@@ -150,6 +150,14 @@ INVALID_TASK_CASES.append(
         True,
     )
 )
+INVALID_TASK_CASES.append(
+    (
+        "copy_field control-to-control",
+        task_document([VALID_STEP, {"command": "copy_field", "from_tag": "001", "to_tag": "005"}]),
+        "step 2",
+        False,
+    )
+)
 
 
 @pytest.fixture
@@ -206,6 +214,7 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         "copy_field non-boolean move": "setting move",
         "copy_field empty if_contains": "if_contains must be a non-empty string",
         "copy_field data-to-control": "cannot copy a data field to a control tag",
+        "copy_field control-to-control": "cannot copy control fields to control tags",
     }
     if name in copy_field_errors:
         assert copy_field_errors[name] in str(error.value)
