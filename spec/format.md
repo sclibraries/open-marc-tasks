@@ -225,6 +225,50 @@ that names the record and step. This prevents a task from silently dropping
 the output when MarcEdit produces an empty file for an all-empty data-field
 replace.
 
+## Command: `copy_field`
+
+`copy_field` copies every field with one exact source tag to another tag:
+
+```json
+{"command": "copy_field", "from_tag": "856", "to_tag": "857"}
+```
+
+`from_tag` and `to_tag` are three ASCII digits and must differ. A data field
+cannot be copied to a control tag (`00X`). A control field can be copied to a
+data tag. `move` is an optional boolean that defaults to `false`; when true,
+the selected source fields are removed after their copies are made. If no
+source field is selected, the record is unchanged.
+
+`if_contains` is an optional non-empty string. A source field is selected when
+its complete rendered field text line contains this string as a case-sensitive
+substring. The line includes `=TAG  ` and the field body described in
+[Field text form](#field-text-form). Field-text escapes in the rendered text,
+such as `{dollar}`, `{lcub}`, and `{rcub}`, are matched in their rendered form.
+
+Data fields keep their indicators and ordered subfields when copied. Copies
+from a data-field source are inserted in source order after existing fields
+with the destination tag, and before the first field with a greater tag (or at
+the end if there is none). For example, copying two 945 fields to 949 places
+both copies after the 945 fields and before 950.
+
+When copying a control field to a data tag, the result has blank indicators
+and one `$a` subfield containing the source field's rendered body. Thus a
+blank in `001` data is represented by `\` in the copied subfield value. These
+copies use the `build_field` tag-order placement and precede existing fields
+with the destination tag. For example, copying `001` to `035` places the new
+035 before existing 035 fields.
+
+The MarcEdit importer translates COPY lines with the default columns: empty
+columns 6 and 8, and `false` in column 7. It supports empty matches and
+non-empty matches on data-field sources. The field-text match escapes
+`{dollar}`, `{lcub}`, and `{rcub}` are preserved. Other `{…}` mnemonics and
+filtered control-field sources are reported as not translated: MarcEdit 7.6
+did not produce a copy for the synthetic filtered control-field probes, so
+their match behavior is not defined here. Control-to-control COPY lines are
+also not imported; the synthetic reference output encoded copied values as
+data-like control fields and interleaved repeated copies with the old target
+fields, so this form remains undefined.
+
 ## Command: `edit_subfield`
 
 A step edits subfields of data fields with one exact tag:

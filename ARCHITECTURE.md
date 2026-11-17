@@ -71,5 +71,9 @@ a change that alters it updates it in the same ticket.
   `spec/format.md`. Regex REPLACE importing remains out of scope (OMT-013).
 - `build_field` (OMT-015, OMT-016): add, add-if-missing and replace from field
   text templates, including the observed MarcEdit `buildnewfield` forms.
-- Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex, COPY,
+- `copy_field` (OMT-018): copies or moves exact-tag fields with optional
+  case-sensitive field-text matching; filtered control sources and
+  control-to-control COPY lines are not imported while their MarcEdit behavior
+  remains unresolved.
+- Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex,
   TASK_LIST, SORTBY, EDITFIELD, INDICATOR.

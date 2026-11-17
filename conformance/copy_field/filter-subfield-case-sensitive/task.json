@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic copy_field filter-subfield-case-sensitive",
+  "description": "Copies only the exact-case JSTOR field, not lowercase or unrelated values.",
+  "steps": [
+    {
+      "command": "copy_field",
+      "from_tag": "856",
+      "to_tag": "857",
+      "if_contains": "$3JSTOR"
+    }
+  ]
+}

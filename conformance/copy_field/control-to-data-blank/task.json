@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic copy_field control-to-data-blank",
+  "description": "Copies a control value to data field 035 and preserves its blank marker.",
+  "steps": [
+    {
+      "command": "copy_field",
+      "from_tag": "001",
+      "to_tag": "035"
+    }
+  ]
+}
