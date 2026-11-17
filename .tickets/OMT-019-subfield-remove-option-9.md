@@ -1,6 +1,6 @@
 Title: Import SUBFIELD_REMOVE option 9 with an empty value as remove-all, and reject control-to-control copy_field
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — importer mapping (owner decision) plus one load-time rejection
 Milestone: M2 — Commands
@@ -53,7 +53,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 42e331b, merged into main (owner OK 2026-11-17). Python 3.9 gate 185 passed, 1 skipped. Measure 26/100 on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Empty option 9 → remove-all with a documented difference; copy_field control→control rejected; measure labels deliberate differences. No fix round.
