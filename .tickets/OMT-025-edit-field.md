@@ -1,6 +1,6 @@
 Title: Add edit_field and import MarcEdit EDITFIELD
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new command built from replace_text's matching and the text form
 Milestone: M2 — Commands
@@ -79,7 +79,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 90c291e, merged into main (owner OK 2026-11-18). Python 3.9 gate 217 passed, 1 skipped; host reference passed. Measure 66/100, 0 differ, on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Body-only text-form edit as MarcEdit; replacer shared with replace_text. Invalid result code errors (MarcEdit writes `$A`), as designed. No fix round.
