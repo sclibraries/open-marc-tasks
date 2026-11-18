@@ -1,6 +1,6 @@
 Title: Add sort_fields and import MarcEdit SORTBY
 
-Status: In-Progress
+Status: In-Review
 Size: S
 Tier: normal — new command; the ordering rule is characterized against MarcEdit
 Milestone: M2 — Commands
