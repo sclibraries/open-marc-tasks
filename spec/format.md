@@ -550,6 +550,11 @@ supports blank indicators (`\`), subfield markers (`$a`), and the `{dollar}`
 literal. Control-field ADD lines become `data` values. Descriptions come from
 `#DESCRIPTION#` lines.
 
+- DELETE tags normalize lowercase `x` to `X`.
+- A DELETE line may have a 10th column when it is empty.
+- An option-106 ADD line may have a 6th column of `100` and an empty 7th column; both are ignored.
+- Leading spaces before data-field ADD indicators are dropped.
+
 MarcEdit `SORTBY` lines with target `ALL` and a pair of `True`/`False` flags
 map to `sort_fields` with scope `all`. Target `0XX` maps to scope `0xx` with
 or without a pair of `True`/`False` flags. Other targets and unsupported flag
