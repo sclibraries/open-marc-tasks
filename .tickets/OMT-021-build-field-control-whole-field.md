@@ -1,6 +1,6 @@
 Title: Reject a whole data-field placeholder in a control-field build_field template
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — one load-time rejection and its importer reason
 Milestone: M2 — Commands
@@ -41,7 +41,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 4044863, merged into main (owner OK 2026-11-18). Python 3.9 gate 190 passed, 1 skipped. Measure 33 match / 0 differ on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Whole data-field placeholder in a control-field template rejected at load; eds_cc_umeapb now reported for a fix. No fix round.
