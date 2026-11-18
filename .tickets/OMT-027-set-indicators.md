@@ -1,6 +1,6 @@
 Title: Add set_indicators and import MarcEdit INDICATOR
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new command
 Milestone: M2 — Commands
@@ -63,7 +63,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 8449167, merged into main (owner OK 2026-11-18). Python 3.9 gate 229 passed, 1 skipped; host reference passed. Measure 73/100, 0 differ, on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Prefix match and positional overwrite as MarcEdit; condition column left untranslated. No fix round.
