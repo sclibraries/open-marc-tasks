@@ -84,6 +84,36 @@ from open_marc_tasks.task import load_task
             },
         ),
         (
+            "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+//",
+            {
+                "command": "add_field",
+                "tag": "655",
+                "ind1": " ",
+                "ind2": "7",
+                "subfields": [["a", "Synthetic genre"]],
+                "if_tag_exists": "add",
+                "when": [
+                    {"leader": 6, "in": ["a", "m", "t"]},
+                    {"leader": 7, "in": ["m"]},
+                ],
+            },
+        ),
+        (
+            "ADD\t655\t\\7$aSynthetic genre\t106\t///=LDR.{8}[amt][m].+///",
+            {
+                "command": "add_field",
+                "tag": "655",
+                "ind1": " ",
+                "ind2": "7",
+                "subfields": [["a", "Synthetic genre"]],
+                "if_tag_exists": "add",
+                "when": [
+                    {"leader": 6, "in": ["a", "m", "t"]},
+                    {"leader": 7, "in": ["m"]},
+                ],
+            },
+        ),
+        (
             "ADD\t655\t\\7$aSynthetic genre\t106\t/=LDR.{9}s.+/",
             {
                 "command": "add_field",
@@ -278,10 +308,10 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "buildnewfield\t=901  \\\\$a{001$a[x]}\tFalse\tFalse\tTrue\tFalse",
         "DELETE\t245\t$aSynthetic match\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "DELETE\t245\t\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
-        "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+//",
         "ADD\t655\t\\7$aSynthetic genre\t106\t=LDR.{8}g.+",
         "ADD\t655\t\\7$aSynthetic genre\t106\t/=LDR.{8}g.+",
-        "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}g.+//",
+        "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+/",
+        "ADD\t655\t\\7$aSynthetic genre\t106\t////=LDR.{8}g.+////",
         "ADD\t650\t\\0$aSynthetic topic\t999\t",
         "ADD\t650\t\\0$aCaf{eacute}\t100\t",
         "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|2",

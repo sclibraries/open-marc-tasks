@@ -1,0 +1,20 @@
+{
+  "format_version": "0.1",
+  "name": "Leader slash wrapper",
+  "description": "Adds a field only when both Leader positions match.",
+  "normalize_typography": true,
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "655",
+      "ind1": " ",
+      "ind2": "7",
+      "subfields": [["a", "Synthetic genre"]],
+      "if_tag_exists": "add",
+      "when": [
+        {"leader": 6, "in": ["a", "m", "t"]},
+        {"leader": 7, "in": ["m"]}
+      ]
+    }
+  ]
+}

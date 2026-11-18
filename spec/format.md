@@ -475,9 +475,11 @@ such as `9XX` are preserved. ADD options 100, 101, and 108 map to
 `add` and supports only the
 Leader conditions `/=LDR.{N}[letters].+/`,
 `/=LDR.{N}[letters][letters].+/`, and `/=LDR.{N}x.+/`; commas in brackets
-separate allowed characters. ADD field text supports blank indicators (`\`),
-subfield markers (`$a`), and the `{dollar}` literal. Control-field ADD lines
-become `data` values. Descriptions come from `#DESCRIPTION#` lines.
+separate allowed characters. Conditions may have the same one, two, or three
+slashes on both sides; other slash wrappers are not translated. ADD field text
+supports blank indicators (`\`), subfield markers (`$a`), and the `{dollar}`
+literal. Control-field ADD lines become `data` values. Descriptions come from
+`#DESCRIPTION#` lines.
 
 The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above.
 Regex `SUBFIELD_EDIT` forms are not translated and are reported with the reason
