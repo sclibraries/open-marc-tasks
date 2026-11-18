@@ -487,6 +487,30 @@ unrelated curly quotes, dashes, and no-break spaces are preserved. MarcEdit
 with its default setting; v0.1 follows `normalize_typography` instead. A
 no-break space is unchanged by either behavior.
 
+## Command: `edit_field`
+
+```json
+{"command": "edit_field", "tag": "001", "find": "old", "replace": "new"}
+```
+
+`tag` is exactly three digits. `find` is a non-empty string, `replace` is a
+string and may be empty, and the optional `regex` setting is a boolean that
+defaults to `false`. Plain and regex matching, including regex validation and
+replacement rules, are the same as for `replace_text`.
+
+For each matching field, `edit_field` replaces text in the field-text body.
+For a data field, the body consists of its subfields and does not include the
+two indicators. For a control field, the body represents its data, with each
+blank represented by `\`. Matching is case-sensitive and replaces every
+non-overlapping occurrence. Other tags and all indicators are preserved.
+
+The result is read back using the field-text rules. In a data field, `$` starts
+a subfield; text before the first `$` is discarded, and `{dollar}` represents
+a literal dollar sign in a value. A result with no subfields keeps the field
+and its indicators. In a control field, `\` becomes a blank. A result with a
+data-field subfield code outside lowercase ASCII letters and digits raises a
+run-time error naming the one-based record and step numbers.
+
 ## Record matching
 
 `records_match(a, b)` compares records without changing either input. It
@@ -570,6 +594,11 @@ mnemonics; any other `{name}` is unsupported.
 Regex patterns and replacements that fail the task loader's `replace_text`
 rules are reported as not translated with the loader's reason. Other REPLACE
 flags, final flag `True`, `0|1`, and non-Leader conditions are not translated.
+
+`EDITFIELD` lines with six tab-separated columns, a three-digit tag, a
+non-empty find string, option `0` or `2`, and an empty final column map to
+`edit_field`; option `2` sets `regex: true`. Other options, a non-empty final
+column, and other line shapes are reported as not translated.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be

@@ -37,6 +37,7 @@
         {"$ref": "#/$defs/edit_subfield_step"},
         {"$ref": "#/$defs/remove_subfield_step"},
         {"$ref": "#/$defs/replace_text_step"},
+        {"$ref": "#/$defs/edit_field_step"},
         {"$ref": "#/$defs/sort_fields_step"}
       ]
     },
@@ -263,6 +264,18 @@
           "type": "array",
           "items": {"$ref": "#/$defs/condition"}
         }
+      }
+    },
+    "edit_field_step": {
+      "type": "object",
+      "required": ["command", "tag", "find", "replace"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "edit_field"},
+        "tag": {"type": "string", "pattern": "^[0-9]{3}$"},
+        "find": {"type": "string", "minLength": 1},
+        "replace": {"type": "string"},
+        "regex": {"type": "boolean", "default": false}
       }
     },
     "sort_fields_step": {
