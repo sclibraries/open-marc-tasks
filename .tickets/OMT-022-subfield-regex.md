@@ -1,6 +1,6 @@
 Title: Add regex subfield edits and removals (MarcEdit SUBFIELD_EDIT and SUBFIELD_REMOVE `0|2`)
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — reuses the OMT-012 regex dialect; one new matching scope, characterized below
 Milestone: M2 — Commands
@@ -76,7 +76,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 043405a, merged into main (owner OK 2026-11-18). Python 3.9 gate 196 passed, 1 skipped; host reference passed. Measure 41/100, 0 differ, on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Regex on code+value per MarcEdit; SUBFIELD_EDIT keeps an emptied field (MarcEdit), SUBFIELD_REMOVE deletes it. Duplicated loop noted for later. No fix round.
