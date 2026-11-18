@@ -1,0 +1,1 @@
+00103    a2200049   4500001001800000852003500018synthetic-omt-022  bSynthetic librarylSCINTlSCME

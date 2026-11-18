@@ -1,0 +1,1 @@
+SUBFIELD_EDIT	650	a	([a-zA-Z0-9])([^a-zA-Z0-9])	$1	0|2

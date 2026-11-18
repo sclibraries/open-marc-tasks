@@ -40,6 +40,7 @@ INVALID_DOCUMENTS = [
     ("remove_subfield bad code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "Z"}]}, "step 2"),
     ("remove_subfield control tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "001", "code": "a"}]}, "step 2"),
     ("remove_subfield both filters", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "if_contains": "x", "remove_text": "y"}]}, "step 2"),
+    ("remove_subfield remove_regex with remove_text", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": "x", "remove_regex": "x"}]}, "step 2"),
     ("remove_subfield empty remove_text", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": ""}]}, "step 2"),
     ("copy_field bad to_tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "90X"}]}, "step 2"),
     ("copy_field non-boolean move", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "857", "move": "true"}]}, "step 2"),
@@ -113,6 +114,29 @@ REGEX_INVALID_DOCUMENTS.append(
         "step 2",
         True,
     )
+)
+REGEX_INVALID_DOCUMENTS.extend(
+    [
+        (
+            "edit_subfield invalid regex pattern",
+            task_document(
+                [
+                    VALID_STEP,
+                    {"command": "edit_subfield", "tag": "650", "code": "a", "action": "replace_regex", "find": "(?=a)", "replace": "x"},
+                ]
+            ),
+            "step 2",
+            True,
+        ),
+        (
+            "remove_subfield invalid regex pattern",
+            task_document(
+                [VALID_STEP, {"command": "remove_subfield", "tag": "856", "code": "z", "remove_regex": "(?=a)"}]
+            ),
+            "step 2",
+            True,
+        ),
+    ]
 )
 INVALID_TASK_CASES = [
     (name, document, step_number, False)
@@ -189,6 +213,8 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert "match_regex" in str(error.value)
     if name == "delete_field invalid regex pattern":
         assert "special groups are not supported" in str(error.value)
+    if name in ("edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern"):
+        assert "special groups are not supported" in str(error.value)
     build_field_errors = {
         "build_field missing field": "missing setting: field",
         "build_field non-string field": "setting field",
@@ -207,6 +233,7 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         "remove_subfield bad code": "setting code",
         "remove_subfield control tag": "data-field tag",
         "remove_subfield both filters": "cannot both be set",
+        "remove_subfield remove_regex with remove_text": "cannot be combined",
         "remove_subfield empty remove_text": "remove_text must be a non-empty string",
     }
     if name in remove_subfield_errors:

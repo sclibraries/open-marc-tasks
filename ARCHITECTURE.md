@@ -64,8 +64,8 @@ a change that alters it updates it in the same ticket.
   translated tasks through the library and MarcEdit on a sample, reports
   "X of Y task files match MarcEdit". Folders and sample are local paths;
   nothing from them enters the repo.
-- `edit_subfield` (OMT-007): every non-regex SUBFIELD_EDIT form; `0|2` (regex) is not translated yet.
-- `remove_subfield` (OMT-017): whole-subfield removal, `if_contains`, and `remove_text`; imports the observed `SUBFIELD_REMOVE` options `107|0` and `0|0`.
+- `edit_subfield` (OMT-007, OMT-022): every observed `SUBFIELD_EDIT` form, including regex option `0|2` via the OMT-012 dialect.
+- `remove_subfield` (OMT-017, OMT-022): whole-subfield removal, `if_contains`, `remove_text`, and regex `remove_regex`; imports the observed `SUBFIELD_REMOVE` options `107|0`, `0|0`, and `0|2`.
 - Field text form and `replace_text` (OMT-011, OMT-012): plain mode replaces
   literal, case-sensitive text; regex mode uses the portable dialect in
   `spec/format.md`. Regex REPLACE importing remains out of scope (OMT-013).
@@ -75,5 +75,5 @@ a change that alters it updates it in the same ticket.
   case-sensitive field-text matching; filtered control sources and
   control-to-control COPY lines are not imported while their MarcEdit behavior
   remains unresolved.
-- Not built yet: regex REPLACE import (OMT-013), SUBFIELD_EDIT regex,
-  TASK_LIST, SORTBY, EDITFIELD, INDICATOR.
+- Not built yet: regex REPLACE import (OMT-013), TASK_LIST, SORTBY, EDITFIELD,
+  INDICATOR.

@@ -4,10 +4,26 @@ from typing import Any, Dict
 from pymarc import Record, Subfield
 
 from ..conditions import conditions_match
+from ..regex_dialect import (
+    RegexDialectError,
+    compile_pattern,
+    expand_replacement,
+    validate_replacement,
+)
 from ..task import TaskError, _required, _unknown_settings, _validate_conditions
+from ..text_form import TextFormError
 
 
-_ACTIONS = ("add", "add_if_missing", "replace", "replace_first", "append", "prepend", "clear")
+_ACTIONS = (
+    "add",
+    "add_if_missing",
+    "replace",
+    "replace_first",
+    "replace_regex",
+    "append",
+    "prepend",
+    "clear",
+)
 _VALUE_ACTIONS = ("add", "add_if_missing", "append", "prepend")
 _REPLACE_ACTIONS = ("replace", "replace_first")
 
@@ -36,7 +52,7 @@ def validate(step: Dict[str, Any], number: int) -> None:
         value = _required(step, "value", number)
         if not isinstance(value, str):
             raise TaskError("step {} setting value must be a string".format(number))
-    elif action in _REPLACE_ACTIONS:
+    elif action in _REPLACE_ACTIONS or action == "replace_regex":
         if "value" in step:
             raise TaskError("step {} value is not valid for action {}".format(number, action))
         find = _required(step, "find", number)
@@ -45,6 +61,12 @@ def validate(step: Dict[str, Any], number: int) -> None:
         replacement = _required(step, "replace", number)
         if not isinstance(replacement, str):
             raise TaskError("step {} setting replace must be a string".format(number))
+        if action == "replace_regex":
+            try:
+                compile_pattern(find)
+                validate_replacement(replacement)
+            except RegexDialectError as error:
+                raise TaskError("step {} {}".format(number, error)) from error
     elif any(setting in step for setting in ("value", "find", "replace")):
         raise TaskError("step {} clear does not accept value, find, or replace".format(number))
 
@@ -55,6 +77,7 @@ def run(record: Record, step: Dict[str, Any]) -> None:
 
     code = step["code"]
     action = step["action"]
+    pattern = compile_pattern(step["find"]) if action == "replace_regex" else None
     for field in record.get_fields(step["tag"]):
         if field.is_control_field():
             continue
@@ -63,6 +86,22 @@ def run(record: Record, step: Dict[str, Any]) -> None:
         elif action == "add_if_missing":
             if not any(subfield.code == code for subfield in field.subfields):
                 field.subfields.append(Subfield(code, step["value"]))
+        elif action == "replace_regex":
+            edited_subfields = []
+            for subfield in field.subfields:
+                if subfield.code != code:
+                    edited_subfields.append(subfield)
+                    continue
+                result = pattern.sub(
+                    lambda match: expand_replacement(match, step["replace"]),
+                    subfield.code + subfield.value,
+                )
+                if not result:
+                    continue
+                if result[0] not in "abcdefghijklmnopqrstuvwxyz0123456789":
+                    raise TextFormError("regex result has an invalid subfield code")
+                edited_subfields.append(Subfield(result[0], result[1:]))
+            field.subfields = edited_subfields
         else:
             for index, subfield in enumerate(field.subfields):
                 if subfield.code != code:

@@ -219,6 +219,10 @@ from open_marc_tasks.task import load_task
             {"command": "edit_subfield", "tag": "959", "code": "a", "action": "replace_first", "find": "needle", "replace": "REPL"},
         ),
         (
+            "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|2",
+            {"command": "edit_subfield", "tag": "950", "code": "a", "action": "replace_regex", "find": "need.*le", "replace": "X"},
+        ),
+        (
             "SUBFIELD_REMOVE\t856\tz\t\t107|0",
             {"command": "remove_subfield", "tag": "856", "code": "z"},
         ),
@@ -241,6 +245,10 @@ from open_marc_tasks.task import load_task
         (
             "SUBFIELD_REMOVE\t856\tz\t{dollar}{lcub}{rcub}\t0|0",
             {"command": "remove_subfield", "tag": "856", "code": "z", "remove_text": "${}"},
+        ),
+        (
+            "SUBFIELD_REMOVE\t856\tz\tOCoLC\t0|2",
+            {"command": "remove_subfield", "tag": "856", "code": "z", "remove_regex": "OCoLC"},
         ),
         (
             "COPY\t856\t857\tfalse\t\t\tfalse\t",
@@ -319,9 +327,9 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "ADD\t655\t\\7$aSynthetic genre\t106\t////=LDR.{8}g.+////",
         "ADD\t650\t\\0$aSynthetic topic\t999\t",
         "ADD\t650\t\\0$aCaf{eacute}\t100\t",
-        "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|2",
+        "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|3",
         "SUBFIELD_REMOVE\t856\tz\tOCoLC\t9|0",
-        "SUBFIELD_REMOVE\t856\tz\tOCoLC\t0|2",
+        "SUBFIELD_REMOVE\t856\tz\tOCoLC\t0|3",
         "SUBFIELD_REMOVE\t856\tz\tOCoLC\t3|1",
         "SUBFIELD_REMOVE\t001\ta\t\t107|0",
         "SUBFIELD_REMOVE\t856\tz\t{bsol}\t0|0",
@@ -362,7 +370,7 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
     assert item.line_number == 3
     assert item.text == line
     if line.startswith("SUBFIELD_EDIT"):
-        assert item.reason == "SUBFIELD_EDIT regular expressions are not supported yet"
+        assert item.reason == "unsupported SUBFIELD_EDIT settings"
     elif line.startswith("SUBFIELD_REMOVE") and "\t9|" in line:
         assert item.reason == "option 9 with a value is not supported"
     elif line == "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse":

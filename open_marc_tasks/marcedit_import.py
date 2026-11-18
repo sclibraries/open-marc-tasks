@@ -6,6 +6,7 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from .commands.build_field import validate as validate_build_field
 from .commands.copy_field import validate as validate_copy_field
 from .commands.delete_field import validate as validate_delete_field
+from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import validate as validate_remove_subfield
 from .task import TaskError
@@ -247,10 +248,14 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, "invalid SUBFIELD_EDIT tag"
         if len(code) != 1 or code not in "abcdefghijklmnopqrstuvwxyz0123456789":
             return None, "invalid SUBFIELD_EDIT subfield code"
-        if flags == "0|2":
-            return None, "SUBFIELD_EDIT regular expressions are not supported yet"
-
         step = {"command": "edit_subfield", "tag": tag, "code": code}
+        if flags == "0|2" and find:
+            step.update({"action": "replace_regex", "find": find, "replace": replacement})
+            try:
+                validate_edit_subfield(step, 1)
+            except TaskError as error:
+                return None, str(error)
+            return step, ""
         if flags == "102|0" and find == "" and replacement:
             step.update({"action": "add", "value": replacement})
         elif flags == "101|0" and find == "" and replacement:
@@ -281,10 +286,19 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, "invalid SUBFIELD_REMOVE subfield code"
         if flags.startswith("9|") and value:
             return None, "option 9 with a value is not supported"
-        if flags.endswith("|2"):
-            return None, "SUBFIELD_REMOVE regular expressions are not supported yet"
-        if flags not in ("107|0", "0|0", "9|0"):
+        if flags not in ("107|0", "0|0", "9|0", "0|2"):
             return None, "unsupported SUBFIELD_REMOVE settings"
+
+        step = {"command": "remove_subfield", "tag": tag, "code": code}
+        if flags == "0|2":
+            if not value:
+                return None, "SUBFIELD_REMOVE regex needs a non-empty pattern"
+            step["remove_regex"] = value
+            try:
+                validate_remove_subfield(step, 1)
+            except TaskError as error:
+                return None, str(error)
+            return step, ""
 
         mnemonics = _MNEMONIC.findall(value)
         if any(mnemonic and mnemonic not in _SUBFIELD_REMOVE_ESCAPES for mnemonic in mnemonics):
@@ -294,7 +308,6 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             value,
         )
 
-        step = {"command": "remove_subfield", "tag": tag, "code": code}
         if value:
             step["if_contains" if flags == "107|0" else "remove_text"] = value
         try:

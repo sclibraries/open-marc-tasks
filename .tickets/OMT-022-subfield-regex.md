@@ -1,6 +1,6 @@
 Title: Add regex subfield edits and removals (MarcEdit SUBFIELD_EDIT and SUBFIELD_REMOVE `0|2`)
 
-Status: Ready
+Status: In-Review
 Size: S
 Tier: normal — reuses the OMT-012 regex dialect; one new matching scope, characterized below
 Milestone: M2 — Commands

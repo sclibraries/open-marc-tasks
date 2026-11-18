@@ -86,6 +86,7 @@ def test_run_writes_matching_conformance_output_and_preserves_utf8_bytes(tmp_pat
         ("input is output", None, "same file"),
         ("all fields deleted", 1, "record 1"),
         ("empty build_field replacement", 2, "record 2 step 2"),
+        ("invalid subfield regex result", 2, "record 2 step 2"),
     ],
 )
 def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_number, message):
@@ -132,12 +133,26 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
         second.add_field(Field(tag="001", data="synthetic-2"))
         second.add_field(Field(tag="950", indicators=[" ", " "], subfields=[Subfield("a", "old-2")]))
         input_path.write_bytes(first.as_marc() + second.as_marc())
+    elif case == "invalid subfield regex result":
+        write_task(
+            task_path,
+            steps=[
+                {"command": "delete_field", "tag": "998"},
+                {"command": "edit_subfield", "tag": "245", "code": "a", "action": "replace_regex", "find": "^a", "replace": "X"},
+            ],
+        )
+        first = Record(force_utf8=True)
+        first.add_field(Field(tag="001", data="synthetic-1"))
+        second = Record(force_utf8=True)
+        second.add_field(Field(tag="001", data="synthetic-2"))
+        second.add_field(Field(tag="245", indicators=["1", "0"], subfields=[Subfield("a", "Synthetic title")]))
+        input_path.write_bytes(first.as_marc() + second.as_marc())
 
     if output_path != input_path and case != "empty build_field replacement":
         output_path.write_bytes(b"existing output must survive")
     original_output = output_path.read_bytes() if output_path.exists() else None
 
-    if case == "empty build_field replacement":
+    if case in ("empty build_field replacement", "invalid subfield regex result"):
         with input_path.open("rb") as source:
             input_records = list(MARCReader(source, to_unicode=True, utf8_handling="strict"))
         with pytest.raises(TaskError, match="record 2 step 2"):

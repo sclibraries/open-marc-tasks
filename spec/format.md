@@ -293,6 +293,7 @@ defined above; all conditions must hold.
 | `add_if_missing` | `value` | Append one new subfield only to matching fields that have no subfield with `code`. Existing values are unchanged. |
 | `replace` | non-empty `find`, `replace` | Replace every literal, case-sensitive occurrence of `find` in every matching subfield value. `replace` may be empty, which removes the matched text. |
 | `replace_first` | non-empty `find`, `replace` | Replace only the first literal, case-insensitive occurrence of `find` in each matching subfield value. `replace` may be empty. |
+| `replace_regex` | non-empty `find`, `replace` | Apply every match of `find` in the matching subfield's code followed by value, using the regex dialect and replacement rules defined for `replace_text`. The first character of a non-empty result becomes the subfield code and the rest becomes its value. An empty result removes the subfield. A non-empty result with an invalid code raises a run-time error naming the record and step. |
 | `append` | `value` | Append `value` to every matching subfield value. |
 | `prepend` | `value` | Prepend `value` to every matching subfield value. |
 | `clear` | none | Set every matching subfield value to the empty string, leaving the subfields in place. |
@@ -309,10 +310,15 @@ The observed MarcEdit 7.6 `SUBFIELD_EDIT` forms map as follows:
 | literal text | empty | `0|0` | `action: "replace"`, `find`, `replace: ""` |
 | empty | empty | `0|0` | `action: "clear"` |
 | literal text | text | `0|1` | `action: "replace_first"`, `find`, `replace` (case-insensitive) |
+| regex | text | `0|2` | `action: "replace_regex"`, `find`, `replace` |
 
-MarcEdit's `0|2` form treats `find` as a regular expression. It is not supported
-by this command or importer; the importer reports it as not translated with
-`SUBFIELD_EDIT regular expressions are not supported yet`.
+For `replace_regex`, `find` uses the portable regex dialect and replacement
+rules defined for `replace_text`. Each matching subfield is treated as the
+string formed by its code followed by its value. Matching and replacement use
+Unicode code points, and every non-overlapping match is replaced from left to
+right. The resulting first character must be a lowercase ASCII letter or
+digit. An empty result removes the subfield, but a data field left with no
+subfields is retained, matching MarcEdit 7.6.
 
 ## Command: `remove_subfield`
 
@@ -324,8 +330,8 @@ A step removes subfields with one exact tag and code:
 
 `tag` is three ASCII digits and must identify a data field (`010` through
 `999`). `code` is one lowercase ASCII letter or digit. The optional
-`if_contains` and `remove_text` settings are non-empty strings and cannot both
-be present.
+`if_contains`, `remove_text`, and `remove_regex` settings are non-empty
+strings and at most one can be present.
 
 Without either setting, every matching subfield is removed. With
 `if_contains`, each matching subfield whose value contains that case-sensitive
@@ -335,6 +341,14 @@ fields. A data field left with no subfields is deleted.
 With `remove_text`, every case-sensitive occurrence of the literal text is
 removed from each matching subfield value. The subfield remains even when its
 value becomes empty. If no field or subfield matches, no change is made.
+
+With `remove_regex`, the portable regex dialect defined for `replace_text` is
+applied to each matching subfield's code followed by value. Every
+non-overlapping match is removed from left to right. If the result is empty,
+the subfield is removed; otherwise its first character becomes the code and
+the rest becomes the value. A non-empty result with an invalid code raises a
+run-time error naming the record and step. A data field left with no subfields
+is deleted.
 
 ## Field text form
 
@@ -484,22 +498,25 @@ supports blank indicators (`\`), subfield markers (`$a`), and the `{dollar}`
 literal. Control-field ADD lines become `data` values. Descriptions come from
 `#DESCRIPTION#` lines.
 
-The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above.
-Regex `SUBFIELD_EDIT` forms are not translated and are reported with the reason
-`SUBFIELD_EDIT regular expressions are not supported yet`.
+The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above,
+including regex option `0|2`, which maps to `replace_regex`. Regex patterns and
+replacement strings are validated with the `replace_text` dialect when the
+task is loaded.
 
 `SUBFIELD_REMOVE` lines have five tab-separated columns. Empty-value forms with
 options `107|0` or `0|0` map to `remove_subfield` without a filter. With a
 non-empty value, `107|0` maps to `if_contains`, and `0|0` maps to `remove_text`.
-The value mnemonics `{dollar}`, `{lcub}`, and `{rcub}` become their literal
-characters. **Difference from MarcEdit.** An empty-value `9|0` line maps to
+Regex option `0|2` with a non-empty value maps to `remove_regex` and is
+validated with the `replace_text` regex dialect when the task is loaded. Other
+regex options are not translated. The value mnemonics `{dollar}`, `{lcub}`,
+and `{rcub}` become their literal characters for non-regex forms. **Difference
+from MarcEdit.** An empty-value `9|0` line maps to
 `remove_subfield` without a filter, intentionally clearing barcode, material
 type, and holdings-prefix subfields before copies are built; MarcEdit 7.6 makes
 no change because an empty option-9 value matches nothing. Option `9|…` with a
 non-empty value is reported as not translated with the reason
-`option 9 with a value is not supported`; regex options ending in `|2`, other
-options, control-field tags, and unsupported character mnemonics are also
-reported as not translated.
+`option 9 with a value is not supported`; other options, control-field tags,
+and unsupported character mnemonics are also reported as not translated.
 
 The plain `REPLACE` form with seven tab-separated columns, flags `0`, an empty
 condition, flags `0`, and final flag `False` maps to `replace_text`. Other
