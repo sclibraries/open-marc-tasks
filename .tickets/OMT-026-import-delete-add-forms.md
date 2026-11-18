@@ -1,6 +1,6 @@
 Title: Import more DELETE and ADD line shapes
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — importer accepts more MarcEdit line shapes; no engine change
 Milestone: M2 — Commands
@@ -53,7 +53,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 8af6a8a, merged into main (owner OK 2026-11-18). Python 3.9 gate 223 passed, 1 skipped. Measure 71/100, 0 differ, on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Four importer shapes as characterized. Minor: 7-column ADD accepted for any option (spec says 106). No fix round.
