@@ -38,9 +38,10 @@ a change that alters it updates it in the same ticket.
   are dispatched by name through the table in `task.py`; each command module
   (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
 - Conformance: `conformance/delete_field/` (9 cases), `conformance/add_field/`
-  (6 cases), `conformance/replace_text/` (10 cases), and
-  `conformance/edit_field/` (5 cases), expected output from MarcEdit 7.6; each
-  case keeps the MarcEdit task line in `marcedit-task.txt`.
+  (6 cases), `conformance/replace_text/` (10 cases),
+  `conformance/edit_field/` (5 cases), and `conformance/set_indicators/`
+  (4 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit
+  task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it. Backslash indicators become blanks on every
@@ -83,4 +84,7 @@ a change that alters it updates it in the same ticket.
 - `edit_field` (OMT-025): edits exact-tag field text bodies with literal or
   portable regex replacement; imports `EDITFIELD` options `0` and `2` with an
   empty final column.
-- Not built yet: regex REPLACE import (OMT-013), TASK_LIST, INDICATOR.
+- `set_indicators` (OMT-027): changes the first one or two indicators on
+  exact-tag fields, optionally filtered by an indicator prefix; imports
+  unconditional `INDICATOR` lines with an empty condition.
+- Not built yet: regex REPLACE import (OMT-013), TASK_LIST.

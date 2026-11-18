@@ -153,6 +153,22 @@ example, the following requires both conditions to hold:
 }
 ```
 
+## Command: `set_indicators`
+
+A step has the form:
+
+```json
+{"command": "set_indicators", "tag": "856", "if_starts_with": "4", "value": "40"}
+```
+
+`tag` is three ASCII digits. `value` is one or two characters. The optional
+`if_starts_with` is one or two characters. For each field with the exact tag,
+the command sets the first one or two indicators to `value` when the field's
+indicators start with `if_starts_with`; if it is absent, all fields with the
+tag match. A one-character `value` changes only the first indicator. A blank
+indicator is written as a space (`" "`). Control fields have no indicators
+and are unchanged.
+
 ## Command: `build_field`
 
 `build_field` builds a field from a text-form template and source fields:
@@ -604,6 +620,12 @@ flags, final flag `True`, `0|1`, and non-Leader conditions are not translated.
 non-empty find string, option `0` or `2`, and an empty final column map to
 `edit_field`; option `2` sets `regex: true`. Other options, a non-empty final
 column, and other line shapes are reported as not translated.
+
+`INDICATOR` lines with five tab-separated columns, a three-digit tag, an empty
+condition, a one- or two-character value, and a find string of zero to two
+characters no longer than the value map to `set_indicators`. A backslash in
+the find string or value becomes a blank indicator. Non-empty conditions and
+other line shapes are reported as not translated.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be

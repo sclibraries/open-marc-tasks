@@ -206,6 +206,18 @@ from open_marc_tasks.task import load_task
             {"command": "edit_field", "tag": "001", "find": "on|ocn|ocm", "replace": "", "regex": True},
         ),
         (
+            "INDICATOR\t024\t\\\t\t8",
+            {"command": "set_indicators", "tag": "024", "if_starts_with": " ", "value": "8"},
+        ),
+        (
+            "INDICATOR\t856\t\t\t40",
+            {"command": "set_indicators", "tag": "856", "value": "40"},
+        ),
+        (
+            "INDICATOR\t035\t\\\t\t9",
+            {"command": "set_indicators", "tag": "035", "if_starts_with": " ", "value": "9"},
+        ),
+        (
             "ADD\t500\t\\\\$aCost {dollar} 5\t100\t",
             {
                 "command": "add_field",
@@ -430,6 +442,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
         "EDITFIELD\t001\tocn\t1\t\t",
         "EDITFIELD\t001\tocn\t0\treplacement\tnote",
+        "INDICATOR\t856\t\tcondition\t40",
         "TASK_LIST\tSynthetic task list",
         "SORTBY\t1XX",
         "SORTBY\tALL",
@@ -464,6 +477,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "unsupported SORTBY settings"
     elif line.startswith("EDITFIELD\t"):
         assert item.reason == "unsupported EDITFIELD settings"
+    elif line.startswith("INDICATOR\t"):
+        assert item.reason == "INDICATOR condition is not supported"
     else:
         assert item.reason and "\n" not in item.reason
 

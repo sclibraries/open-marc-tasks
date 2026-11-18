@@ -16,6 +16,8 @@ INVALID_DOCUMENTS = [
     ("unknown command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "unknown"}]}, "step 2"),
     ("missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field"}]}, "step 2"),
     ("edit_field missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_field", "find": "x", "replace": "y"}]}, "step 2"),
+    ("set_indicators missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "set_indicators", "value": "9"}]}, "step 2"),
+    ("set_indicators long value", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "set_indicators", "tag": "856", "value": "900"}]}, "step 2"),
     ("short tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "9X"}]}, "step 2"),
     ("trailing newline tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "999\n"}]}, "step 2"),
     ("lowercase tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "9xx"}]}, "step 2"),
@@ -225,6 +227,10 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert step_number in str(error.value)
     if name == "edit_field missing tag":
         assert "missing setting: tag" in str(error.value)
+    if name == "set_indicators missing tag":
+        assert "missing setting: tag" in str(error.value)
+    if name == "set_indicators long value":
+        assert "setting value must be one or two characters" in str(error.value)
     if name == "sort_fields unknown scope":
         assert "setting scope" in str(error.value)
     if name == "replace_text empty find":

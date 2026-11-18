@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic indicator task",
+  "description": "Sets indicators on synthetic MARC fields.",
+  "steps": [
+    {
+      "command": "set_indicators",
+      "tag": "024",
+      "if_starts_with": " ",
+      "value": "8"
+    }
+  ]
+}

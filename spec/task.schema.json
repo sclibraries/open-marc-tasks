@@ -38,6 +38,7 @@
         {"$ref": "#/$defs/remove_subfield_step"},
         {"$ref": "#/$defs/replace_text_step"},
         {"$ref": "#/$defs/edit_field_step"},
+        {"$ref": "#/$defs/set_indicators_step"},
         {"$ref": "#/$defs/sort_fields_step"}
       ]
     },
@@ -276,6 +277,17 @@
         "find": {"type": "string", "minLength": 1},
         "replace": {"type": "string"},
         "regex": {"type": "boolean", "default": false}
+      }
+    },
+    "set_indicators_step": {
+      "type": "object",
+      "required": ["command", "tag", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "set_indicators"},
+        "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
+        "value": {"type": "string", "minLength": 1, "maxLength": 2},
+        "if_starts_with": {"type": "string", "minLength": 1, "maxLength": 2}
       }
     },
     "sort_fields_step": {
