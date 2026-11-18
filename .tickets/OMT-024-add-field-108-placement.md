@@ -1,6 +1,6 @@
 Title: Place skip_if_identical additions before the first greater tag (MarcEdit ADD option 108)
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — changes where one add_field policy inserts a field
 Milestone: M2 — Commands
