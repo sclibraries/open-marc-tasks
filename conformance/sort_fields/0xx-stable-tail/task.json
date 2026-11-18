@@ -1,0 +1,11 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic sort 0XX fields",
+  "description": "Sorts 0XX fields and keeps the other fields in their original order.",
+  "steps": [
+    {
+      "command": "sort_fields",
+      "scope": "0xx"
+    }
+  ]
+}

@@ -286,6 +286,42 @@ from open_marc_tasks.task import load_task
             "buildnewfield\t=001  X{956$a}\tFalse\tTrue\tFalse\tFalse",
             {"command": "build_field", "field": "=001  X{956$a}", "mode": "replace"},
         ),
+        (
+            "SORTBY\tALL\tTrue\tTrue",
+            {"command": "sort_fields", "scope": "all"},
+        ),
+        (
+            "SORTBY\tALL\tTrue\tFalse",
+            {"command": "sort_fields", "scope": "all"},
+        ),
+        (
+            "SORTBY\tALL\tFalse\tTrue",
+            {"command": "sort_fields", "scope": "all"},
+        ),
+        (
+            "SORTBY\tALL\tFalse\tFalse",
+            {"command": "sort_fields", "scope": "all"},
+        ),
+        (
+            "SORTBY\t0XX",
+            {"command": "sort_fields", "scope": "0xx"},
+        ),
+        (
+            "SORTBY\t0XX\tTrue\tTrue",
+            {"command": "sort_fields", "scope": "0xx"},
+        ),
+        (
+            "SORTBY\t0XX\tTrue\tFalse",
+            {"command": "sort_fields", "scope": "0xx"},
+        ),
+        (
+            "SORTBY\t0XX\tFalse\tTrue",
+            {"command": "sort_fields", "scope": "0xx"},
+        ),
+        (
+            "SORTBY\t0XX\tFalse\tFalse",
+            {"command": "sort_fields", "scope": "0xx"},
+        ),
     ],
 )
 def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step):
@@ -352,11 +388,10 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "REPLACE\tfind\treplacement\t2\t=LDR.{8}g.+\t0\tFalse",
         "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
         "TASK_LIST\tSynthetic task list",
-        "SORTBY\tALL\tTrue\tTrue",
-        "SORTBY\tALL\tFalse\tFalse",
-        "SORTBY\t0XX",
-        "SORTBY\t0XX\tTrue\tFalse",
         "SORTBY\t1XX",
+        "SORTBY\tALL",
+        "SORTBY\tALL\tTrue",
+        "SORTBY\t0XX\tTrue",
         "MYSTERY\tSynthetic unknown command",
     ],
 )
@@ -380,8 +415,10 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "option 9 with a value is not supported"
     elif line == "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse":
         assert item.reason == "step 1 setting field cannot use a whole data-field placeholder for a control field"
+    elif line.startswith("SORTBY\t1XX"):
+        assert item.reason == "unsupported SORTBY target"
     elif line.startswith("SORTBY\t"):
-        assert item.reason == "SORTBY ordering for repeated Unicode fields is not characterized"
+        assert item.reason == "unsupported SORTBY settings"
     else:
         assert item.reason and "\n" not in item.reason
 

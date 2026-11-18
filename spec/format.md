@@ -385,6 +385,34 @@ subfields, repeated subfields, and trailing spaces are valid. Retagging
 between control and data field forms is allowed. A parsed replacement stays
 at the original field position.
 
+## Command: `sort_fields`
+
+A step has one of these forms:
+
+```json
+{"command": "sort_fields", "scope": "all"}
+{"command": "sort_fields", "scope": "0xx"}
+```
+
+`scope` is required. With `all`, fields are stably sorted by their complete
+[field text form](#field-text-form). With `0xx`, fields whose tags begin with
+`0` are stably sorted by the same key and placed first; all other fields keep
+their original relative order after them. The sort is stable, so equal keys
+retain their input order. The reference cannot expose the tie order of exact
+duplicate field text because those fields are identical; it preserves their
+multiplicity.
+
+To compare field text forms, encode the complete line as UTF-8, decode each
+byte as Windows-1252, and compare the resulting strings by Unicode code point.
+The Windows-1252 bytes `0x81`, `0x8D`, `0x8F`, `0x90`, and `0x9D`, which that
+codec leaves undefined, map to Unicode code points U+0081, U+008D, U+008F,
+U+0090, and U+009D respectively. This includes the `=TAG  ` prefix, indicators,
+and field content. Thus `=650  10$aZ` sorts before `=650  \0$aA`, and control
+fields participate in the same ordering: an empty `001` precedes `001` with
+data `Z`, followed by tags `003` and `008`. The reference is MarcEdit's
+command-line version running with invariant globalization; a Windows desktop
+install might compare differently.
+
 ## Command: `replace_text`
 
 A plain-mode step has this form:
@@ -498,12 +526,10 @@ supports blank indicators (`\`), subfield markers (`$a`), and the `{dollar}`
 literal. Control-field ADD lines become `data` values. Descriptions come from
 `#DESCRIPTION#` lines.
 
-`SORTBY` lines are reported as not translated. MarcEdit 7.6 sorts fields by
-tag and sorts repeated fields by their field text, but its comparison is not
-Unicode code-point order: with the same tag and indicators, synthetic values
-showed `é` before `Å` and `É`, while ASCII case pairs followed code-point
-order. The exact comparison rule for Unicode values is not established, so
-neither `ALL` nor `0XX` can be translated safely.
+MarcEdit `SORTBY` lines with target `ALL` and a pair of `True`/`False` flags
+map to `sort_fields` with scope `all`. Target `0XX` maps to scope `0xx` with
+or without a pair of `True`/`False` flags. Other targets and unsupported flag
+forms are reported as not translated.
 
 The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above,
 including regex option `0|2`, which maps to `replace_regex`. Regex patterns and

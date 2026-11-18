@@ -1,0 +1,11 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic sort all fields",
+  "description": "Sorts every field by MarcEdit 7.6 field-text order.",
+  "steps": [
+    {
+      "command": "sort_fields",
+      "scope": "all"
+    }
+  ]
+}
