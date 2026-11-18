@@ -1,6 +1,6 @@
 Title: Add set_indicators and import MarcEdit INDICATOR
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — new command
 Milestone: M2 — Commands
