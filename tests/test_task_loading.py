@@ -15,6 +15,7 @@ INVALID_DOCUMENTS = [
     ("missing command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"tag": "999"}]}, "step 2"),
     ("unknown command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "unknown"}]}, "step 2"),
     ("missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field"}]}, "step 2"),
+    ("edit_field missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_field", "find": "x", "replace": "y"}]}, "step 2"),
     ("short tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "9X"}]}, "step 2"),
     ("trailing newline tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "999\n"}]}, "step 2"),
     ("lowercase tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field", "tag": "9xx"}]}, "step 2"),
@@ -115,6 +116,19 @@ REGEX_INVALID_DOCUMENTS.append(
         True,
     )
 )
+REGEX_INVALID_DOCUMENTS.append(
+    (
+        "edit_field invalid regex pattern",
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "edit_field", "tag": "650", "find": "(?=a)", "replace": "x", "regex": True},
+            ]
+        ),
+        "step 2",
+        True,
+    )
+)
 REGEX_INVALID_DOCUMENTS.extend(
     [
         (
@@ -209,6 +223,8 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         load_task(task_path)
     if step_number:
         assert step_number in str(error.value)
+    if name == "edit_field missing tag":
+        assert "missing setting: tag" in str(error.value)
     if name == "sort_fields unknown scope":
         assert "setting scope" in str(error.value)
     if name == "replace_text empty find":
@@ -223,7 +239,7 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert "match_regex" in str(error.value)
     if name == "delete_field invalid regex pattern":
         assert "special groups are not supported" in str(error.value)
-    if name in ("edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern"):
+    if name in ("edit_field invalid regex pattern", "edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern"):
         assert "special groups are not supported" in str(error.value)
     build_field_errors = {
         "build_field missing field": "missing setting: field",

@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic 956-empty-body",
+  "description": "Retains a data field and its indicators when its body becomes empty.",
+  "steps": [
+    {
+      "command": "edit_field",
+      "tag": "956",
+      "find": ".+",
+      "replace": "",
+      "regex": true
+    }
+  ]
+}

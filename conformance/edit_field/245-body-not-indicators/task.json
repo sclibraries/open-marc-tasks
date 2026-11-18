@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic 245-body-not-indicators",
+  "description": "Edits the field body while preserving matching indicator text.",
+  "steps": [
+    {
+      "command": "edit_field",
+      "tag": "245",
+      "find": "10",
+      "replace": "X"
+    }
+  ]
+}

@@ -167,6 +167,14 @@ from open_marc_tasks.task import load_task
             },
         ),
         (
+            "EDITFIELD\t001\tocn\t0\t\t",
+            {"command": "edit_field", "tag": "001", "find": "ocn", "replace": ""},
+        ),
+        (
+            "EDITFIELD\t001\ton|ocn|ocm\t2\t\t",
+            {"command": "edit_field", "tag": "001", "find": "on|ocn|ocm", "replace": "", "regex": True},
+        ),
+        (
             "ADD\t500\t\\\\$aCost {dollar} 5\t100\t",
             {
                 "command": "add_field",
@@ -387,6 +395,8 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "REPLACE\tfind\treplacement\t2\t=008.+\t0\tFalse",
         "REPLACE\tfind\treplacement\t2\t=LDR.{8}g.+\t0\tFalse",
         "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
+        "EDITFIELD\t001\tocn\t1\t\t",
+        "EDITFIELD\t001\tocn\t0\treplacement\tnote",
         "TASK_LIST\tSynthetic task list",
         "SORTBY\t1XX",
         "SORTBY\tALL",
@@ -419,6 +429,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "unsupported SORTBY target"
     elif line.startswith("SORTBY\t"):
         assert item.reason == "unsupported SORTBY settings"
+    elif line.startswith("EDITFIELD\t"):
+        assert item.reason == "unsupported EDITFIELD settings"
     else:
         assert item.reason and "\n" not in item.reason
 
