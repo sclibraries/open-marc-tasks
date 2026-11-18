@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic remove_subfield regex regex-partial-and-full",
+  "description": "Exercises the characterized MarcEdit regex subfield behavior.",
+  "steps": [
+    {
+      "command": "remove_subfield",
+      "tag": "856",
+      "code": "z",
+      "remove_regex": "^zB$|[A-Z]"
+    }
+  ]
+}

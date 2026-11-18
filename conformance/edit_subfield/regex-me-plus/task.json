@@ -1,0 +1,15 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic edit_subfield regex regex-me-plus",
+  "description": "Exercises the characterized MarcEdit regex subfield behavior.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "852",
+      "code": "l",
+      "action": "replace_regex",
+      "find": "ME.+",
+      "replace": "SCINT"
+    }
+  ]
+}

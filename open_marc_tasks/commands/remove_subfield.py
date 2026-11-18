@@ -2,11 +2,15 @@ from typing import Any, Dict
 
 from pymarc import Record, Subfield
 
+from ..regex_dialect import RegexDialectError, compile_pattern
 from ..task import TaskError, _required, _unknown_settings
+from ..text_form import TextFormError
 
 
 def validate(step: Dict[str, Any], number: int) -> None:
-    _unknown_settings(step, {"command", "tag", "code", "if_contains", "remove_text"}, number)
+    _unknown_settings(
+        step, {"command", "tag", "code", "if_contains", "remove_text", "remove_regex"}, number
+    )
 
     tag = _required(step, "tag", number)
     if not isinstance(tag, str) or len(tag) != 3 or any(
@@ -28,8 +32,18 @@ def validate(step: Dict[str, Any], number: int) -> None:
         value = step["remove_text"]
         if not isinstance(value, str) or not value:
             raise TaskError("step {} setting remove_text must be a non-empty string".format(number))
+    if "remove_regex" in step:
+        value = step["remove_regex"]
+        if not isinstance(value, str) or not value:
+            raise TaskError("step {} setting remove_regex must be a non-empty string".format(number))
+        try:
+            compile_pattern(value)
+        except RegexDialectError as error:
+            raise TaskError("step {} {}".format(number, error)) from error
     if "if_contains" in step and "remove_text" in step:
         raise TaskError("step {} if_contains and remove_text cannot both be set".format(number))
+    if "remove_regex" in step and ("if_contains" in step or "remove_text" in step):
+        raise TaskError("step {} remove_regex cannot be combined with if_contains or remove_text".format(number))
 
 
 def run(record: Record, step: Dict[str, Any]) -> None:
@@ -43,6 +57,25 @@ def run(record: Record, step: Dict[str, Any]) -> None:
                 else subfield
                 for subfield in field.subfields
             ]
+        return
+
+    if "remove_regex" in step:
+        pattern = compile_pattern(step["remove_regex"])
+        for field in record.get_fields(step["tag"]):
+            edited_subfields = []
+            for subfield in field.subfields:
+                if subfield.code != code:
+                    edited_subfields.append(subfield)
+                    continue
+                result = pattern.sub("", subfield.code + subfield.value)
+                if not result:
+                    continue
+                if result[0] not in "abcdefghijklmnopqrstuvwxyz0123456789":
+                    raise TextFormError("regex result has an invalid subfield code")
+                edited_subfields.append(Subfield(result[0], result[1:]))
+            field.subfields = edited_subfields
+            if not field.subfields:
+                record.remove_field(field)
         return
 
     if_contains = step.get("if_contains")

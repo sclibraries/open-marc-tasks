@@ -1,0 +1,15 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic edit_subfield regex regex-to-honline",
+  "description": "Exercises the characterized MarcEdit regex subfield behavior.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "856",
+      "code": "h",
+      "action": "replace_regex",
+      "find": ".+",
+      "replace": "hOnline"
+    }
+  ]
+}
