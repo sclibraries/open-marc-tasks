@@ -89,6 +89,8 @@ from .commands.replace_text import run as run_replace_text
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import run as run_remove_subfield
 from .commands.remove_subfield import validate as validate_remove_subfield
+from .commands.sort_fields import run as run_sort_fields
+from .commands.sort_fields import validate as validate_sort_fields
 
 
 COMMANDS = {
@@ -99,6 +101,7 @@ COMMANDS = {
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
     "replace_text": (validate_replace_text, run_replace_text),
     "remove_subfield": (validate_remove_subfield, run_remove_subfield),
+    "sort_fields": (validate_sort_fields, run_sort_fields),
 }
 
 

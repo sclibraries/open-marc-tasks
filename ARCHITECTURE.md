@@ -75,5 +75,7 @@ a change that alters it updates it in the same ticket.
   case-sensitive field-text matching; filtered control sources and
   control-to-control COPY lines are not imported while their MarcEdit behavior
   remains unresolved.
-- Not built yet: regex REPLACE import (OMT-013), TASK_LIST, SORTBY, EDITFIELD,
+- `sort_fields` (OMT-023): sorts by MarcEdit's command-line field-text key and
+  supports all-fields sorting or a stable 0XX-first partition.
+- Not built yet: regex REPLACE import (OMT-013), TASK_LIST, EDITFIELD,
   INDICATOR.

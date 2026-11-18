@@ -183,6 +183,14 @@ INVALID_TASK_CASES.append(
         False,
     )
 )
+INVALID_TASK_CASES.append(
+    (
+        "sort_fields unknown scope",
+        task_document([VALID_STEP, {"command": "sort_fields", "scope": "unknown"}]),
+        "step 2",
+        False,
+    )
+)
 
 
 @pytest.fixture
@@ -201,6 +209,8 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         load_task(task_path)
     if step_number:
         assert step_number in str(error.value)
+    if name == "sort_fields unknown scope":
+        assert "setting scope" in str(error.value)
     if name == "replace_text empty find":
         assert "setting find" in str(error.value)
     if name == "replace_text non-string replace":

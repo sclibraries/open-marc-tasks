@@ -36,7 +36,8 @@
         {"$ref": "#/$defs/build_field_step"},
         {"$ref": "#/$defs/edit_subfield_step"},
         {"$ref": "#/$defs/remove_subfield_step"},
-        {"$ref": "#/$defs/replace_text_step"}
+        {"$ref": "#/$defs/replace_text_step"},
+        {"$ref": "#/$defs/sort_fields_step"}
       ]
     },
     "delete_field_step": {
@@ -262,6 +263,15 @@
           "type": "array",
           "items": {"$ref": "#/$defs/condition"}
         }
+      }
+    },
+    "sort_fields_step": {
+      "type": "object",
+      "required": ["command", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "sort_fields"},
+        "scope": {"enum": ["all", "0xx"]}
       }
     }
   }

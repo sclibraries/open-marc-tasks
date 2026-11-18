@@ -9,6 +9,7 @@ from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import validate as validate_remove_subfield
+from .commands.sort_fields import validate as validate_sort_fields
 from .task import TaskError
 
 
@@ -158,6 +159,28 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             step["if_contains"] = match
         try:
             validate_copy_field(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
+
+    if command == "SORTBY":
+        if len(columns) < 2:
+            return None, "malformed SORTBY line"
+        target = columns[1]
+        if target not in ("ALL", "0XX"):
+            return None, "unsupported SORTBY target"
+        if target == "0XX" and len(columns) == 2:
+            step = {"command": "sort_fields", "scope": "0xx"}
+        elif (
+            len(columns) == 4
+            and columns[2] in ("True", "False")
+            and columns[3] in ("True", "False")
+        ):
+            step = {"command": "sort_fields", "scope": "all" if target == "ALL" else "0xx"}
+        else:
+            return None, "unsupported SORTBY settings"
+        try:
+            validate_sort_fields(step, 1)
         except TaskError as error:
             return None, str(error)
         return step, ""
