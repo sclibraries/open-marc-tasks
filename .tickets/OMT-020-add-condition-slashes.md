@@ -1,6 +1,6 @@
 Title: Import ADD Leader conditions written with doubled or tripled slashes
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — importer mapping only
 Milestone: M2 — Commands
@@ -48,7 +48,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 2f70bc6, merged into main (owner OK 2026-11-18). Python 3.9 gate 187 passed, 1 skipped; host reference passed. Measure 33 match / 1 differs on all three samples.
 
 Review:
-- (orchestrator fills in)
+- 1–3 equal slashes accepted. The one difference (eds_cc_umeapb) is an OMT-015 gap: whole data field placed in a control field; follow-up OMT-021. No fix round.
