@@ -137,6 +137,7 @@ INVALID_TASK_CASES.extend(
         ("build_field two x placeholders", "=901  \\\\$a{001$a[x]}{002$a[x]}", {}),
         ("build_field x with add_if_missing", "=901  \\\\$a{001$a[x]}", {"mode": "add_if_missing"}),
         ("build_field x with replace", "=901  \\\\$a{001$a[x]}", {"mode": "replace"}),
+        ("build_field whole data-field placeholder in control field", "=001  X{956}", {}),
         ("build_field placeholder tag is not three digits", "=901  \\\\$a{01$a}", {}),
         ("build_field bad template subfield code", "=901  \\\\$Atext", {}),
     )
@@ -196,6 +197,7 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         "build_field two x placeholders": "only one",
         "build_field x with add_if_missing": "add_if_missing",
         "build_field x with replace": "replace",
+        "build_field whole data-field placeholder in control field": "whole data-field placeholder",
         "build_field placeholder tag is not three digits": "three digits",
         "build_field bad template subfield code": "invalid subfield code",
     }
