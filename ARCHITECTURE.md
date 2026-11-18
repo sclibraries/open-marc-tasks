@@ -76,4 +76,5 @@ a change that alters it updates it in the same ticket.
   control-to-control COPY lines are not imported while their MarcEdit behavior
   remains unresolved.
 - Not built yet: regex REPLACE import (OMT-013), TASK_LIST, SORTBY, EDITFIELD,
-  INDICATOR.
+  INDICATOR. `SORTBY` remains untranslated while MarcEdit's Unicode ordering
+  for repeated fields lacks an established portable comparison rule.

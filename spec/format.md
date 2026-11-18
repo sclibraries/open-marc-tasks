@@ -498,6 +498,13 @@ supports blank indicators (`\`), subfield markers (`$a`), and the `{dollar}`
 literal. Control-field ADD lines become `data` values. Descriptions come from
 `#DESCRIPTION#` lines.
 
+`SORTBY` lines are reported as not translated. MarcEdit 7.6 sorts fields by
+tag and sorts repeated fields by their field text, but its comparison is not
+Unicode code-point order: with the same tag and indicators, synthetic values
+showed `é` before `Å` and `É`, while ASCII case pairs followed code-point
+order. The exact comparison rule for Unicode values is not established, so
+neither `ALL` nor `0XX` can be translated safely.
+
 The characterized `SUBFIELD_EDIT` forms map to `edit_subfield` as shown above,
 including regex option `0|2`, which maps to `replace_regex`. Regex patterns and
 replacement strings are validated with the `replace_text` dialect when the

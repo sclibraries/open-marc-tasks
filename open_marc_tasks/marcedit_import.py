@@ -357,6 +357,9 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, "unsupported REPLACE character mnemonic"
         return step, ""
 
+    if command == "SORTBY":
+        return None, "SORTBY ordering for repeated Unicode fields is not characterized"
+
     return None, "unknown MarcEdit command"
 
 

@@ -352,6 +352,11 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "REPLACE\tfind\treplacement\t2\t=LDR.{8}g.+\t0\tFalse",
         "REPLACE\t{eacute}\tafter\t0\t\t0\tFalse",
         "TASK_LIST\tSynthetic task list",
+        "SORTBY\tALL\tTrue\tTrue",
+        "SORTBY\tALL\tFalse\tFalse",
+        "SORTBY\t0XX",
+        "SORTBY\t0XX\tTrue\tFalse",
+        "SORTBY\t1XX",
         "MYSTERY\tSynthetic unknown command",
     ],
 )
@@ -375,6 +380,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "option 9 with a value is not supported"
     elif line == "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse":
         assert item.reason == "step 1 setting field cannot use a whole data-field placeholder for a control field"
+    elif line.startswith("SORTBY\t"):
+        assert item.reason == "SORTBY ordering for repeated Unicode fields is not characterized"
     else:
         assert item.reason and "\n" not in item.reason
 
