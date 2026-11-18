@@ -1,6 +1,6 @@
 Title: Place skip_if_identical additions before the first greater tag (MarcEdit ADD option 108)
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — changes where one add_field policy inserts a field
 Milestone: M2 — Commands
@@ -60,7 +60,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head ffb92f6, merged into main (owner OK 2026-11-18). Python 3.9 gate 210 passed, 1 skipped; host reference passed. Measure 57/100, 0 differ, on all three samples.
 
 Review:
-- (orchestrator fills in)
+- skip_if_identical inserts before the first strictly greater tag, as MarcEdit does; old branch removed. No fix round.
