@@ -1,6 +1,6 @@
 Title: Add sort_fields and import MarcEdit SORTBY
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new command; the ordering rule is characterized against MarcEdit
 Milestone: M2 — Commands
@@ -62,7 +62,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 1c87328, merged into main (owner OK 2026-11-18). Python 3.9 gate 210 passed, 1 skipped; host reference passed. Measure 57/56/56 of 100; 1 differ (eds_cc_umsiam) from add_field placement in out-of-order records, not sorting.
 
 Review:
-- (orchestrator fills in)
+- Key = UTF-8 bytes read as cp1252, stable sort; 0xx stable tail. First round deferred (comparison unresolved); orchestrator pinned the key; one fix round. Minor: nine importer flag rows where three were asked.
