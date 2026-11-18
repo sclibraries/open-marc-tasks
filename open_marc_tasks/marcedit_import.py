@@ -11,6 +11,7 @@ from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import validate as validate_remove_subfield
 from .commands.sort_fields import validate as validate_sort_fields
+from .commands.set_indicators import validate as validate_set_indicators
 from .task import TaskError
 
 
@@ -266,6 +267,28 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
                     raise ValueError("ADD option 106 needs a Leader condition")
                 step["when"] = _condition(condition_text)
         except ValueError as error:
+            return None, str(error)
+        return step, ""
+
+    if command == "INDICATOR":
+        if len(columns) != 5:
+            return None, "malformed INDICATOR line"
+        _, tag, find, condition, value = columns
+        if len(tag) != 3 or not tag.isascii() or not tag.isdigit():
+            return None, "invalid INDICATOR tag"
+        if condition:
+            return None, "INDICATOR condition is not supported"
+        if len(value) not in (1, 2):
+            return None, "INDICATOR value must be one or two characters"
+        if len(find) > 2 or len(find) > len(value):
+            return None, "INDICATOR find must be no longer than value and at most two characters"
+
+        step = {"command": "set_indicators", "tag": tag, "value": value.replace("\\", " ")}
+        if find:
+            step["if_starts_with"] = find.replace("\\", " ")
+        try:
+            validate_set_indicators(step, 1)
+        except TaskError as error:
             return None, str(error)
         return step, ""
 
