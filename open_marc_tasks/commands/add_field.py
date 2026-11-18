@@ -94,10 +94,11 @@ def add_field(record: Record, settings: Dict[str, Any]) -> None:
         return
 
     position = None
-    if policy == "skip_if_identical" and existing:
-        position = max(
-            index for index, current in enumerate(record.fields) if current.tag == tag
-        ) + 1
+    if policy == "skip_if_identical":
+        position = next(
+            (index for index, current in enumerate(record.fields) if current.tag > tag),
+            len(record.fields),
+        )
     insert_fields(record, [field], position)
 
 
