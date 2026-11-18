@@ -6,6 +6,7 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from .commands.build_field import validate as validate_build_field
 from .commands.copy_field import validate as validate_copy_field
 from .commands.delete_field import validate as validate_delete_field
+from .commands.edit_field import validate as validate_edit_field
 from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import validate as validate_remove_subfield
@@ -378,6 +379,31 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
         mnemonics = _MNEMONIC.findall(find + replacement)
         if any(mnemonic and mnemonic not in _FIELD_TEXT_ESCAPES for mnemonic in mnemonics):
             return None, "unsupported REPLACE character mnemonic"
+        return step, ""
+
+    if command == "EDITFIELD":
+        if len(columns) != 6:
+            return None, "malformed EDITFIELD line"
+        _, tag, find, option, replacement, final_column = columns
+        if len(tag) != 3 or not tag.isascii() or not tag.isdigit():
+            return None, "invalid EDITFIELD tag"
+        if not find:
+            return None, "EDITFIELD find must be non-empty"
+        if option not in ("0", "2") or final_column:
+            return None, "unsupported EDITFIELD settings"
+
+        step = {
+            "command": "edit_field",
+            "tag": tag,
+            "find": find,
+            "replace": replacement,
+        }
+        if option == "2":
+            step["regex"] = True
+        try:
+            validate_edit_field(step, 1)
+        except TaskError as error:
+            return None, str(error)
         return step, ""
 
     return None, "unknown MarcEdit command"

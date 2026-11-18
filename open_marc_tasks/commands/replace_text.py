@@ -32,20 +32,24 @@ def validate(step: Dict[str, Any], number: int) -> None:
         _validate_conditions(step["when"], number)
 
 
+def _build_replacer(step):
+    replacement = step["replace"]
+    if not step.get("regex", False):
+        return lambda text: text.replace(step["find"], replacement)
+
+    pattern = compile_pattern(step["find"])
+    return lambda text: pattern.sub(
+        lambda match: expand_replacement(match, replacement), text
+    )
+
+
 def run(record, step):
     if not conditions_match(record, step.get("when", [])):
         return
 
-    regex = step.get("regex", False)
-    pattern = compile_pattern(step["find"]) if regex else None
-    replacement = step["replace"]
+    replace = _build_replacer(step)
     for index, field in enumerate(record.fields):
         text = render_field(field)
-        if pattern is None:
-            replaced = text.replace(step["find"], replacement)
-        else:
-            replaced = pattern.sub(
-                lambda match: expand_replacement(match, replacement), text
-            )
+        replaced = replace(text)
         if replaced != text:
             record.fields[index] = parse_field(replaced)

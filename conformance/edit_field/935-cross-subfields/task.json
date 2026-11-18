@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic 935-cross-subfields",
+  "description": "Applies a regex match across a following subfield marker.",
+  "steps": [
+    {
+      "command": "edit_field",
+      "tag": "935",
+      "find": "(10\\.3998\\/\\w{2,7}\\.)(.+)",
+      "replace": "$2",
+      "regex": true
+    }
+  ]
+}

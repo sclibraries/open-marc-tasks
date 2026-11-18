@@ -1,0 +1,14 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic 001-strip-identifiers",
+  "description": "Removes every matching identifier form from a control field.",
+  "steps": [
+    {
+      "command": "edit_field",
+      "tag": "001",
+      "find": "on|ocn|ocm",
+      "replace": "",
+      "regex": true
+    }
+  ]
+}

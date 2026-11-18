@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic 001-remove-blank",
+  "description": "Removes a represented blank from control-field data.",
+  "steps": [
+    {
+      "command": "edit_field",
+      "tag": "001",
+      "find": "\\",
+      "replace": ""
+    }
+  ]
+}

@@ -37,7 +37,10 @@ a change that alters it updates it in the same ticket.
   `records_match` live in `open_marc_tasks/task.py` and `match.py`. Commands
   are dispatched by name through the table in `task.py`; each command module
   (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
-- Conformance: `conformance/delete_field/` (9 cases), `conformance/add_field/` (6 cases), and `conformance/replace_text/` (10 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit task line in `marcedit-task.txt`.
+- Conformance: `conformance/delete_field/` (9 cases), `conformance/add_field/`
+  (6 cases), `conformance/replace_text/` (10 cases), and
+  `conformance/edit_field/` (5 cases), expected output from MarcEdit 7.6; each
+  case keeps the MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it. Backslash indicators become blanks on every
@@ -77,5 +80,7 @@ a change that alters it updates it in the same ticket.
   remains unresolved.
 - `sort_fields` (OMT-023): sorts by MarcEdit's command-line field-text key and
   supports all-fields sorting or a stable 0XX-first partition.
-- Not built yet: regex REPLACE import (OMT-013), TASK_LIST, EDITFIELD,
-  INDICATOR.
+- `edit_field` (OMT-025): edits exact-tag field text bodies with literal or
+  portable regex replacement; imports `EDITFIELD` options `0` and `2` with an
+  empty final column.
+- Not built yet: regex REPLACE import (OMT-013), TASK_LIST, INDICATOR.

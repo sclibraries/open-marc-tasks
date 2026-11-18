@@ -85,6 +85,8 @@ from .commands.delete_field import run as run_delete_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_subfield import run as run_edit_subfield
 from .commands.edit_subfield import validate as validate_edit_subfield
+from .commands.edit_field import run as run_edit_field
+from .commands.edit_field import validate as validate_edit_field
 from .commands.replace_text import run as run_replace_text
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import run as run_remove_subfield
@@ -99,6 +101,7 @@ COMMANDS = {
     "add_field": (validate_add_field, run_add_field),
     "build_field": (validate_build_field, run_build_field),
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
+    "edit_field": (validate_edit_field, run_edit_field),
     "replace_text": (validate_replace_text, run_replace_text),
     "remove_subfield": (validate_remove_subfield, run_remove_subfield),
     "sort_fields": (validate_sort_fields, run_sort_fields),
