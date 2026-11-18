@@ -1,6 +1,6 @@
 Title: Import more DELETE and ADD line shapes
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — importer accepts more MarcEdit line shapes; no engine change
 Milestone: M2 — Commands
