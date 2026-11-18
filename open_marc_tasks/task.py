@@ -19,6 +19,12 @@ class Task(NamedTuple):
     steps: List[Dict[str, Any]]
 
 
+class _LoadedCallStep(dict):
+    def __init__(self, step: Dict[str, Any], task: Task) -> None:
+        super().__init__(step)
+        self.task = task
+
+
 _TYPOGRAPHY_TRANSLATION = str.maketrans(
     {"“": '"', "”": '"', "‘": "'", "’": "'", "—": "-", "–": "-", "…": "..."}
 )
@@ -79,6 +85,8 @@ from .commands.add_field import run as run_add_field
 from .commands.add_field import validate as validate_add_field
 from .commands.build_field import run as run_build_field
 from .commands.build_field import validate as validate_build_field
+from .commands.call_task import run as run_call_task
+from .commands.call_task import validate as validate_call_task
 from .commands.copy_field import run as run_copy_field
 from .commands.copy_field import validate as validate_copy_field
 from .commands.delete_field import run as run_delete_field
@@ -108,12 +116,25 @@ COMMANDS = {
     "remove_subfield": (validate_remove_subfield, run_remove_subfield),
     "sort_fields": (validate_sort_fields, run_sort_fields),
     "set_indicators": (validate_set_indicators, run_set_indicators),
+    "call_task": (validate_call_task, run_call_task),
 }
 
 
 def load_task(path: Union[str, Path]) -> Task:
+    return _load_task(Path(path), [])
+
+
+def _load_task(path: Path, ancestors: List[Path]) -> Task:
+    resolved_path = path.resolve()
+    if resolved_path in ancestors:
+        start = ancestors.index(resolved_path)
+        cycle = ancestors[start:] + [resolved_path]
+        raise TaskError(
+            "call cycle: {}".format(" -> ".join(item.name for item in cycle))
+        )
+
     try:
-        with open(path, "r", encoding="utf-8") as task_file:
+        with resolved_path.open("r", encoding="utf-8") as task_file:
             document = json.load(task_file)
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise TaskError("could not read task: {}".format(error)) from error
@@ -151,6 +172,16 @@ def load_task(path: Union[str, Path]) -> Task:
             raise TaskError("step {} has unknown command: {!r}".format(number, command))
         validator, _ = COMMANDS[command]
         validator(step, number)
+        if command == "call_task":
+            try:
+                called_task = _load_task(
+                    resolved_path.parent / step["task"], ancestors + [resolved_path]
+                )
+            except TaskError as error:
+                raise TaskError(
+                    "step {} call_task {}: {}".format(number, step["task"], error)
+                ) from error
+            document["steps"][number - 1] = _LoadedCallStep(step, called_task)
 
     return Task(
         document["format_version"],
@@ -159,6 +190,23 @@ def load_task(path: Union[str, Path]) -> Task:
         normalize_typography,
         document["steps"],
     )
+
+
+def _run_called_task(record: Record, task: Task, task_file: str) -> None:
+    if task.normalize_typography:
+        normalize_typography(record)
+    for step_number, step in enumerate(task.steps, start=1):
+        _, runner = COMMANDS[step["command"]]
+        try:
+            runner(record, step)
+        except TextFormError as error:
+            raise TaskError(
+                "task {} step {}: {}".format(task_file, step_number, error)
+            ) from error
+        except TaskError as error:
+            raise TaskError(
+                "task {} step {}: {}".format(task_file, step_number, error)
+            ) from error
 
 
 def run_task(
@@ -175,5 +223,13 @@ def run_task(
             except TextFormError as error:
                 raise TaskError(
                     "record {} step {}: {}".format(record_number, step_number, error)
+                ) from error
+            except TaskError as error:
+                if step["command"] != "call_task":
+                    raise
+                raise TaskError(
+                    "record {} step {} call_task {}: {}".format(
+                        record_number, step_number, step["task"], error
+                    )
                 ) from error
         yield record

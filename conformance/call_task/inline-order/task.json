@@ -1,0 +1,21 @@
+{
+  "format_version": "0.1",
+  "name": "Call shared edit task",
+  "description": "Runs a shared edit between caller steps.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "Synthetic",
+      "replace": "First"
+    },
+    {
+      "command": "call_task",
+      "task": "shared-edit.json"
+    },
+    {
+      "command": "replace_text",
+      "find": "Final",
+      "replace": "Complete"
+    }
+  ]
+}

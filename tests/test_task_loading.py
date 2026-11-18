@@ -207,6 +207,34 @@ INVALID_TASK_CASES.append(
         False,
     )
 )
+INVALID_TASK_CASES.extend(
+    [
+        (
+            "call_task missing file",
+            task_document([VALID_STEP, {"command": "call_task", "task": "missing.json"}]),
+            "step 2",
+            True,
+        ),
+        (
+            "call_task invalid file",
+            task_document([VALID_STEP, {"command": "call_task", "task": "broken.json"}]),
+            "step 2",
+            True,
+        ),
+        (
+            "call_task cycle",
+            task_document([VALID_STEP, {"command": "call_task", "task": "child.json"}]),
+            "step 2",
+            True,
+        ),
+        (
+            "call_task slash in file",
+            task_document([VALID_STEP, {"command": "call_task", "task": "../other.json"}]),
+            "step 2",
+            False,
+        ),
+    ]
+)
 
 
 @pytest.fixture
@@ -221,6 +249,13 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
 ):
     task_path = tmp_path / (name.replace(" ", "-") + ".json")
     task_path.write_text(json.dumps(document), encoding="utf-8")
+    if name == "call_task invalid file":
+        (tmp_path / "broken.json").write_text("{", encoding="utf-8")
+    if name == "call_task cycle":
+        (tmp_path / "child.json").write_text(
+            json.dumps(task_document([{"command": "call_task", "task": task_path.name}])),
+            encoding="utf-8",
+        )
     with pytest.raises(TaskError) as error:
         load_task(task_path)
     if step_number:
@@ -233,6 +268,17 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert "setting value must be one or two characters" in str(error.value)
     if name == "sort_fields unknown scope":
         assert "setting scope" in str(error.value)
+    call_task_errors = {
+        "call_task missing file": "missing.json",
+        "call_task invalid file": "broken.json",
+        "call_task cycle": "call cycle",
+        "call_task slash in file": "path separators",
+    }
+    if name in call_task_errors:
+        assert call_task_errors[name] in str(error.value)
+    if name == "call_task cycle":
+        assert "child.json" in str(error.value)
+        assert task_path.name in str(error.value)
     if name == "replace_text empty find":
         assert "setting find" in str(error.value)
     if name == "replace_text non-string replace":

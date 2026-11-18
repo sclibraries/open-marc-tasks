@@ -88,6 +88,7 @@ def test_run_writes_matching_conformance_output_and_preserves_utf8_bytes(tmp_pat
         ("empty build_field replacement", 2, "record 2 step 2"),
         ("invalid subfield regex result", 2, "record 2 step 2"),
         ("invalid edit_field result", 2, "record 2 step 2"),
+        ("called task runtime error", 2, "record 2 step 2"),
     ],
 )
 def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_number, message):
@@ -162,12 +163,39 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
         second.add_field(Field(tag="001", data="synthetic-2"))
         second.add_field(Field(tag="245", indicators=["1", "0"], subfields=[Subfield("a", "Synthetic title")]))
         input_path.write_bytes(first.as_marc() + second.as_marc())
+    elif case == "called task runtime error":
+        write_task(
+            task_path,
+            steps=[
+                {"command": "delete_field", "tag": "998"},
+                {"command": "call_task", "task": "child.json"},
+            ],
+        )
+        (tmp_path / "child.json").write_text(
+            json.dumps(
+                {
+                    "format_version": "0.1",
+                    "name": "Synthetic child task",
+                    "description": "Exercises errors in called tasks.",
+                    "steps": [
+                        {"command": "edit_field", "tag": "245", "find": "$a", "replace": "$A"}
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        first = Record(force_utf8=True)
+        first.add_field(Field(tag="001", data="synthetic-1"))
+        second = Record(force_utf8=True)
+        second.add_field(Field(tag="001", data="synthetic-2"))
+        second.add_field(Field(tag="245", indicators=["1", "0"], subfields=[Subfield("a", "Synthetic title")]))
+        input_path.write_bytes(first.as_marc() + second.as_marc())
 
     if output_path != input_path and case != "empty build_field replacement":
         output_path.write_bytes(b"existing output must survive")
     original_output = output_path.read_bytes() if output_path.exists() else None
 
-    if case in ("empty build_field replacement", "invalid subfield regex result", "invalid edit_field result"):
+    if case in ("empty build_field replacement", "invalid subfield regex result", "invalid edit_field result", "called task runtime error"):
         with input_path.open("rb") as source:
             input_records = list(MARCReader(source, to_unicode=True, utf8_handling="strict"))
         with pytest.raises(TaskError, match="record 2 step 2"):
@@ -181,6 +209,9 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
     assert len(error_lines) == 1
     assert error_lines[0].startswith("omt:")
     assert message in error_lines[0]
+    if case == "called task runtime error":
+        assert "child.json" in error_lines[0]
+        assert "step 1" in error_lines[0]
     if record_number is not None:
         assert "record {}".format(record_number) in error_lines[0]
     if original_output is None:
