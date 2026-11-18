@@ -108,6 +108,7 @@ def _field(tag: str, text: str) -> Dict[str, object]:
             "data": text.replace("{dollar}", "$"),
         }
 
+    text = text.lstrip(" ")
     if len(text) < 2:
         raise ValueError("ADD field text needs two indicators")
     indicators = [" " if char == "\\" else char for char in text[:2]]
@@ -211,9 +212,11 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
         return step, ""
 
     if command == "DELETE":
+        if len(columns) == 10 and columns[-1] == "":
+            columns = columns[:-1]
         if len(columns) != 9:
             return None, "malformed DELETE line"
-        tag = columns[1]
+        tag = columns[1].replace("x", "X")
         if len(tag) != 3 or any(char not in "0123456789X" for char in tag):
             return None, "invalid DELETE tag"
         match = columns[2]
@@ -242,6 +245,8 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
         return step, ""
 
     if command == "ADD":
+        if len(columns) == 7 and columns[5:] == ["100", ""]:
+            columns = columns[:5]
         if len(columns) != 5:
             return None, "malformed ADD line"
         _, tag, field_text, option, condition_text = columns

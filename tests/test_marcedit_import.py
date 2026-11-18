@@ -20,6 +20,14 @@ from open_marc_tasks.task import load_task
             {"command": "delete_field", "tag": "9XX"},
         ),
         (
+            "DELETE\t9xx\t\t0\tFalse\tFalse\tFalse\tFalse\tFalse",
+            {"command": "delete_field", "tag": "9XX"},
+        ),
+        (
+            "DELETE\t506\t\t0\tFalse\tFalse\tFalse\tFalse\tFalse\t",
+            {"command": "delete_field", "tag": "506"},
+        ),
+        (
             "DELETE\t655\tElectronic books\t0\tFalse\tFalse\tFalse\tFalse\tFalse",
             {"command": "delete_field", "tag": "655", "match": "Electronic books"},
         ),
@@ -81,6 +89,29 @@ from open_marc_tasks.task import load_task
                     {"leader": 6, "in": ["a", "m", "t"]},
                     {"leader": 7, "in": ["m"]},
                 ],
+            },
+        ),
+        (
+            "ADD\t877\t\\\\$mSynthetic image\t106\t/=LDR.{8}[km].+/\t100\t",
+            {
+                "command": "add_field",
+                "tag": "877",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [["m", "Synthetic image"]],
+                "if_tag_exists": "add",
+                "when": [{"leader": 6, "in": ["k", "m"]}],
+            },
+        ),
+        (
+            "ADD\t337\t \\\\$aSynthetic computer$bc$2rdamedia\t100\t",
+            {
+                "command": "add_field",
+                "tag": "337",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [["a", "Synthetic computer"], ["b", "c"], ["2", "rdamedia"]],
+                "if_tag_exists": "add",
             },
         ),
         (
@@ -365,11 +396,13 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse",
         "DELETE\t245\t$aSynthetic match\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "DELETE\t245\t\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
+        "DELETE\t506\t\t0\tFalse\tFalse\tFalse\tFalse\tFalse\textra",
         "ADD\t655\t\\7$aSynthetic genre\t106\t=LDR.{8}g.+",
         "ADD\t655\t\\7$aSynthetic genre\t106\t/=LDR.{8}g.+",
         "ADD\t655\t\\7$aSynthetic genre\t106\t//=LDR.{8}[amt][m].+/",
         "ADD\t655\t\\7$aSynthetic genre\t106\t////=LDR.{8}g.+////",
         "ADD\t650\t\\0$aSynthetic topic\t999\t",
+        "ADD\t877\t\\\\$mSynthetic image\t106\t/=LDR.{8}[km].+/\t101\t",
         "ADD\t650\t\\0$aCaf{eacute}\t100\t",
         "SUBFIELD_EDIT\t950\ta\tneed.*le\tX\t0|3",
         "SUBFIELD_REMOVE\t856\tz\tOCoLC\t9|0",
