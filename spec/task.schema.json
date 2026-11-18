@@ -162,7 +162,7 @@
         "command": {"const": "edit_subfield"},
         "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
         "code": {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
-        "action": {"enum": ["add", "add_if_missing", "replace", "replace_first", "append", "prepend", "clear"]},
+        "action": {"enum": ["add", "add_if_missing", "replace", "replace_first", "replace_regex", "append", "prepend", "clear"]},
         "value": {"type": "string"},
         "find": {"type": "string", "minLength": 1},
         "replace": {"type": "string"},
@@ -185,6 +185,16 @@
         {
           "if": {
             "properties": {"action": {"enum": ["replace", "replace_first"]}},
+            "required": ["action"]
+          },
+          "then": {
+            "required": ["find", "replace"],
+            "not": {"required": ["value"]}
+          }
+        },
+        {
+          "if": {
+            "properties": {"action": {"const": "replace_regex"}},
             "required": ["action"]
           },
           "then": {
@@ -218,10 +228,19 @@
         "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
         "code": {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
         "if_contains": {"type": "string", "minLength": 1},
-        "remove_text": {"type": "string", "minLength": 1}
+        "remove_text": {"type": "string", "minLength": 1},
+        "remove_regex": {"type": "string", "minLength": 1}
       },
       "allOf": [
-        {"not": {"required": ["if_contains", "remove_text"]}},
+        {
+          "not": {
+            "anyOf": [
+              {"required": ["if_contains", "remove_text"]},
+              {"required": ["if_contains", "remove_regex"]},
+              {"required": ["remove_text", "remove_regex"]}
+            ]
+          }
+        },
         {
           "not": {
             "properties": {"tag": {"pattern": "^00[0-9]$"}},
