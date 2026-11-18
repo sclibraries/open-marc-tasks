@@ -182,7 +182,10 @@ The supported placeholders are `{NNN}`, `{NNN$c}`, and `{NNN$c[x]}`, where
 `NNN` is a three-digit tag and `c` is one lowercase ASCII letter or digit.
 `{NNN}` inserts the first matching field's body in field text form: control
 data with blanks shown as `\`, or a data field's two indicators and
-`$`-subfields. `{NNN$c}` inserts the first `$c` value found among fields with
+`$`-subfields. Templates for control-field tags (`000`–`009`) may not contain
+a whole-field placeholder for a data-field tag (`010`–`999`), because
+data-field indicators and subfield delimiters are not valid control-field data.
+`{NNN$c}` inserts the first `$c` value found among fields with
 that tag. If the source field or subfield is missing, the placeholder becomes
 empty. A text-form escape such as `{dollar}`, `{lcub}`, `{rcub}`, or `{bsol}`
 is literal and is not a placeholder. Any other brace expression is invalid.

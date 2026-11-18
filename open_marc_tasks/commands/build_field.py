@@ -28,6 +28,7 @@ def validate(step: Dict[str, Any], number: int) -> None:
         _validate_conditions(step["when"], number)
 
     x_count = 0
+    has_whole_data_field_placeholder = False
     for expression in _BRACE_EXPRESSION.finditer(field):
         token = expression.group(0)
         if token in _TEXT_FORM_ESCAPES:
@@ -38,6 +39,8 @@ def validate(step: Dict[str, Any], number: int) -> None:
                 "step {} setting field has unsupported placeholder {!r}; "
                 "source placeholders require a tag of three digits".format(number, token)
             )
+        if placeholder.group(2) is None and placeholder.group(1) >= "010":
+            has_whole_data_field_placeholder = True
         if placeholder.group(3):
             x_count += 1
 
@@ -47,9 +50,15 @@ def validate(step: Dict[str, Any], number: int) -> None:
         raise TaskError("step {} setting mode {} cannot use [x]".format(number, mode))
 
     try:
-        parse_field(_PLACEHOLDER.sub("", field))
+        template_field = parse_field(_PLACEHOLDER.sub("", field))
     except TextFormError as error:
         raise TaskError("step {} setting field is invalid: {}".format(number, error)) from error
+    if has_whole_data_field_placeholder and template_field.is_control_field():
+        raise TaskError(
+            "step {} setting field cannot use a whole data-field placeholder for a control field".format(
+                number
+            )
+        )
 
 
 def _subfield_text(field: Field, code: str) -> Optional[str]:

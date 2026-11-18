@@ -274,6 +274,10 @@ from open_marc_tasks.task import load_task
             "buildnewfield\t=035  \\\\$a{001}\tFalse\tTrue\tFalse\tFalse",
             {"command": "build_field", "field": "=035  \\\\$a{001}", "mode": "replace"},
         ),
+        (
+            "buildnewfield\t=001  X{956$a}\tFalse\tTrue\tFalse\tFalse",
+            {"command": "build_field", "field": "=001  X{956$a}", "mode": "replace"},
+        ),
     ],
 )
 def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step):
@@ -306,6 +310,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "buildnewfield\t=035  \\$a{eacute}\tFalse\tFalse\tFalse\tTrue",
         "buildnewfield\t=035  \\$a{001$a[x]}{002$a[x]}\tFalse\tFalse\tFalse\tTrue",
         "buildnewfield\t=901  \\\\$a{001$a[x]}\tFalse\tFalse\tTrue\tFalse",
+        "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse",
         "DELETE\t245\t$aSynthetic match\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "DELETE\t245\t\t0\tTrue\tFalse\tFalse\tFalse\tFalse",
         "ADD\t655\t\\7$aSynthetic genre\t106\t=LDR.{8}g.+",
@@ -360,6 +365,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "SUBFIELD_EDIT regular expressions are not supported yet"
     elif line.startswith("SUBFIELD_REMOVE") and "\t9|" in line:
         assert item.reason == "option 9 with a value is not supported"
+    elif line == "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse":
+        assert item.reason == "step 1 setting field cannot use a whole data-field placeholder for a control field"
     else:
         assert item.reason and "\n" not in item.reason
 
