@@ -132,11 +132,11 @@ whose tag is equal to or greater than the new tag, or at the end if there is
 no such field. Thus a new field precedes existing fields with the same tag,
 and repeated additions of one tag appear in reverse step order.
 
-With `"skip_if_identical"`, when the tag exists but no identical field does,
-the new field is inserted after the last existing field with that tag and
-before the first field with a greater tag. If the tag is absent, it is
-inserted before the first field with a greater tag, or at the end if there is
-none. `"skip"` only adds when the tag is absent, so it follows that same
+With `"skip_if_identical"`, when no identical field exists, the new field is
+inserted before the first field whose tag is strictly greater than the new
+tag, or at the end if there is none. This applies whether or not any field
+with the same tag exists; an equal tag does not stop the scan.
+`"skip"` only adds when the tag is absent, so it follows that same
 absent-tag placement.
 
 If any `when` condition is false for a record, the field is not added. For

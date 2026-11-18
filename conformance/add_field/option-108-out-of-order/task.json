@@ -1,0 +1,15 @@
+{
+  "format_version": "0.1",
+  "name": "option-108-out-of-order",
+  "description": "Place a non-identical option 108 field before the first greater tag, even when fields are out of order.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "710",
+      "ind1": " ",
+      "ind2": "0",
+      "subfields": [["a", "Added field"]],
+      "if_tag_exists": "skip_if_identical"
+    }
+  ]
+}
