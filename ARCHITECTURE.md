@@ -88,6 +88,6 @@ a change that alters it updates it in the same ticket.
   exact-tag fields, optionally filtered by an indicator prefix; imports
   unconditional `INDICATOR` lines with an empty condition.
 - `call_task` (OMT-028): runs a same-folder JSON task at a step; imports the
-  observed three- and four-column `TASK_LIST` forms and recursively inlines
+  observed three-column `TASK_LIST` form and recursively inlines
   called task lines for measurement.
 - Not built yet: regex REPLACE import (OMT-013).

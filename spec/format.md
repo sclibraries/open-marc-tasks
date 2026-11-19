@@ -658,12 +658,12 @@ characters no longer than the value map to `set_indicators`. A backslash in
 the find string or value becomes a blank indicator. Non-empty conditions and
 other line shapes are reported as not translated.
 
-`TASK_LIST` lines with three columns (`TASK_LIST`, name, file) or four columns
-(`TASK_LIST`, group, name, file), where the last column ends in `.txt`, map to
-`call_task`. The task file is named
-`<name>.-<file stem>.json`, using the second-to-last column as `<name>`. The
-importer does not check whether the called task exists. Other shapes are
-reported as not translated.
+`TASK_LIST` lines with exactly three columns (`TASK_LIST`, name, file), where
+the last column ends in `.txt`, map to `call_task`. The name column may contain
+`name` or `group|name`; when it contains a group, the text after the last `|`
+is the name. The task file is named `<name>.-<file stem>.json`. The importer
+does not check whether the called task exists. Other shapes are reported as
+not translated.
 
 `tools/measure.py` imports all tasks in the supplied folders into one temporary
 directory so calls can resolve. For MarcEdit comparison it recursively

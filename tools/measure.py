@@ -12,7 +12,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from open_marc_tasks import records_match, run_task
-from open_marc_tasks.marcedit_import import import_marcedit
+from open_marc_tasks.marcedit_import import called_task_name, import_marcedit
 from open_marc_tasks.task import load_task
 from tools.marcedit_reference import run_marcedit
 
@@ -46,7 +46,7 @@ def _task_sources(source_path):
 def _collect_tasks(sources, task_directory):
     tasks = []
     tasks_by_name = {}
-    for source_path in sources:
+    for source_path, is_library in sources:
         result = import_marcedit(source_path)
         source_entries = _task_sources(source_path)
         for imported_task in result.tasks:
@@ -67,12 +67,13 @@ def _collect_tasks(sources, task_directory):
                 "failures": failures,
                 "display_name": display_name,
             }
-            tasks.append(task)
+            if not is_library:
+                tasks.append(task)
             tasks_by_name.setdefault(imported_task.name, []).append(task)
 
     task_directory.mkdir()
     for name, matches in tasks_by_name.items():
-        if len(matches) == 1:
+        if all(task["text"] == matches[0]["text"] for task in matches[1:]):
             (task_directory / "{}.json".format(name)).write_text(
                 json.dumps(matches[0]["imported"].document, ensure_ascii=False),
                 encoding="utf-8",
@@ -80,23 +81,11 @@ def _collect_tasks(sources, task_directory):
     return tasks, tasks_by_name
 
 
-def _called_task_name(line):
-    columns = line.split("\t")
-    if len(columns) not in (3, 4) or columns[0] != "TASK_LIST" or not columns[-1].endswith(".txt"):
-        return None
-    return "{}.-{}.json".format(columns[-2], Path(columns[-1]).stem)
-
-
-def _inline_task(name, tasks_by_name, stack=()):
-    matches = tasks_by_name.get(name, [])
-    if not matches:
-        return None, "called task {} was not found".format(name + ".json")
-    if len(matches) > 1:
-        return None, "called task {} is ambiguous".format(name + ".json")
+def _inline_task(task, tasks_by_name, stack=()):
+    name = task["name"]
     if name in stack:
         return None, "TASK_LIST call cycle: {}".format(" -> ".join(stack + (name,)))
 
-    task = matches[0]
     if task["failures"]:
         failure = task["failures"][0]
         return None, "called task {} is not fully translated: {}:{} {}".format(
@@ -106,11 +95,17 @@ def _inline_task(name, tasks_by_name, stack=()):
     lines = []
     for line in task["text"].splitlines():
         if line.startswith("TASK_LIST\t"):
-            called_name = _called_task_name(line)
+            called_name = called_task_name(line)
             if called_name is None:
                 return None, "malformed TASK_LIST line in {}".format(name + ".json")
+            called_name = called_name[:-5]
+            matches = tasks_by_name.get(called_name, [])
+            if not matches:
+                return None, "called task {} was not found".format(called_name + ".json")
+            if any(task["text"] != matches[0]["text"] for task in matches[1:]):
+                return None, "called task {} is ambiguous".format(called_name + ".json")
             called_text, reason = _inline_task(
-                called_name[:-5], tasks_by_name, stack + (name,)
+                matches[0], tasks_by_name, stack + (name,)
             )
             if reason:
                 return None, reason
@@ -147,12 +142,15 @@ def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, n
         )
         return False
 
-    inline_text, reason = _inline_task(imported_task.name, tasks_by_name)
+    inline_text, reason = _inline_task(task, tasks_by_name)
     if reason:
         print("{}: not translated ({})".format(display_name, reason))
         return False
 
     task_path = task_directory / "{}.json".format(imported_task.name)
+    task_path.write_text(
+        json.dumps(imported_task.document, ensure_ascii=False), encoding="utf-8"
+    )
     task_source = work_dir / "reference-{}.txt".format(number)
     task_source.write_text(inline_text, encoding="utf-8")
     library_output = work_dir / "library-{}.mrc".format(number)
@@ -182,14 +180,33 @@ def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, n
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Measure imported task agreement with MarcEdit.")
     parser.add_argument("--records", required=True, type=Path)
+    parser.add_argument(
+        "--library",
+        action="append",
+        type=Path,
+        metavar="DIR",
+        help="folder of .txt or .task files available to calls, but not measured (repeatable)",
+    )
     parser.add_argument("folders", nargs="+", type=Path)
     arguments = parser.parse_args(argv)
 
-    sources = sorted(
-        source
-        for folder in arguments.folders
-        for source in folder.rglob("*")
-        if source.is_file() and source.suffix.lower() in (".txt", ".task")
+    sources = [
+        (source, False)
+        for source in sorted(
+            source
+            for folder in arguments.folders
+            for source in folder.rglob("*")
+            if source.is_file() and source.suffix.lower() in (".txt", ".task")
+        )
+    ]
+    sources.extend(
+        (source, True)
+        for source in sorted(
+            source
+            for folder in arguments.library or []
+            for source in folder.rglob("*")
+            if source.is_file() and source.suffix.lower() in (".txt", ".task")
+        )
     )
     matched = 0
     with tempfile.TemporaryDirectory(
@@ -199,13 +216,6 @@ def main(argv=None):
         task_directory = work_dir / "tasks"
         tasks, tasks_by_name = _collect_tasks(sources, task_directory)
         for number, task in enumerate(tasks):
-            if len(tasks_by_name[task["name"]]) > 1:
-                print(
-                    "{}: not translated (task name {} is ambiguous)".format(
-                        task["display_name"], task["name"]
-                    )
-                )
-                continue
             if _measure_task(
                 task,
                 tasks_by_name,

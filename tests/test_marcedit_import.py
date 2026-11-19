@@ -225,10 +225,10 @@ from open_marc_tasks.task import load_task
             },
         ),
         (
-            "TASK_LIST\tFOLIO\tFOLIO UM Core\ttasksfile-2023_10_30_154434371.txt",
+            "TASK_LIST\tFOLIO|FOLIO All FC CORE\ttasksfile-1a705cbaa3d242eca9bbd78f44eb4bbf.txt",
             {
                 "command": "call_task",
-                "task": "FOLIO UM Core.-tasksfile-2023_10_30_154434371.json",
+                "task": "FOLIO All FC CORE.-tasksfile-1a705cbaa3d242eca9bbd78f44eb4bbf.json",
             },
         ),
         (
@@ -470,6 +470,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "EDITFIELD\t001\tocn\t0\treplacement\tnote",
         "INDICATOR\t856\t\tcondition\t40",
         "TASK_LIST\tSynthetic task list",
+        "TASK_LIST\tFOLIO\tFOLIO UM Core\ttasksfile-2023_10_30_154434371.txt",
         "SORTBY\t1XX",
         "SORTBY\tALL",
         "SORTBY\tALL\tTrue",

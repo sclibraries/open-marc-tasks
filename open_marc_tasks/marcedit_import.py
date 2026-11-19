@@ -135,19 +135,29 @@ def _field(tag: str, text: str) -> Dict[str, object]:
     }
 
 
+def called_task_name(line: str) -> Optional[str]:
+    columns = line.split("\t")
+    if (
+        len(columns) != 3
+        or columns[0] != "TASK_LIST"
+        or not columns[2].endswith(".txt")
+    ):
+        return None
+    name = columns[1].rsplit("|", 1)[-1]
+    return "{}.-{}.json".format(name, Path(columns[2]).stem)
+
+
 def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
     columns = line.split("\t")
     command = columns[0]
 
     if command == "TASK_LIST":
-        if len(columns) not in (3, 4):
-            return None, "malformed TASK_LIST line"
-        if not columns[-1].endswith(".txt"):
+        task_name = called_task_name(line)
+        if task_name is None:
+            if len(columns) != 3:
+                return None, "malformed TASK_LIST line"
             return None, "TASK_LIST file must end in .txt"
-        step = {
-            "command": "call_task",
-            "task": "{}.-{}.json".format(columns[-2], Path(columns[-1]).stem),
-        }
+        step = {"command": "call_task", "task": task_name}
         try:
             validate_call_task(step, 1)
         except TaskError as error:
