@@ -336,8 +336,15 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
             {"command": "remove_subfield", "tag": "856", "code": "z"},
         ),
         (
-            "SUBFIELD_REMOVE\t945\tb\t\t9|0",
-            {"command": "remove_subfield", "tag": "945", "code": "b"},
+            "ADD\t650\t\\0$aSynthetic topic\t100\t\nSUBFIELD_REMOVE\t945\tb\t\t9|0",
+            {
+                "command": "add_field",
+                "tag": "650",
+                "ind1": " ",
+                "ind2": "0",
+                "subfields": [["a", "Synthetic topic"]],
+                "if_tag_exists": "add",
+            },
         ),
         (
             "SUBFIELD_REMOVE\t856\tz\tOCoLC\t107|0",
