@@ -38,7 +38,8 @@ a change that alters it updates it in the same ticket.
   are dispatched by name through the table in `task.py`; each command module
   (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
 - Conformance: `conformance/delete_field/` (9 cases), `conformance/add_field/`
-  (6 cases), `conformance/replace_text/` (10 cases),
+  (6 cases), `conformance/gather_subfields/` (6 cases),
+  `conformance/replace_text/` (10 cases),
   `conformance/edit_field/` (5 cases), and `conformance/set_indicators/`
   (4 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit
   task line in `marcedit-task.txt`.
@@ -79,6 +80,9 @@ a change that alters it updates it in the same ticket.
   case-sensitive field-text matching; filtered control sources and
   control-to-control COPY lines are not imported while their MarcEdit behavior
   remains unresolved.
+- `gather_subfields` (OMT-029): appends matching source subfields to the last
+  later target field and can remove gathered sources; imports the corrected
+  856-to-945 loop idiom when its temporary 999 fields are later deleted.
 - `sort_fields` (OMT-023): sorts by MarcEdit's command-line field-text key and
   supports all-fields sorting or a stable 0XX-first partition.
 - `edit_field` (OMT-025): edits exact-tag field text bodies with literal or
