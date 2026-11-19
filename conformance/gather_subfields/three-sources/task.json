@@ -1,0 +1,37 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic gather subfields three-sources",
+  "description": "Characterizes gathering subfields from synthetic records.",
+  "steps": [
+    {
+      "command": "add_field",
+      "tag": "945",
+      "ind1": " ",
+      "ind2": " ",
+      "subfields": [
+        [
+          "a",
+          "placeholder"
+        ]
+      ],
+      "if_tag_exists": "skip"
+    },
+    {
+      "command": "gather_subfields",
+      "from_tag": "856",
+      "code": "u",
+      "to_tag": "945",
+      "remove_source": true
+    },
+    {
+      "command": "remove_subfield",
+      "tag": "945",
+      "code": "a",
+      "remove_text": "placeholder"
+    },
+    {
+      "command": "delete_field",
+      "tag": "999"
+    }
+  ]
+}

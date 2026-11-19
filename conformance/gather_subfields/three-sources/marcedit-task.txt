@@ -1,0 +1,6 @@
+ADD	945	\\$aplaceholder	101	
+#STARTLOOP:r=0
+REPLACE	(=856)([^\r\n]*?)(\$u[^\r\n]*)(.*)(=945[^\n\r]*)(.*)/m	=999$2$3$4$5$3$6	2		0	False
+#ENDLOOP
+SUBFIELD_REMOVE	945	a	placeholder	107	0
+DELETE	999		0	False	False	False	False	False

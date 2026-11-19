@@ -1,0 +1,18 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic gather subfields last-of-two-targets",
+  "description": "Characterizes gathering subfields from synthetic records.",
+  "steps": [
+    {
+      "command": "gather_subfields",
+      "from_tag": "856",
+      "code": "u",
+      "to_tag": "945",
+      "remove_source": true
+    },
+    {
+      "command": "delete_field",
+      "tag": "999"
+    }
+  ]
+}

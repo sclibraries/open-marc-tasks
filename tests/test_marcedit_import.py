@@ -8,6 +8,46 @@ from open_marc_tasks.marcedit_import import import_marcedit
 from open_marc_tasks.task import load_task
 
 
+GATHER_LOOP_REPLACE = "\t".join(
+    [
+        "REPLACE",
+        r"(=856)([^\r\n]*?)(\$u[^\r\n]*)(.*)(=945[^\n\r]*)(.*)/m",
+        r"=999$2$3$4$5$3$6",
+        "2",
+        "",
+        "0",
+        "False",
+    ]
+)
+GATHER_LOOP_DELETE = "\t".join(
+    ["DELETE", "999", "", "0", "False", "False", "False", "False", "False"]
+)
+GATHER_LOOP_WITH_DELETE = "\n".join(
+    ["#STARTLOOP:r=0", GATHER_LOOP_REPLACE, "#ENDLOOP", GATHER_LOOP_DELETE]
+)
+GATHER_LOOP_WITHOUT_DELETE = "\n".join(
+    ["#STARTLOOP:r=0", GATHER_LOOP_REPLACE, "#ENDLOOP"]
+)
+GATHER_LOOP_UNCORRECTED = "\n".join(
+    [
+        "#STARTLOOP:r=0",
+        "\t".join(
+            [
+                "REPLACE",
+                r"(=856)(.*)(\$u[^\r\n]*)(.*)(=945[^\n\r]*)(.*)/m",
+                r"=999$2$3$4$5$3$6",
+                "2",
+                "",
+                "0",
+                "False",
+            ]
+        ),
+        "#ENDLOOP",
+        GATHER_LOOP_DELETE,
+    ]
+)
+
+
 @pytest.mark.parametrize(
     "line,step",
     [
@@ -387,6 +427,16 @@ from open_marc_tasks.task import load_task
             "SORTBY\t0XX\tFalse\tFalse",
             {"command": "sort_fields", "scope": "0xx"},
         ),
+        (
+            GATHER_LOOP_WITH_DELETE,
+            {
+                "command": "gather_subfields",
+                "from_tag": "856",
+                "code": "u",
+                "to_tag": "945",
+                "remove_source": True,
+            },
+        ),
     ],
 )
 def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step):
@@ -399,12 +449,15 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
     assert len(result.tasks) == 1
     imported = result.tasks[0]
     assert imported.name == "Synthetic task"
+    expected_steps = [step]
+    if step["command"] == "gather_subfields":
+        expected_steps.append({"command": "delete_field", "tag": "999"})
     assert imported.document == {
         "format_version": "0.1",
         "name": "Synthetic task",
         "description": "Synthetic description",
         "normalize_typography": True,
-        "steps": [step],
+        "steps": expected_steps,
     }
     task_path = tmp_path / "task.json"
     task_path.write_text(json.dumps(imported.document), encoding="utf-8")
@@ -420,7 +473,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
             ),
             encoding="utf-8",
         )
-    assert load_task(task_path).steps == [step]
+    assert load_task(task_path).steps == expected_steps
 
 
 @pytest.mark.parametrize(
@@ -476,6 +529,8 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "SORTBY\tALL\tTrue",
         "SORTBY\t0XX\tTrue",
         "MYSTERY\tSynthetic unknown command",
+        GATHER_LOOP_UNCORRECTED,
+        GATHER_LOOP_WITHOUT_DELETE,
     ],
 )
 def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
@@ -490,6 +545,14 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
     assert len(result.not_translated) == 1
     item = result.not_translated[0]
     assert item.source == "Synthetic task.txt"
+    if line.startswith("#STARTLOOP:"):
+        assert item.line_number == 4
+        assert item.text.startswith("REPLACE\t")
+        if line == GATHER_LOOP_UNCORRECTED:
+            assert item.reason == "unsupported MarcEdit loop"
+        else:
+            assert item.reason == "gather_subfields loop requires a later DELETE 999"
+        return
     assert item.line_number == 3
     assert item.text == line
     if line.startswith("SUBFIELD_EDIT"):

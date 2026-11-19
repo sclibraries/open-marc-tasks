@@ -1,0 +1,4 @@
+#STARTLOOP:r=0
+REPLACE	(=856)([^\r\n]*?)(\$u[^\r\n]*)(.*)(=945[^\n\r]*)(.*)/m	=999$2$3$4$5$3$6	2		0	False
+#ENDLOOP
+DELETE	999		0	False	False	False	False	False
