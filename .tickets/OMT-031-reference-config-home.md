@@ -1,6 +1,6 @@
 Title: Let the MarcEdit reference runner resolve called tasks and rule files itself
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — reference tooling only; no engine or format change
 Milestone: M2 — Commands
