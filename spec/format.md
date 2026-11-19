@@ -28,6 +28,17 @@ each step in order to each record in place, and yields records in their input
 order. Records are Unicode; MARC-8 conversion and file input/output are outside
 this version.
 
+`call_task` steps name another JSON task in the same directory as the task file.
+`load_task(path)` loads called tasks recursively. A missing or invalid called
+task and a cycle are load errors; errors identify the call step, and cycle
+errors name the files in the cycle. A called task runs on the current record at
+the call step, then the caller resumes with its next step. The called task's
+`normalize_typography` setting, when true, is applied before its steps. Input
+indicator backslashes are blanked once before the outer task begins.
+
+A runtime error in a called task identifies the record number, the caller's
+step number, the called task file, and the failing step in that task.
+
 ## Record handling
 
 Before running task steps, `run_task` replaces each backslash data-field
@@ -429,6 +440,20 @@ data `Z`, followed by tags `003` and `008`. The reference is MarcEdit's
 command-line version running with invariant globalization; a Windows desktop
 install might compare differently.
 
+## Command: `call_task`
+
+A step names a JSON task file in the same directory as the calling task file:
+
+```json
+{"command": "call_task", "task": "shared-cleanup.json"}
+```
+
+`task` is a file name ending in `.json` and contains no `/` or `\`. The called
+task's steps run on the current record at this point in the caller's sequence.
+The called task is loaded and validated when the caller is loaded. Missing or
+invalid files and call cycles are load errors. Runtime errors identify the
+record, calling step, called task file, and failing step in the called task.
+
 ## Command: `replace_text`
 
 A plain-mode step has this form:
@@ -546,6 +571,12 @@ If MarcEdit writes an empty output for a no-change task, use the input records
 with backslash indicators blanked and typography normalized, matching MarcEdit's
 written output.
 
+A `call_task` conformance case also includes the called task JSON file.
+`marcedit-task.txt` contains the called task's MarcEdit lines inline where the
+call appears. MarcEdit 7.6 silently skips `TASK_LIST` in the command-line
+reference runner, so the inlined task is the reference for sequential task
+execution.
+
 ## Importing MarcEdit tasks
 
 `omt import SOURCE OUT_DIR` imports a tab-separated MarcEdit task file or a
@@ -626,6 +657,19 @@ condition, a one- or two-character value, and a find string of zero to two
 characters no longer than the value map to `set_indicators`. A backslash in
 the find string or value becomes a blank indicator. Non-empty conditions and
 other line shapes are reported as not translated.
+
+`TASK_LIST` lines with exactly three columns (`TASK_LIST`, name, file), where
+the last column ends in `.txt`, map to `call_task`. The name column may contain
+`name` or `group|name`; when it contains a group, the text after the last `|`
+is the name. The task file is named `<name>.-<file stem>.json`. The importer
+does not check whether the called task exists. Other shapes are reported as
+not translated.
+
+`tools/measure.py` imports all tasks in the supplied folders into one temporary
+directory so calls can resolve. For MarcEdit comparison it recursively
+replaces each `TASK_LIST` line with the called task's lines, finding tasks by
+their inner file name across those folders. A missing called task or one that
+is not fully translated makes the caller not translated with a reason.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be

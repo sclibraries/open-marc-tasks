@@ -218,6 +218,20 @@ from open_marc_tasks.task import load_task
             {"command": "set_indicators", "tag": "035", "if_starts_with": " ", "value": "9"},
         ),
         (
+            "TASK_LIST\tOCLC Records Clean up 001 and 035\ttasksfile-2024_06_04_122910785.txt",
+            {
+                "command": "call_task",
+                "task": "OCLC Records Clean up 001 and 035.-tasksfile-2024_06_04_122910785.json",
+            },
+        ),
+        (
+            "TASK_LIST\tFOLIO|FOLIO All FC CORE\ttasksfile-1a705cbaa3d242eca9bbd78f44eb4bbf.txt",
+            {
+                "command": "call_task",
+                "task": "FOLIO All FC CORE.-tasksfile-1a705cbaa3d242eca9bbd78f44eb4bbf.json",
+            },
+        ),
+        (
             "ADD\t500\t\\\\$aCost {dollar} 5\t100\t",
             {
                 "command": "add_field",
@@ -394,6 +408,18 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
     }
     task_path = tmp_path / "task.json"
     task_path.write_text(json.dumps(imported.document), encoding="utf-8")
+    if step["command"] == "call_task":
+        (tmp_path / step["task"]).write_text(
+            json.dumps(
+                {
+                    "format_version": "0.1",
+                    "name": "Synthetic called task",
+                    "description": "Allows validating the imported call step.",
+                    "steps": [],
+                }
+            ),
+            encoding="utf-8",
+        )
     assert load_task(task_path).steps == [step]
 
 
@@ -444,6 +470,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "EDITFIELD\t001\tocn\t0\treplacement\tnote",
         "INDICATOR\t856\t\tcondition\t40",
         "TASK_LIST\tSynthetic task list",
+        "TASK_LIST\tFOLIO\tFOLIO UM Core\ttasksfile-2023_10_30_154434371.txt",
         "SORTBY\t1XX",
         "SORTBY\tALL",
         "SORTBY\tALL\tTrue",
@@ -479,6 +506,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "unsupported EDITFIELD settings"
     elif line.startswith("INDICATOR\t"):
         assert item.reason == "INDICATOR condition is not supported"
+    elif line.startswith("TASK_LIST\t"):
+        assert item.reason == "malformed TASK_LIST line"
     else:
         assert item.reason and "\n" not in item.reason
 

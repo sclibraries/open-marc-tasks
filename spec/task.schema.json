@@ -39,7 +39,8 @@
         {"$ref": "#/$defs/replace_text_step"},
         {"$ref": "#/$defs/edit_field_step"},
         {"$ref": "#/$defs/set_indicators_step"},
-        {"$ref": "#/$defs/sort_fields_step"}
+        {"$ref": "#/$defs/sort_fields_step"},
+        {"$ref": "#/$defs/call_task_step"}
       ]
     },
     "delete_field_step": {
@@ -297,6 +298,15 @@
       "properties": {
         "command": {"const": "sort_fields"},
         "scope": {"enum": ["all", "0xx"]}
+      }
+    },
+    "call_task_step": {
+      "type": "object",
+      "required": ["command", "task"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "call_task"},
+        "task": {"type": "string", "minLength": 6, "pattern": "^[^/\\\\]+\\.json$"}
       }
     }
   }

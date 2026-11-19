@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 from .commands.build_field import validate as validate_build_field
+from .commands.call_task import validate as validate_call_task
 from .commands.copy_field import validate as validate_copy_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_field import validate as validate_edit_field
@@ -134,9 +135,34 @@ def _field(tag: str, text: str) -> Dict[str, object]:
     }
 
 
+def called_task_name(line: str) -> Optional[str]:
+    columns = line.split("\t")
+    if (
+        len(columns) != 3
+        or columns[0] != "TASK_LIST"
+        or not columns[2].endswith(".txt")
+    ):
+        return None
+    name = columns[1].rsplit("|", 1)[-1]
+    return "{}.-{}.json".format(name, Path(columns[2]).stem)
+
+
 def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
     columns = line.split("\t")
     command = columns[0]
+
+    if command == "TASK_LIST":
+        task_name = called_task_name(line)
+        if task_name is None:
+            if len(columns) != 3:
+                return None, "malformed TASK_LIST line"
+            return None, "TASK_LIST file must end in .txt"
+        step = {"command": "call_task", "task": task_name}
+        try:
+            validate_call_task(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
 
     if command == "COPY":
         if len(columns) != 8:

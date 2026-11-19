@@ -87,4 +87,7 @@ a change that alters it updates it in the same ticket.
 - `set_indicators` (OMT-027): changes the first one or two indicators on
   exact-tag fields, optionally filtered by an indicator prefix; imports
   unconditional `INDICATOR` lines with an empty condition.
-- Not built yet: regex REPLACE import (OMT-013), TASK_LIST.
+- `call_task` (OMT-028): runs a same-folder JSON task at a step; imports the
+  observed three-column `TASK_LIST` form and recursively inlines
+  called task lines for measurement.
+- Not built yet: regex REPLACE import (OMT-013).
