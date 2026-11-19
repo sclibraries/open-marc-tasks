@@ -252,6 +252,7 @@
         "command": {"const": "remove_subfield"},
         "tag": {"type": "string", "minLength": 3, "maxLength": 3, "pattern": "^[0-9]{3}$"},
         "code": {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
+        "duplicates": {"type": "boolean", "default": false},
         "if_contains": {"type": "string", "minLength": 1},
         "remove_text": {"type": "string", "minLength": 1},
         "remove_regex": {"type": "string", "minLength": 1}
@@ -262,6 +263,9 @@
             "anyOf": [
               {"required": ["if_contains", "remove_text"]},
               {"required": ["if_contains", "remove_regex"]},
+              {"required": ["duplicates", "if_contains"]},
+              {"required": ["duplicates", "remove_text"]},
+              {"required": ["duplicates", "remove_regex"]},
               {"required": ["remove_text", "remove_regex"]}
             ]
           }

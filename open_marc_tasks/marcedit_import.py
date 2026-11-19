@@ -372,8 +372,6 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             return None, "option 9 with a value is not supported"
         if flags not in ("107|0", "0|0", "9|0", "0|2"):
             return None, "unsupported SUBFIELD_REMOVE settings"
-        if flags == "9|0" and not value:
-            return None, ""
 
         step = {"command": "remove_subfield", "tag": tag, "code": code}
         if flags == "0|2":
@@ -394,7 +392,9 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             value,
         )
 
-        if value:
+        if flags == "9|0":
+            step["duplicates"] = True
+        elif value:
             step["if_contains" if flags == "107|0" else "remove_text"] = value
         try:
             validate_remove_subfield(step, 1)
@@ -551,10 +551,10 @@ def _import_text(text: str, source: str, name: str) -> Tuple[ImportedTask, List[
             continue
 
         step, reason = _translate(line)
-        if step is not None:
-            steps.append(step)
-        elif reason:
+        if step is None:
             not_translated.append(NotTranslated(source, index + 1, line, reason))
+        else:
+            steps.append(step)
         index += 1
 
     return (

@@ -173,6 +173,43 @@ INVALID_TASK_CASES = [
     )
 ] + REGEX_INVALID_DOCUMENTS
 INVALID_TASK_CASES.extend(
+    [
+        (
+            "remove_subfield duplicates with if_contains",
+            task_document(
+                [
+                    VALID_STEP,
+                    {
+                        "command": "remove_subfield",
+                        "tag": "856",
+                        "code": "z",
+                        "duplicates": True,
+                        "if_contains": "x",
+                    },
+                ]
+            ),
+            "step 2",
+            False,
+        ),
+        (
+            "remove_subfield non-boolean duplicates",
+            task_document(
+                [
+                    VALID_STEP,
+                    {
+                        "command": "remove_subfield",
+                        "tag": "856",
+                        "code": "z",
+                        "duplicates": "yes",
+                    },
+                ]
+            ),
+            "step 2",
+            False,
+        ),
+    ]
+)
+INVALID_TASK_CASES.extend(
     (name, task_document([VALID_STEP, {"command": "build_field", "field": field, **settings}]), "step 2", True)
     for name, field, settings in (
         ("build_field unsupported mnemonic", "=901  \\\\$a{eacute}", {}),
@@ -313,6 +350,8 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         "remove_subfield bad code": "setting code",
         "remove_subfield control tag": "data-field tag",
         "remove_subfield both filters": "cannot both be set",
+        "remove_subfield duplicates with if_contains": "cannot be combined",
+        "remove_subfield non-boolean duplicates": "setting duplicates",
         "remove_subfield remove_regex with remove_text": "cannot be combined",
         "remove_subfield empty remove_text": "remove_text must be a non-empty string",
     }

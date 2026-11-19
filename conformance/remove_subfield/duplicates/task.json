@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic remove subfield duplicates",
+  "description": "Keeps the first copy of each repeated synthetic subfield value within a field.",
+  "steps": [
+    {
+      "command": "remove_subfield",
+      "tag": "945",
+      "code": "b",
+      "duplicates": true
+    }
+  ]
+}
