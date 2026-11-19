@@ -67,8 +67,9 @@ a change that alters it updates it in the same ticket.
   task only when fully translated.
 - `tools/measure.py` (dev only): imports MarcEdit task folders, runs fully
   translated tasks through the library and MarcEdit on a sample, reports
-  "X of Y task files match MarcEdit". Folders and sample are local paths;
-  nothing from them enters the repo.
+  "X of Y task files match MarcEdit". It stages called tasks under their
+  `TASK_LIST` filenames and can pass local rule files to MarcEdit. Folders and
+  sample are local paths; nothing from them enters the repo.
 - `edit_subfield` (OMT-007, OMT-022): every observed `SUBFIELD_EDIT` form, including regex option `0|2` via the OMT-012 dialect.
 - `remove_subfield` (OMT-017, OMT-022): whole-subfield removal, `if_contains`, `remove_text`, and regex `remove_regex`; imports the observed `SUBFIELD_REMOVE` options `107|0`, `0|0`, and `0|2`.
 - Field text form and `replace_text` (OMT-011, OMT-012): plain mode replaces
@@ -92,6 +93,6 @@ a change that alters it updates it in the same ticket.
   exact-tag fields, optionally filtered by an indicator prefix; imports
   unconditional `INDICATOR` lines with an empty condition.
 - `call_task` (OMT-028): runs a same-folder JSON task at a step; imports the
-  observed three-column `TASK_LIST` form and recursively inlines
-  called task lines for measurement.
+  observed three-column `TASK_LIST` form; measurement stages called MarcEdit
+  task files recursively.
 - Not built yet: regex REPLACE import (OMT-013).

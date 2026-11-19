@@ -81,42 +81,41 @@ def _collect_tasks(sources, task_directory):
     return tasks, tasks_by_name
 
 
-def _inline_task(task, tasks_by_name, stack=()):
+def _stage_called_tasks(task, tasks_by_name, macros, stack=()):
     name = task["name"]
     if name in stack:
-        return None, "TASK_LIST call cycle: {}".format(" -> ".join(stack + (name,)))
+        return "TASK_LIST call cycle: {}".format(" -> ".join(stack + (name,)))
 
     if task["failures"]:
         failure = task["failures"][0]
-        return None, "called task {} is not fully translated: {}:{} {}".format(
+        return "called task {} is not fully translated: {}:{} {}".format(
             name + ".json", failure.source, failure.line_number, failure.reason
         )
 
-    lines = []
     for line in task["text"].splitlines():
         if line.startswith("TASK_LIST\t"):
             called_name = called_task_name(line)
             if called_name is None:
-                return None, "malformed TASK_LIST line in {}".format(name + ".json")
+                return "malformed TASK_LIST line in {}".format(name + ".json")
             called_name = called_name[:-5]
             matches = tasks_by_name.get(called_name, [])
             if not matches:
-                return None, "called task {} was not found".format(called_name + ".json")
+                return "called task {} was not found".format(called_name + ".json")
             if any(task["text"] != matches[0]["text"] for task in matches[1:]):
-                return None, "called task {} is ambiguous".format(called_name + ".json")
-            called_text, reason = _inline_task(
-                matches[0], tasks_by_name, stack + (name,)
+                return "called task {} is ambiguous".format(called_name + ".json")
+            macro_name = line.split("\t")[2]
+            macros[macro_name] = matches[0]["text"]
+            reason = _stage_called_tasks(
+                matches[0], tasks_by_name, macros, stack + (name,)
             )
             if reason:
-                return None, reason
-            lines.extend(called_text.splitlines())
-        else:
-            lines.append(line)
-    ending = "\n" if task["text"].endswith(("\n", "\r")) else ""
-    return "\n".join(lines) + ending, None
+                return reason
+    return None
 
 
-def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, number):
+def _measure_task(
+    task, tasks_by_name, task_directory, records_path, configs, work_dir, number
+):
     display_name = task["display_name"]
     imported_task = task["imported"]
     failures = task["failures"]
@@ -129,7 +128,8 @@ def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, n
         )
         return False
 
-    inline_text, reason = _inline_task(task, tasks_by_name)
+    macros = {}
+    reason = _stage_called_tasks(task, tasks_by_name, macros)
     if reason:
         print("{}: not translated ({})".format(display_name, reason))
         return False
@@ -139,13 +139,20 @@ def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, n
         json.dumps(imported_task.document, ensure_ascii=False), encoding="utf-8"
     )
     task_source = work_dir / "reference-{}.txt".format(number)
-    task_source.write_text(inline_text, encoding="utf-8")
+    task_source.write_text(task["text"], encoding="utf-8")
     library_output = work_dir / "library-{}.mrc".format(number)
     reference_output = work_dir / "marcedit-{}.mrc".format(number)
     loaded_task = load_task(task_path)
     records = _read_records(records_path)
     _write_records(library_output, run_task(loaded_task, records))
-    run_marcedit(task_source, records_path, reference_output, MARCEDIT_DIR)
+    run_marcedit(
+        task_source,
+        records_path,
+        reference_output,
+        MARCEDIT_DIR,
+        macros=macros or None,
+        configs=configs,
+    )
 
     library_records = _read_records(library_output)
     reference_records = _read_records(reference_output)
@@ -172,6 +179,7 @@ def main(argv=None):
         metavar="DIR",
         help="folder of .txt or .task files available to calls, but not measured (repeatable)",
     )
+    parser.add_argument("--configs", type=Path, help="folder of MarcEdit rule files")
     parser.add_argument("folders", nargs="+", type=Path)
     arguments = parser.parse_args(argv)
 
@@ -206,6 +214,7 @@ def main(argv=None):
                 tasks_by_name,
                 task_directory,
                 arguments.records,
+                arguments.configs,
                 work_dir,
                 number,
             ):
