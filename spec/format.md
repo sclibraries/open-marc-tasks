@@ -535,8 +535,8 @@ With `regex: true`, `find` uses the following portable dialect:
   matches any code point except LF. `^` and `$` are anchors, parentheses
   create groups, `|` separates alternatives, and quantifiers have the forms
   below. `/` and `-` are literal outside character classes, whether escaped
-  or not. An unescaped `]` is invalid. An unmatched `}` is literal, and `{`
-  is literal when it does not begin a valid repetition count.
+  or not. An unmatched `]` or `}` is literal, and `{` is literal when it
+  does not begin a valid repetition count.
 - A character class uses square brackets, may begin with `^` to negate the
   class, and may contain literal characters, escaped punctuation, the ASCII
   classes above, and character ranges such as `a-z`. Class subtraction and
