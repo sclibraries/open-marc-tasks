@@ -1,6 +1,6 @@
 Title: Let the MarcEdit reference runner resolve called tasks and rule files itself
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — reference tooling only; no engine or format change
 Milestone: M2 — Commands
@@ -63,7 +63,7 @@ Verification:
   it must still be 81/100 with 0 differing.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 129ba29, merged into main (owner OK 2026-11-19). Python 3.9 gate 244 passed, 1 skipped; host reference passed. Measure 81/100, 0 differ, with MarcEdit resolving calls (--library, --configs).
 
 Review:
-- (orchestrator fills in)
+- call_task expected.mrc byte-identical with a real TASK_LIST (inlining confirmed). Minor: case-folder mapping duplicated in two places. No fix round.
