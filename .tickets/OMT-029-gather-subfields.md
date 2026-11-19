@@ -1,6 +1,6 @@
 Title: Add gather_subfields and import the 856-to-945 loop idiom
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — new command plus one importer idiom; owner chose this over emulating loops
 Milestone: M2 — Commands
@@ -81,7 +81,7 @@ Verification:
   with `--library` pointing at the folder holding the corrected loop task.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 92ad5a5, merged into main (owner OK 2026-11-19). Python 3.9 gate 242 passed, 1 skipped; host reference passed. Measure 75/100; 6 Multiple FOLIO tasks differ from the option-9 decision (reversed in OMT-030).
 
 Review:
-- (orchestrator fills in)
+- Gather step and corrected-loop idiom; empty 945 $a follows MarcEdit. No fix round.
