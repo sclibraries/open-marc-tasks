@@ -49,6 +49,8 @@ INVALID_DOCUMENTS = [
     ("copy_field non-boolean move", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "857", "move": "true"}]}, "step 2"),
     ("copy_field empty if_contains", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "857", "if_contains": ""}]}, "step 2"),
     ("copy_field data-to-control", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "copy_field", "from_tag": "856", "to_tag": "001"}]}, "step 2"),
+    ("gather_subfields missing code", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "gather_subfields", "from_tag": "856", "to_tag": "945"}]}, "step 2"),
+    ("gather_subfields control to_tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "gather_subfields", "from_tag": "856", "code": "u", "to_tag": "001"}]}, "step 2"),
 ]
 
 
@@ -325,6 +327,10 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
     }
     if name in copy_field_errors:
         assert copy_field_errors[name] in str(error.value)
+    if name == "gather_subfields missing code":
+        assert "missing setting: code" in str(error.value)
+    if name == "gather_subfields control to_tag":
+        assert "setting to_tag must be a data-field tag" in str(error.value)
     if schema_valid:
         jsonschema.validate(document, task_schema)
     else:

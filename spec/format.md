@@ -300,6 +300,46 @@ not imported because MarcEdit's synthetic reference output encoded copied
 values as data-like control fields and interleaved repeated copies with the old
 target fields; these mappings are rejected when a task is loaded.
 
+## Command: `gather_subfields`
+
+```json
+{
+  "command": "gather_subfields",
+  "from_tag": "856",
+  "code": "u",
+  "to_tag": "945",
+  "remove_source": true
+}
+```
+
+`from_tag` and `to_tag` are three ASCII digits and must name data fields, not
+control fields (`00X`). `code` is one lowercase ASCII letter or digit.
+`remove_source` is an optional boolean that defaults to `false`.
+
+The command examines fields in record order. For each `from_tag` field that
+contains `code`, it finds the first such subfield and the last `to_tag` field
+that follows the source field. When a target exists, the command appends the
+source subfields from that first matching subfield through the end of the
+source field, preserving their order. The target keeps its tag, indicators,
+and existing subfields. If `remove_source` is true, the gathered source field
+is removed after its subfields are appended. A source with no matching
+subfield, or with no later target, is unchanged. If no source is gathered, the
+record is unchanged.
+
+The importer recognizes only this corrected loop, with any three-digit data
+tags in place of `856` and `945` and any valid code in place of `u`:
+
+```text
+#STARTLOOP:r=0
+REPLACE	(=856)([^\r\n]*?)(\$u[^\r\n]*)(.*)(=945[^\n\r]*)(.*)/m	=999$2$3$4$5$3$6	2		0	False
+#ENDLOOP
+```
+
+The task must also contain a later `DELETE 999` line, which removes the
+temporary source tag used by the loop. Other loops, including the older greedy
+`(.*)` source form, and this loop without a later `DELETE 999`, are reported as
+not translated.
+
 ## Command: `edit_subfield`
 
 A step edits subfields of data fields with one exact tag:

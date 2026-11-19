@@ -32,6 +32,7 @@
       "oneOf": [
         {"$ref": "#/$defs/delete_field_step"},
         {"$ref": "#/$defs/copy_field_step"},
+        {"$ref": "#/$defs/gather_subfields_step"},
         {"$ref": "#/$defs/add_field_step"},
         {"$ref": "#/$defs/build_field_step"},
         {"$ref": "#/$defs/edit_subfield_step"},
@@ -96,6 +97,26 @@
           }
         }
       ]
+    },
+    "gather_subfields_step": {
+      "type": "object",
+      "required": ["command", "from_tag", "code", "to_tag"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "gather_subfields"},
+        "from_tag": {
+          "type": "string",
+          "pattern": "^[0-9]{3}$",
+          "not": {"pattern": "^00[0-9]$"}
+        },
+        "code": {"type": "string", "minLength": 1, "maxLength": 1, "pattern": "^[a-z0-9]$"},
+        "to_tag": {
+          "type": "string",
+          "pattern": "^[0-9]{3}$",
+          "not": {"pattern": "^00[0-9]$"}
+        },
+        "remove_source": {"type": "boolean", "default": false}
+      }
     },
     "add_field_step": {
       "type": "object",

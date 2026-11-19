@@ -1,0 +1,1 @@
+00074    a2200037   450024500360000040aSynthetic record without an 856

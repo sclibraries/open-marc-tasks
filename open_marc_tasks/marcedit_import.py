@@ -13,6 +13,7 @@ from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import validate as validate_remove_subfield
 from .commands.sort_fields import validate as validate_sort_fields
 from .commands.set_indicators import validate as validate_set_indicators
+from .commands.gather_subfields import validate as validate_gather_subfields
 from .task import TaskError
 
 
@@ -45,6 +46,11 @@ _SUBFIELD = re.compile(r"\$([a-z0-9])")
 _FIELD_TEXT_ESCAPES = {"dollar", "lcub", "rcub", "bsol"}
 _SUBFIELD_REMOVE_ESCAPES = {"dollar": "$", "lcub": "{", "rcub": "}"}
 _COPY_MATCH_ESCAPES = {"dollar", "lcub", "rcub"}
+_GATHER_LOOP_FIND = re.compile(
+    r"\(=([0-9]{3})\)\(\[\^\\r\\n\]\*\?\)"
+    r"\(\\\$([a-z0-9])\[\^\\r\\n\]\*\)"
+    r"\(\.\*\)\(=([0-9]{3})\[\^\\n\\r\]\*\)\(\.\*\)/m"
+)
 
 
 def _condition_values(values: str) -> List[str]:
@@ -463,24 +469,91 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
     return None, "unknown MarcEdit command"
 
 
+def _translate_gather_loop(
+    lines: List[str], start: int, end: int
+) -> Tuple[Optional[Dict[str, object]], str]:
+    if lines[start] != "#STARTLOOP:r=0" or end != start + 2:
+        return None, "unsupported MarcEdit loop"
+
+    columns = lines[start + 1].split("\t")
+    if (
+        len(columns) != 7
+        or columns[0] != "REPLACE"
+        or columns[2] != r"=999$2$3$4$5$3$6"
+        or columns[3:] != ["2", "", "0", "False"]
+    ):
+        return None, "unsupported MarcEdit loop"
+
+    match = _GATHER_LOOP_FIND.fullmatch(columns[1])
+    if match is None:
+        return None, "unsupported MarcEdit loop"
+
+    step = {
+        "command": "gather_subfields",
+        "from_tag": match.group(1),
+        "code": match.group(2),
+        "to_tag": match.group(3),
+        "remove_source": True,
+    }
+    try:
+        validate_gather_subfields(step, 1)
+    except TaskError as error:
+        return None, str(error)
+
+    has_delete_999 = any(
+        _translate(line)[0] == {"command": "delete_field", "tag": "999"}
+        for line in lines[end + 1 :]
+    )
+    if not has_delete_999:
+        return None, "gather_subfields loop requires a later DELETE 999"
+    return step, ""
+
+
 def _import_text(text: str, source: str, name: str) -> Tuple[ImportedTask, List[NotTranslated]]:
     description = ""
     description_seen = False
     steps = []
     not_translated = []
+    lines = text.splitlines()
 
-    for line_number, line in enumerate(text.splitlines(), start=1):
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if line.startswith("#STARTLOOP"):
+            end = next(
+                (position for position in range(index + 1, len(lines)) if lines[position] == "#ENDLOOP"),
+                len(lines),
+            )
+            has_end = end < len(lines)
+            if has_end:
+                step, reason = _translate_gather_loop(lines, index, end)
+            else:
+                step, reason = None, "unsupported MarcEdit loop"
+
+            if step is not None:
+                steps.append(step)
+            else:
+                for position in range(index + 1, end):
+                    if lines[position].strip() and not lines[position].startswith("#"):
+                        not_translated.append(
+                            NotTranslated(source, position + 1, lines[position], reason)
+                        )
+            index = end + 1 if has_end else len(lines)
+            continue
+
         if not line.strip() or line.startswith("#"):
             if line.startswith("#DESCRIPTION#") and not description_seen:
                 description = line[len("#DESCRIPTION#") :].lstrip("\t ")
                 description_seen = True
+            index += 1
             continue
 
         step, reason = _translate(line)
         if step is None:
-            not_translated.append(NotTranslated(source, line_number, line, reason))
+            not_translated.append(NotTranslated(source, index + 1, line, reason))
         else:
             steps.append(step)
+        index += 1
 
     return (
         ImportedTask(

@@ -1,0 +1,1 @@
+00068    a2200037   450085600300000040uhttps://example.edu/alone

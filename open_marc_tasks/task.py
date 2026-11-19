@@ -95,6 +95,8 @@ from .commands.edit_subfield import run as run_edit_subfield
 from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.edit_field import run as run_edit_field
 from .commands.edit_field import validate as validate_edit_field
+from .commands.gather_subfields import run as run_gather_subfields
+from .commands.gather_subfields import validate as validate_gather_subfields
 from .commands.replace_text import run as run_replace_text
 from .commands.replace_text import validate as validate_replace_text
 from .commands.remove_subfield import run as run_remove_subfield
@@ -117,6 +119,7 @@ COMMANDS = {
     "sort_fields": (validate_sort_fields, run_sort_fields),
     "set_indicators": (validate_set_indicators, run_set_indicators),
     "call_task": (validate_call_task, run_call_task),
+    "gather_subfields": (validate_gather_subfields, run_gather_subfields),
 }
 
 
