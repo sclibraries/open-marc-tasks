@@ -1,6 +1,6 @@
 Title: Add call_task and import MarcEdit TASK_LIST
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — new command that loads another task file; owner chose the design
 Milestone: M2 — Commands
@@ -93,7 +93,7 @@ Plan:
 4. `tools/measure.py` folder import and reference inlining.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head d5b09f8, merged into main (owner OK 2026-11-19). Python 3.9 gate 237 passed, 1 skipped; host reference passed. Measure 75/100, 0 differ, on all three samples (--library marcedit-main).
 
 Review:
-- (orchestrator fills in)
+- One fix round: real TASK_LIST is 3 columns with optional `group|name` (ticket's 4-column shape was the orchestrator's error); measure duplicate-copy regression; --library. Reference for calls inlines the called task (stated assumption).
