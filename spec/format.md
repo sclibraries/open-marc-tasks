@@ -617,10 +617,9 @@ with backslash indicators blanked and typography normalized, matching MarcEdit's
 written output.
 
 A `call_task` conformance case also includes the called task JSON file.
-`marcedit-task.txt` contains the called task's MarcEdit lines inline where the
-call appears. MarcEdit 7.6 silently skips `TASK_LIST` in the command-line
-reference runner, so the inlined task is the reference for sequential task
-execution.
+`marcedit-task.txt` may use a `TASK_LIST` line with the called MarcEdit task
+under `marcedit-macros/`; the reference runner stages it in MarcEdit's user
+data folder so the call executes at that point.
 
 ## Importing MarcEdit tasks
 
@@ -708,10 +707,10 @@ does not check whether the called task exists. Other shapes are reported as
 not translated.
 
 `tools/measure.py` imports all tasks in the supplied folders into one temporary
-directory so calls can resolve. For MarcEdit comparison it recursively
-replaces each `TASK_LIST` line with the called task's lines, finding tasks by
-their inner file name across those folders. A missing called task or one that
-is not fully translated makes the caller not translated with a reason.
+directory so calls can resolve. For MarcEdit comparison it stages each called
+task under its `TASK_LIST` filename, recursively, and passes an optional
+`--configs` folder as MarcEdit rule files. A missing, ambiguous, or incomplete
+called task makes the caller not translated with a reason.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be

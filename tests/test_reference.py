@@ -30,11 +30,24 @@ def test_expected_outputs_match_fresh_marcedit_runs(tmp_path):
 
     for case in cases:
         actual_path = tmp_path / "{}.mrc".format(case.name)
+        macros_dir = case / "marcedit-macros"
+        configs_dir = case / "marcedit-configs"
+        macros = (
+            {
+                path.name: path.read_text(encoding="utf-8")
+                for path in macros_dir.iterdir()
+                if path.is_file()
+            }
+            if macros_dir.is_dir()
+            else None
+        )
         run_marcedit(
             case / "marcedit-task.txt",
             case / "input.mrc",
             actual_path,
             MARCEDIT_DIR,
+            macros=macros,
+            configs=configs_dir if configs_dir.is_dir() else None,
         )
         actual_records = read_records(actual_path)
         expected_records = read_records(case / "expected.mrc")
