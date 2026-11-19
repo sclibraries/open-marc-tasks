@@ -1,6 +1,6 @@
 Title: Import empty-value SUBFIELD_REMOVE option 9 as no change, as MarcEdit does
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — reverses an importer mapping (owner decision 2026-11-19)
 Milestone: M2 — Commands
@@ -44,7 +44,7 @@ Verification:
 - The orchestrator reruns the private 100-task measurement after the check.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head bffab01, merged into main (owner OK 2026-11-19). Python 3.9 gate 244 passed, 1 skipped; host reference passed. Measure 81/100, 0 differ, on all three samples.
 
 Review:
-- (orchestrator fills in)
+- Premise corrected in fix round 1 (owner-approved scope change): empty-value 9|0 removes duplicate subfields, keeping the first (MarcEdit probe), not "no change". remove_subfield gains `duplicates`.
