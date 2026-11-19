@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-escaped-punctuation",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=245  10\\$a)(\\:\\,\\;\\=|[\\:\\,\\;\\=]{4})$",
+      "replace": "$1PUNCT",
+      "regex": true
+    }
+  ]
+}

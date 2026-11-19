@@ -1,0 +1,1 @@
+REPLACE	^=245  10\$a({2]|{lcub}2])$	=245  10$aMATCH	2		0	False

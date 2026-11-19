@@ -1,0 +1,1 @@
+REPLACE	^(=245  10\$a)\D+$	$1NON-DIGITS	2		0	False

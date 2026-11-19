@@ -78,10 +78,8 @@ REGEX_INVALID_DOCUMENTS = [
     for pattern in (
         "(?=a)",
         "(?i)a",
-        "a+?",
         "a++",
         "(?>a)",
-        "a{,3}",
         r"(a)\1",
         r"\bx",
         "[a-z-[aeiou]]",

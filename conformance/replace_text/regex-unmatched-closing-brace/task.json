@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-unmatched-closing-brace",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^=245  10\\$aa}$",
+      "replace": "=245  10$aMATCH",
+      "regex": true
+    }
+  ]
+}

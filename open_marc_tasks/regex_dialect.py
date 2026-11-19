@@ -1,11 +1,12 @@
 import re
+import string
 
 
 class RegexDialectError(ValueError):
     """Raised when a regex is outside the task format dialect."""
 
 
-_LITERAL_ESCAPES = frozenset(".?$/\\()[]+*{}|^-")
+_LITERAL_ESCAPES = frozenset(string.punctuation)
 _SPECIAL_REPLACEMENTS = frozenset("$+&{`'_")
 
 
@@ -46,8 +47,6 @@ class _Parser:
                     self._error("quantifier cannot follow an anchor")
                 translated += quantifier[0]
                 atom_nullable = quantifier[1]
-                if self.index < len(self.pattern) and self.pattern[self.index] in "+?":
-                    self._error("lazy and possessive quantifiers are not supported")
             parts.append(translated)
             nullable = nullable and atom_nullable
         return "".join(parts), nullable
@@ -61,7 +60,7 @@ class _Parser:
                 self._error("trailing backslash")
             escaped = self.pattern[self.index]
             self.index += 1
-            if escaped in "dws":
+            if escaped in "dDws":
                 return "\\" + escaped, False, True
             if escaped in _LITERAL_ESCAPES:
                 return "\\" + escaped, False, True
@@ -79,46 +78,49 @@ class _Parser:
             return "^", True, False
         if char == "$":
             return r"\Z", True, False
-        if char in "*+?{":
+        if char in "*+?":
             self._error("quantifier has no preceding atom")
-        if char in ")]|":
+        if char in ")|":
             self._error("unexpected closing delimiter")
-        if char == "}":
-            self._error("unmatched closing brace")
         return re.escape(char), False, True
 
     def _quantifier(self, atom_nullable):
         if self.index >= len(self.pattern):
             return "", False
         char = self.pattern[self.index]
-        if char == "*":
-            self.index += 1
-            return "*", True
-        if char == "+":
-            self.index += 1
-            return "+", atom_nullable
-        if char == "?":
-            self.index += 1
-            return "?", True
-        if char != "{":
+        if char not in "*+?{":
             return "", False
 
-        start = self.index
-        self.index += 1
-        minimum = self._digits()
-        if minimum is None:
-            self._error("invalid repetition count")
-        maximum = minimum
-        if self.index < len(self.pattern) and self.pattern[self.index] == ",":
+        if char in "*+?":
             self.index += 1
-            maximum = self._digits()
-        if self.index >= len(self.pattern) or self.pattern[self.index] != "}":
-            self._error("unclosed repetition count")
-        self.index += 1
-        if maximum is not None and minimum > maximum:
-            self._error("repetition minimum exceeds maximum")
-        quantifier = self.pattern[start : self.index]
-        return quantifier, minimum == 0 or atom_nullable
+            quantifier = char
+            nullable = char in "*?" or atom_nullable
+        else:
+            start = self.index
+            self.index += 1
+            minimum = self._digits()
+            if minimum is None:
+                self.index = start
+                return "", False
+            maximum = minimum
+            if self.index < len(self.pattern) and self.pattern[self.index] == ",":
+                self.index += 1
+                maximum = self._digits()
+            if self.index >= len(self.pattern) or self.pattern[self.index] != "}":
+                self.index = start
+                return "", False
+            self.index += 1
+            if maximum is not None and minimum > maximum:
+                self._error("repetition minimum exceeds maximum")
+            quantifier = self.pattern[start : self.index]
+            nullable = minimum == 0 or atom_nullable
+
+        if self.index < len(self.pattern) and self.pattern[self.index] == "+":
+            self._error("possessive quantifiers are not supported")
+        if self.index < len(self.pattern) and self.pattern[self.index] == "?":
+            self.index += 1
+            quantifier += "?"
+        return quantifier, nullable
 
     def _digits(self):
         start = self.index
@@ -152,7 +154,7 @@ class _Parser:
                 if self.index + 1 >= len(self.pattern):
                     self._error("trailing backslash in character class")
                 escaped = self.pattern[self.index + 1]
-                if escaped not in "dws" and escaped not in _LITERAL_ESCAPES:
+                if escaped not in "dDws" and escaped not in _LITERAL_ESCAPES:
                     self._error("unsupported escape in character class: \\" + escaped)
                 translated.append("\\" + escaped)
                 self.index += 2

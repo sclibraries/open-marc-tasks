@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-literal-brace-2-bracket",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^=245  10\\$a({2]|{lcub}2])$",
+      "replace": "=245  10$aMATCH",
+      "regex": true
+    }
+  ]
+}
