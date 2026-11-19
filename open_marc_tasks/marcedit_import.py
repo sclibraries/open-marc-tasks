@@ -392,7 +392,9 @@ def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
             value,
         )
 
-        if value:
+        if flags == "9|0":
+            step["duplicates"] = True
+        elif value:
             step["if_contains" if flags == "107|0" else "remove_text"] = value
         try:
             validate_remove_subfield(step, 1)

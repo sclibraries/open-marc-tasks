@@ -116,19 +116,6 @@ def _inline_task(task, tasks_by_name, stack=()):
     return "\n".join(lines) + ending, None
 
 
-def _has_empty_option_9(source_path):
-    return any(
-        len(columns) == 5
-        and columns[0] == "SUBFIELD_REMOVE"
-        and columns[3] == ""
-        and columns[4] == "9|0"
-        for columns in (
-            line.split("\t")
-            for line in source_path.read_text(encoding="utf-8").splitlines()
-        )
-    )
-
-
 def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, number):
     display_name = task["display_name"]
     imported_task = task["imported"]
@@ -168,8 +155,6 @@ def _measure_task(task, tasks_by_name, task_directory, records_path, work_dir, n
     )
     if matches:
         label = "match"
-    elif _has_empty_option_9(task_source):
-        label = "differs (deliberate: SUBFIELD_REMOVE option 9)"
     else:
         label = "differs"
 

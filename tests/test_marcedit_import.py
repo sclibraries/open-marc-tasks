@@ -337,7 +337,7 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
         ),
         (
             "SUBFIELD_REMOVE\t945\tb\t\t9|0",
-            {"command": "remove_subfield", "tag": "945", "code": "b"},
+            {"command": "remove_subfield", "tag": "945", "code": "b", "duplicates": True},
         ),
         (
             "SUBFIELD_REMOVE\t856\tz\tOCoLC\t107|0",

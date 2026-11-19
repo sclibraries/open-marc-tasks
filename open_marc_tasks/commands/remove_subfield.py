@@ -9,7 +9,17 @@ from ..text_form import TextFormError
 
 def validate(step: Dict[str, Any], number: int) -> None:
     _unknown_settings(
-        step, {"command", "tag", "code", "if_contains", "remove_text", "remove_regex"}, number
+        step,
+        {
+            "command",
+            "tag",
+            "code",
+            "duplicates",
+            "if_contains",
+            "remove_text",
+            "remove_regex",
+        },
+        number,
     )
 
     tag = _required(step, "tag", number)
@@ -24,6 +34,8 @@ def validate(step: Dict[str, Any], number: int) -> None:
     if not isinstance(code, str) or len(code) != 1 or code not in "abcdefghijklmnopqrstuvwxyz0123456789":
         raise TaskError("step {} setting code must be one lowercase letter or digit".format(number))
 
+    if "duplicates" in step and not isinstance(step["duplicates"], bool):
+        raise TaskError("step {} setting duplicates must be a boolean".format(number))
     if "if_contains" in step:
         value = step["if_contains"]
         if not isinstance(value, str) or not value:
@@ -40,6 +52,13 @@ def validate(step: Dict[str, Any], number: int) -> None:
             compile_pattern(value)
         except RegexDialectError as error:
             raise TaskError("step {} {}".format(number, error)) from error
+    if "duplicates" in step and any(
+        setting in step for setting in ("if_contains", "remove_text", "remove_regex")
+    ):
+        raise TaskError(
+            "step {} duplicates cannot be combined with if_contains, remove_text, "
+            "or remove_regex".format(number)
+        )
     if "if_contains" in step and "remove_text" in step:
         raise TaskError("step {} if_contains and remove_text cannot both be set".format(number))
     if "remove_regex" in step and ("if_contains" in step or "remove_text" in step):
@@ -48,6 +67,19 @@ def validate(step: Dict[str, Any], number: int) -> None:
 
 def run(record: Record, step: Dict[str, Any]) -> None:
     code = step["code"]
+    if step.get("duplicates", False):
+        for field in record.get_fields(step["tag"]):
+            seen_values = set()
+            unique_subfields = []
+            for subfield in field.subfields:
+                if subfield.code == code:
+                    if subfield.value in seen_values:
+                        continue
+                    seen_values.add(subfield.value)
+                unique_subfields.append(subfield)
+            field.subfields = unique_subfields
+        return
+
     if "remove_text" in step:
         text = step["remove_text"]
         for field in record.get_fields(step["tag"]):

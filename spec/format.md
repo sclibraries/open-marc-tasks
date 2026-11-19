@@ -397,13 +397,18 @@ A step removes subfields with one exact tag and code:
 
 `tag` is three ASCII digits and must identify a data field (`010` through
 `999`). `code` is one lowercase ASCII letter or digit. The optional
-`if_contains`, `remove_text`, and `remove_regex` settings are non-empty
-strings and at most one can be present.
+`duplicates` setting is a boolean that defaults to `false`; `if_contains`,
+`remove_text`, and `remove_regex` are non-empty strings. At most one of these
+four settings can be present.
 
-Without either setting, every matching subfield is removed. With
+With `duplicates` omitted or false and no other setting, every matching
+subfield is removed. With `duplicates: true`, later matching subfields whose
+values exactly equal an earlier matching subfield's value in the same field
+are removed. The first occurrence is kept. Value comparison is case-sensitive,
+and other codes are untouched. This mode never deletes a field. With
 `if_contains`, each matching subfield whose value contains that case-sensitive
 literal substring is removed. These whole-subfield forms apply to all matching
-fields. A data field left with no subfields is deleted.
+fields. A data field left with no subfields is deleted by these forms.
 
 With `remove_text`, every case-sensitive occurrence of the literal text is
 removed from each matching subfield value. The subfield remains even when its
@@ -657,15 +662,12 @@ options `107|0` or `0|0` map to `remove_subfield` without a filter. With a
 non-empty value, `107|0` maps to `if_contains`, and `0|0` maps to `remove_text`.
 Regex option `0|2` with a non-empty value maps to `remove_regex` and is
 validated with the `replace_text` regex dialect when the task is loaded. Other
-regex options are not translated. The value mnemonics `{dollar}`, `{lcub}`,
-and `{rcub}` become their literal characters for non-regex forms. **Difference
-from MarcEdit.** An empty-value `9|0` line maps to
-`remove_subfield` without a filter, intentionally clearing barcode, material
-type, and holdings-prefix subfields before copies are built; MarcEdit 7.6 makes
-no change because an empty option-9 value matches nothing. Option `9|…` with a
-non-empty value is reported as not translated with the reason
-`option 9 with a value is not supported`; other options, control-field tags,
-and unsupported character mnemonics are also reported as not translated.
+regex options are not translated. The value mnemonics `{dollar}`, `{lcub}`, and
+`{rcub}` become their literal characters for non-regex forms. Other options,
+control-field tags, and unsupported character mnemonics are also reported as
+not translated. An empty-value `9|0` line maps to `remove_subfield` with
+`duplicates: true`; option `9|…` with a non-empty value is reported as not
+translated with the reason `option 9 with a value is not supported`.
 
 The plain `REPLACE` form with seven tab-separated columns, flags `0`, an empty
 condition, flags `0`, and final flag `False` maps to `replace_text`. Other
