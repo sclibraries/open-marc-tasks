@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "leader06-mappings",
+  "description": "Synthetic Leader/06 content type mapping grid.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}

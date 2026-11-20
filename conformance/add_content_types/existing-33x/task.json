@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "existing-33x",
+  "description": "Synthetic existing and repeated 33X fields, including suppression of 337/338 when either is present.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}

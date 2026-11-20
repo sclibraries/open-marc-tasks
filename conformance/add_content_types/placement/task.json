@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "placement",
+  "description": "Synthetic field-order grid for insertion of generated 33X tags.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}

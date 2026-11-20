@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "007-media-carriers",
+  "description": "Synthetic 007 class, subtype, length, and repetition grid.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}
