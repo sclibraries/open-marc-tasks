@@ -729,9 +729,13 @@ literal. Control-field ADD lines become `data` values. Descriptions come from
 Without the folder or named file, the source line is reported as not
 translated. Smart-character files skip blank lines, ignore non-tab lines,
 take the first tab-separated pair for each find string, and switch subsequent
-pairs to regex mode after a `#` line containing `regex`. ISBD files skip blank,
-comment, and non-tab lines, then import tab-separated key, pattern, and
-replacement triples in file order. `REPLACEHTMLENTITIES` maps to
+pairs to regex mode after a non-tab `#` line containing `regex`; other
+non-tab lines are ignored. Tab-delimited pairs are imported even when the find
+string starts with `#`. ISBD files skip blank, comment, and non-tab lines, then
+import tab-separated key, pattern, and replacement triples in file order.
+Config files containing U+0085, U+2028, or U+2029 are reported as not translated
+because MarcEdit's handling of those characters in rule text is not
+characterized. `REPLACEHTMLENTITIES` maps to
 `decode_entities`. `REMOVEBLANKLINES` maps to no step because binary MARC
 records have no blank lines to remove.
 

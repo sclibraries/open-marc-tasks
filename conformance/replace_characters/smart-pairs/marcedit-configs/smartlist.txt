@@ -3,5 +3,6 @@
 &#x2022;	*
 &#x2022;	SHOULD-NOT-WIN
 ignored without tab
+#123	No. 123
 # regex replacement follows
 ([A-Z])([0-9])	$1-$2

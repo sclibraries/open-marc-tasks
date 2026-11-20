@@ -74,7 +74,7 @@ def transform_record_text(record, transform):
             raise TextFormError(
                 "Leader text must start with '=LDR  ' and contain 24 characters"
             )
-        record.leader = transformed_leader[len(leader_prefix) :]
+        record.leader[0:24] = transformed_leader[len(leader_prefix) :]
 
     for index, field in enumerate(record.fields):
         field_line = render_field(field)

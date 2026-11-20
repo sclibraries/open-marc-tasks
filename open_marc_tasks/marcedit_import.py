@@ -180,20 +180,20 @@ def _translate_cleanup(line: str, command: str, configs: Optional[Path]):
         text, reason = _read_config(configs, columns[1], command)
         if text is None:
             return None, reason
+        if any(separator in text for separator in ("\u0085", "\u2028", "\u2029")):
+            return None, "{} config contains unsupported Unicode line separator".format(command)
 
         if command == "CLEANSMARTCHARACTERS":
             pairs = []
             regex_pairs = []
             seen = set()
             regex_mode = False
-            for config_line in text.splitlines():
+            for config_line in text.split("\n"):
                 if not config_line:
                     continue
-                if config_line.startswith("#"):
-                    if "regex" in config_line.lower():
-                        regex_mode = True
-                    continue
                 if "\t" not in config_line:
+                    if config_line.startswith("#") and "regex" in config_line.lower():
+                        regex_mode = True
                     continue
                 find, replacement = config_line.split("\t", 1)
                 if find in seen:
@@ -206,7 +206,7 @@ def _translate_cleanup(line: str, command: str, configs: Optional[Path]):
             validator = validate_replace_characters
         else:
             rules = []
-            for config_line in text.splitlines():
+            for config_line in text.split("\n"):
                 if not config_line or config_line.startswith("#") or "\t" not in config_line:
                     continue
                 rule = config_line.split("\t", 2)

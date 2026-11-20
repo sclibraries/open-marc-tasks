@@ -87,7 +87,7 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
             "CLEANSMARTCHARACTERS\tsmartlist.txt",
             {
                 "command": "replace_characters",
-                "pairs": [["&#x2022;", "*"]],
+                "pairs": [["&#x2022;", "*"], ["#123", "No. 123"]],
                 "regex_pairs": [["([A-Z])([0-9])", "$1-$2"]],
             },
         ),
@@ -468,7 +468,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
     configs.mkdir()
     if line.startswith("CLEANSMARTCHARACTERS\t"):
         (configs / "smartlist.txt").write_text(
-            "# synthetic config\n\n&#x2022;\t*\n&#x2022;\tSECOND\n"
+            "# synthetic config\n\n&#x2022;\t*\n&#x2022;\tSECOND\n#123\tNo. 123\n"
             "# regex mode\n([A-Z])([0-9])\t$1-$2\n",
             encoding="utf-8",
         )
@@ -557,6 +557,12 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "COPY\t001\t005\tfalse\t\t\tfalse\t",
         "COPY\t856\t001\tfalse\t\t\tfalse\t",
         "CLEANSMARTCHARACTERS\tsmartlist.txt",
+        "CLEANSMARTCHARACTERS\tsmartlist-u0085.txt",
+        "CLEANSMARTCHARACTERS\tsmartlist-u2028.txt",
+        "CLEANSMARTCHARACTERS\tsmartlist-u2029.txt",
+        "REMOVEISBD\tremove_isbd-u0085.txt",
+        "REMOVEISBD\tremove_isbd-u2028.txt",
+        "REMOVEISBD\tremove_isbd-u2029.txt",
         "REPLACE\tbefore.*\tafter\t0|2\t\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t/=LDR.{6}a.+/\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t\t0\tTrue",
@@ -588,7 +594,20 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         encoding="utf-8",
     )
 
-    result = import_marcedit(source)
+    configs = None
+    if "-u" in line:
+        configs = tmp_path / "configs"
+        configs.mkdir()
+        config_name = line.split("\t", 1)[1]
+        separator = chr(int(config_name.rsplit("-u", 1)[1].split(".", 1)[0], 16))
+        config_contents = (
+            "OLD{}KEY\tnew\n".format(separator)
+            if line.startswith("CLEANSMARTCHARACTERS\t")
+            else "=245\tOLD{}KEY\tnew\n".format(separator)
+        )
+        (configs / config_name).write_text(config_contents, encoding="utf-8")
+
+    result = import_marcedit(source, configs=configs)
 
     assert len(result.not_translated) == 1
     item = result.not_translated[0]
@@ -606,7 +625,12 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
     if line.startswith("SUBFIELD_EDIT"):
         assert item.reason == "unsupported SUBFIELD_EDIT settings"
     elif line.startswith("CLEANSMARTCHARACTERS\t"):
-        assert item.reason == "CLEANSMARTCHARACTERS requires --configs"
+        if "-u" in line:
+            assert item.reason == "CLEANSMARTCHARACTERS config contains unsupported Unicode line separator"
+        else:
+            assert item.reason == "CLEANSMARTCHARACTERS requires --configs"
+    elif line.startswith("REMOVEISBD\t"):
+        assert item.reason == "REMOVEISBD config contains unsupported Unicode line separator"
     elif line.startswith("SUBFIELD_REMOVE") and "\t9|" in line:
         assert item.reason == "option 9 with a value is not supported"
     elif line == "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse":

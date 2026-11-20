@@ -414,6 +414,7 @@ def test_regex_dialect_accepts_escaped_and_in_class_metacharacters(
         ("replace_text", "245", "𐐀", r"^(=245  10\$a).$", "$1X", True, "X"),
         ("replace_text", "245", "abc\n", r"^(=245  10\$a)(abc)$", "$1$2X", True, "abc\n"),
         ("replace_text", "001", "a.b(", "a.b(", "$1", False, "$1"),
+        ("apply_rules", "245", "unchanged", None, None, False, "unchanged"),
         ("decode_entities", "245", "caf&#233;", None, None, False, "café"),
     ],
 )
@@ -424,7 +425,14 @@ def test_text_commands_use_expected_character_semantics(
     step = (
         {"command": command}
         if command == "decode_entities"
-        else {"command": command, "find": find, "replace": replacement, "regex": regex}
+        else (
+            {
+                "command": "apply_rules",
+                "rules": [["=LDR", "^(=LDR  .....).", "$1c"]],
+            }
+            if command == "apply_rules"
+            else {"command": command, "find": find, "replace": replacement, "regex": regex}
+        )
     )
     task_path.write_text(
         json.dumps(task_document([step])),
@@ -445,6 +453,8 @@ def test_text_commands_use_expected_character_semantics(
     else:
         actual = result[0][tag]["a"]
     assert actual == expected
+    if command == "apply_rules":
+        assert result[0].leader.record_status == "c"
     if command == "decode_entities":
         assert expected.encode("utf-8") in result[0].as_marc()
 
