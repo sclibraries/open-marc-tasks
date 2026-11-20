@@ -1,6 +1,6 @@
 Title: Make the measurement report per-task errors instead of crashing
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: small — private-measurement tooling only; no engine, format or importer change
 Milestone: M2 — Commands
@@ -37,7 +37,7 @@ Verification:
 - The Python 3.9 gate in AGENTS.md "Build and test".
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head ad15baf, merged into main (owner OK 2026-11-20). Python 3.9 gate 259 passed, 1 skipped. Measure 89/86/81 match, 0 differ; 2/5/10 errors, 9 not translated.
 
 Review:
-- (orchestrator fills in)
+- Per-task error reporting as specified. No fix round.
