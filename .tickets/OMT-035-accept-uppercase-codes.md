@@ -1,6 +1,6 @@
 Title: Accept uppercase subfield codes in edited fields, as MarcEdit does
 
-Status: Ready
+Status: In-Progress
 Size: S
 Tier: normal — relaxes a text-form check (owner decision 2026-11-20)
 Milestone: M2 — Commands
