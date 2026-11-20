@@ -1,6 +1,6 @@
 Title: Add the MarcEdit cleanup commands (smart characters, ISBD rules, HTML entities, blank lines)
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — two new commands, one new decode command, importer and CLI option; owner decided the design
 Milestone: M2 — Commands
@@ -101,7 +101,7 @@ Plan:
 4. Importer, `--configs` on the CLI and in measure.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head ff42048, merged into main (owner OK 2026-11-20). Python 3.9 gate 259 passed, 1 skipped; host reference passed. Real Edit Smart/HTML/ISBD task imports; the measurement crashed on per-task errors (OMT-034).
 
 Review:
-- (orchestrator fills in)
+- One fix round (whitespace-only config lines, as MarcEdit). BOM ignored and file-order pairs follow MarcEdit / are documented. Open: source records with invalid subfield codes; build_field all-empty replace; MarcEdit Latin-1 entity output.
