@@ -79,8 +79,8 @@ def _run(task_path, input_path, output_path):
                 pass
 
 
-def _import(source_path, output_dir):
-    result = import_marcedit(source_path)
+def _import(source_path, output_dir, configs=None):
+    result = import_marcedit(source_path, configs=configs)
     output_dir.mkdir(parents=True, exist_ok=True)
     incomplete_names = {Path(item.source).stem for item in result.not_translated}
     not_written = []
@@ -116,13 +116,14 @@ def main(argv=None):
     import_parser = commands.add_parser("import")
     import_parser.add_argument("source", type=Path)
     import_parser.add_argument("out_dir", type=Path)
+    import_parser.add_argument("--configs", type=Path)
 
     try:
         arguments = parser.parse_args(argv)
         if arguments.command == "run":
             _run(arguments.task, arguments.input, arguments.output)
         else:
-            _import(arguments.source, arguments.out_dir)
+            _import(arguments.source, arguments.out_dir, arguments.configs)
         return 0
     except Exception as error:
         message = " ".join(str(error).splitlines()).strip()

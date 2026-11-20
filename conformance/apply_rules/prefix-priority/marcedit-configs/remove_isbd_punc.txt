@@ -1,0 +1,7 @@
+# synthetic rules
+
+=245	SAME	SAME-4
+=24	SAME	SAME-3
+=2	SAME	SAME-2
+=LDR	^(=LDR  .....).	$1c
+ignored without tabs

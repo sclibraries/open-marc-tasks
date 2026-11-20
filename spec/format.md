@@ -602,6 +602,77 @@ and its indicators. In a control field, `\` becomes a blank. A result with a
 data-field subfield code outside lowercase ASCII letters and digits raises a
 run-time error naming the one-based record and step numbers.
 
+## Record text lines
+
+`replace_characters`, `apply_rules`, and `decode_entities` process one line
+for the Leader followed by one line for each field. The Leader line is `=LDR  `
+followed by its 24 characters. Field lines use the [field text form](#field-text-form).
+Changed field lines are parsed back into fields. If a command changes the
+Leader line, it must still start with `=LDR  ` and contain exactly 24
+characters after that prefix, or the command raises a run-time error naming
+the record and step.
+
+## Command: `replace_characters`
+
+```json
+{
+  "command": "replace_characters",
+  "pairs": [["old", "new"]],
+  "regex_pairs": [["([A-Z])([0-9])", "$1-$2"]]
+}
+```
+
+`pairs` is an array of `[find, replace]` string pairs. Each `find` is
+non-empty; `replace` may be empty. The optional `regex_pairs` is an array with
+the same shape. For each Leader and field text line, every literal pair is
+applied in order, replacing all case-sensitive occurrences. Then each regex
+pair is applied in order, replacing every match. Regex patterns and
+replacements use the portable dialect and validation rules defined for
+`replace_text`.
+
+MarcEdit 7.6 reads `CLEANSMARTCHARACTERS` pairs into a hash table, so their
+order can differ from file order when replacements overlap. This format uses
+the order in `pairs` and `regex_pairs`; outputs can therefore differ for
+overlapping pairs. A UTF-8 BOM at the start of the rule file is ignored by
+MarcEdit and does not become part of its first `find` string.
+
+## Command: `apply_rules`
+
+```json
+{
+  "command": "apply_rules",
+  "rules": [["=245", "SAME", "REPLACED"]]
+}
+```
+
+`rules` is an array of `[key, pattern, replacement]` string triples. A key is
+two, three, or four characters and starts with `=`; `pattern` is a non-empty
+regular expression, and `replacement` is a string. Patterns must not match
+empty text. Patterns and replacements use the portable `replace_text` regex
+dialect and are validated when the task is loaded.
+
+For each Leader or field text line, select the group whose key equals the
+line's first four characters; if there is no such group, try the first three,
+then the first two. Apply only the selected group's rules, in their order in
+`rules`, replacing every match of each pattern. A `=245` line with rules for
+`=245`, `=24`, and `=2` uses only the `=245` rules. A line with no matching key
+is unchanged.
+
+## Command: `decode_entities`
+
+```json
+{"command": "decode_entities"}
+```
+
+This command has no settings. In each Leader and field text line, decode
+hexadecimal numeric entities such as `&#x41;`, decimal numeric entities such
+as `&#65;`, and named entities such as `&amp;`, in that order. Unknown entities
+are unchanged. Decoding is performed once in each pass, so `&amp;lt;` becomes
+`&lt;`, not `<`. Decoded non-ASCII values are stored as their Unicode
+characters and written as UTF-8. MarcEdit's command-line output instead
+contains a raw Latin-1 byte for such values; this format intentionally writes
+valid UTF-8.
+
 ## Record matching
 
 `records_match(a, b)` compares records without changing either input. It
@@ -650,6 +721,24 @@ literal. Control-field ADD lines become `data` values. Descriptions come from
 - A DELETE line may have a 10th column when it is empty.
 - An option-106 ADD line may have a 6th column of `100` and an empty 7th column; both are ignored.
 - Leading spaces before data-field ADD indicators are dropped.
+
+`CLEANSMARTCHARACTERS<TAB>filename` and
+`REMOVEISBD<TAB>filename` import when the file exists under the optional
+`--configs DIR` folder. The importer copies the config's rule data into
+`replace_characters` or `apply_rules`; it does not retain a path to the file.
+Without the folder or named file, the source line is reported as not
+translated. Both rule files skip lines that are empty after trimming
+whitespace. Smart-character files ignore non-tab lines, take the first
+tab-separated pair for each find string, and switch subsequent pairs to regex
+mode after a non-tab `#` line containing `regex`; other non-tab lines are
+ignored. Tab-delimited pairs are imported even when the find string starts
+with `#`. ISBD files skip comment and non-tab lines, then import tab-separated
+key, pattern, and replacement triples in file order.
+Config files containing U+0085, U+2028, or U+2029 are reported as not translated
+because MarcEdit's handling of those characters in rule text is not
+characterized. `REPLACEHTMLENTITIES` maps to
+`decode_entities`. `REMOVEBLANKLINES` maps to no step because binary MARC
+records have no blank lines to remove.
 
 MarcEdit `SORTBY` lines with target `ALL` and a pair of `True`/`False` flags
 map to `sort_fields` with scope `all`. Target `0XX` maps to scope `0xx` with

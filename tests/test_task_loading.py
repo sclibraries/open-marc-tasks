@@ -120,6 +120,19 @@ REGEX_INVALID_DOCUMENTS.append(
 )
 REGEX_INVALID_DOCUMENTS.append(
     (
+        "apply_rules invalid regex pattern",
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "apply_rules", "rules": [["=245", "(?=a)", "x"]]},
+            ]
+        ),
+        "step 2",
+        True,
+    )
+)
+REGEX_INVALID_DOCUMENTS.append(
+    (
         "edit_field invalid regex pattern",
         task_document(
             [
@@ -328,7 +341,7 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert "match_regex" in str(error.value)
     if name == "delete_field invalid regex pattern":
         assert "special groups are not supported" in str(error.value)
-    if name in ("edit_field invalid regex pattern", "edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern"):
+    if name in ("edit_field invalid regex pattern", "edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern", "apply_rules invalid regex pattern"):
         assert "special groups are not supported" in str(error.value)
     build_field_errors = {
         "build_field missing field": "missing setting: field",
@@ -392,30 +405,40 @@ def test_regex_dialect_accepts_escaped_and_in_class_metacharacters(
 
 
 @pytest.mark.parametrize(
-    "tag,value,find,replacement,regex,expected",
+    "command,tag,value,find,replacement,regex,expected",
     [
-        ("245", "٣", r"^=245  10\$a\d$", "X", True, "٣"),
-        ("245", "é", r"^=245  10\$a\w$", "X", True, "é"),
-        ("245", " ", r"^=245  10\$a\s$", "X", True, " "),
-        ("245", "é", r"^(=245  10\$a).$", "$1X", True, "X"),
-        ("245", "𐐀", r"^(=245  10\$a).$", "$1X", True, "X"),
-        ("245", "abc\n", r"^(=245  10\$a)(abc)$", "$1$2X", True, "abc\n"),
-        ("001", "a.b(", "a.b(", "$1", False, "$1"),
+        ("replace_text", "245", "٣", r"^=245  10\$a\d$", "X", True, "٣"),
+        ("replace_text", "245", "é", r"^=245  10\$a\w$", "X", True, "é"),
+        ("replace_text", "245", " ", r"^=245  10\$a\s$", "X", True, " "),
+        ("replace_text", "245", "é", r"^(=245  10\$a).$", "$1X", True, "X"),
+        ("replace_text", "245", "𐐀", r"^(=245  10\$a).$", "$1X", True, "X"),
+        ("replace_text", "245", "abc\n", r"^(=245  10\$a)(abc)$", "$1$2X", True, "abc\n"),
+        ("replace_text", "001", "a.b(", "a.b(", "$1", False, "$1"),
+        ("apply_rules", "245", "unchanged", None, None, False, "unchanged"),
+        ("decode_entities", "245", "caf&#233;", None, None, False, "café"),
     ],
 )
-def test_replace_text_uses_portable_regex_character_and_plain_literal_semantics(
-    tmp_path, tag, value, find, replacement, regex, expected
+def test_text_commands_use_expected_character_semantics(
+    tmp_path, command, tag, value, find, replacement, regex, expected
 ):
     task_path = tmp_path / "task.json"
+    step = (
+        {"command": command}
+        if command == "decode_entities"
+        else (
+            {
+                "command": "apply_rules",
+                "rules": [["=LDR", "^(=LDR  .....).", "$1c"]],
+            }
+            if command == "apply_rules"
+            else {"command": command, "find": find, "replace": replacement, "regex": regex}
+        )
+    )
     task_path.write_text(
-        json.dumps(
-            task_document(
-                [{"command": "replace_text", "find": find, "replace": replacement, "regex": regex}]
-            )
-        ),
+        json.dumps(task_document([step])),
         encoding="utf-8",
     )
-    record = Record()
+    record = Record(force_utf8=True)
     if tag.startswith("00"):
         record.add_field(Field(tag=tag, data=value))
     else:
@@ -430,6 +453,10 @@ def test_replace_text_uses_portable_regex_character_and_plain_literal_semantics(
     else:
         actual = result[0][tag]["a"]
     assert actual == expected
+    if command == "apply_rules":
+        assert result[0].leader.record_status == "c"
+    if command == "decode_entities":
+        assert expected.encode("utf-8") in result[0].as_marc()
 
 
 @pytest.mark.parametrize("contents", ['{"format_version":', None])

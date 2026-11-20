@@ -83,18 +83,24 @@ def _validate_conditions(conditions: Any, number: int) -> None:
 
 from .commands.add_field import run as run_add_field
 from .commands.add_field import validate as validate_add_field
+from .commands.apply_rules import run as run_apply_rules
+from .commands.apply_rules import validate as validate_apply_rules
 from .commands.build_field import run as run_build_field
 from .commands.build_field import validate as validate_build_field
 from .commands.call_task import run as run_call_task
 from .commands.call_task import validate as validate_call_task
 from .commands.copy_field import run as run_copy_field
 from .commands.copy_field import validate as validate_copy_field
+from .commands.decode_entities import run as run_decode_entities
+from .commands.decode_entities import validate as validate_decode_entities
 from .commands.delete_field import run as run_delete_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_subfield import run as run_edit_subfield
 from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.edit_field import run as run_edit_field
 from .commands.edit_field import validate as validate_edit_field
+from .commands.replace_characters import run as run_replace_characters
+from .commands.replace_characters import validate as validate_replace_characters
 from .commands.gather_subfields import run as run_gather_subfields
 from .commands.gather_subfields import validate as validate_gather_subfields
 from .commands.replace_text import run as run_replace_text
@@ -115,6 +121,9 @@ COMMANDS = {
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
     "edit_field": (validate_edit_field, run_edit_field),
     "replace_text": (validate_replace_text, run_replace_text),
+    "replace_characters": (validate_replace_characters, run_replace_characters),
+    "apply_rules": (validate_apply_rules, run_apply_rules),
+    "decode_entities": (validate_decode_entities, run_decode_entities),
     "remove_subfield": (validate_remove_subfield, run_remove_subfield),
     "sort_fields": (validate_sort_fields, run_sort_fields),
     "set_indicators": (validate_set_indicators, run_set_indicators),

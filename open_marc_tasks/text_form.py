@@ -64,6 +64,25 @@ def render_field(field):
     return prefix + indicators + subfields
 
 
+def transform_record_text(record, transform):
+    """Transform the Leader and field text lines in place."""
+    leader_prefix = "=LDR  "
+    leader_line = leader_prefix + str(record.leader)
+    transformed_leader = transform(leader_line)
+    if transformed_leader != leader_line:
+        if not transformed_leader.startswith(leader_prefix) or len(transformed_leader) != 30:
+            raise TextFormError(
+                "Leader text must start with '=LDR  ' and contain 24 characters"
+            )
+        record.leader[0:24] = transformed_leader[len(leader_prefix) :]
+
+    for index, field in enumerate(record.fields):
+        field_line = render_field(field)
+        transformed = transform(field_line)
+        if transformed != field_line:
+            record.fields[index] = parse_field(transformed)
+
+
 def parse_field(text):
     """Parse one field text form into a pymarc field."""
     if (

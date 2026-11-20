@@ -1,0 +1,6 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic remove blank lines",
+  "description": "Shows that blank-line removal has no effect on binary MARC.",
+  "steps": []
+}

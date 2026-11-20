@@ -1,0 +1,26 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic smart cleanup",
+  "description": "Covers literal and regex smart-character pairs.",
+  "steps": [
+    {
+      "command": "replace_characters",
+      "pairs": [
+        [
+          "&#x2022;",
+          "*"
+        ],
+        [
+          "#123",
+          "No. 123"
+        ]
+      ],
+      "regex_pairs": [
+        [
+          "([A-Z])([0-9])",
+          "$1-$2"
+        ]
+      ]
+    }
+  ]
+}
