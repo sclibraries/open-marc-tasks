@@ -806,6 +806,14 @@ task under its `TASK_LIST` filename, recursively, and passes an optional
 `--configs` folder as MarcEdit rule files. A missing, ambiguous, or incomplete
 called task makes the caller not translated with a reason.
 
+A `TaskError` loading or running the library task is reported for that task as
+`error (ours): <message on one line>`, and measurement continues. If MarcEdit
+output cannot be read, because pymarc returns `None` for any record or raises
+while reading, the task is reported as
+`error (MarcEdit output unreadable): <reason>`. Neither error counts as a
+match. The final line reports `N of M task files match MarcEdit (D differ,
+E error, U not translated)`.
+
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be
 run accidentally. Other MarcEdit commands, DELETE options outside the forms

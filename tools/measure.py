@@ -11,7 +11,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from open_marc_tasks import records_match, run_task
+from open_marc_tasks import TaskError, records_match, run_task
 from open_marc_tasks.marcedit_import import called_task_name, import_marcedit
 from open_marc_tasks.task import load_task
 from tools.marcedit_reference import run_marcedit
@@ -126,13 +126,13 @@ def _measure_task(
                 display_name, failure.source, failure.line_number, failure.reason
             )
         )
-        return False
+        return "not translated"
 
     macros = {}
     reason = _stage_called_tasks(task, tasks_by_name, macros)
     if reason:
         print("{}: not translated ({})".format(display_name, reason))
-        return False
+        return "not translated"
 
     task_path = task_directory / "{}.json".format(imported_task.name)
     task_path.write_text(
@@ -142,9 +142,18 @@ def _measure_task(
     task_source.write_text(task["text"], encoding="utf-8")
     library_output = work_dir / "library-{}.mrc".format(number)
     reference_output = work_dir / "marcedit-{}.mrc".format(number)
-    loaded_task = load_task(task_path)
-    records = _read_records(records_path)
-    _write_records(library_output, run_task(loaded_task, records))
+    try:
+        loaded_task = load_task(task_path)
+        records = _read_records(records_path)
+        _write_records(library_output, run_task(loaded_task, records))
+    except TaskError as error:
+        print(
+            "{}: error (ours): {}".format(
+                display_name, " ".join(str(error).split())
+            )
+        )
+        return "error"
+
     run_marcedit(
         task_source,
         records_path,
@@ -155,7 +164,33 @@ def _measure_task(
     )
 
     library_records = _read_records(library_output)
-    reference_records = _read_records(reference_output)
+    try:
+        reference_records = _read_records(reference_output)
+    except Exception as error:
+        reason = " ".join(str(error).split()) or type(error).__name__
+        print(
+            "{}: error (MarcEdit output unreadable): {}".format(
+                display_name, reason
+            )
+        )
+        return "error"
+
+    unreadable_record = next(
+        (
+            number
+            for number, record in enumerate(reference_records, start=1)
+            if record is None
+        ),
+        None,
+    )
+    if unreadable_record is not None:
+        print(
+            "{}: error (MarcEdit output unreadable): record {} returned None".format(
+                display_name, unreadable_record
+            )
+        )
+        return "error"
+
     matches = len(library_records) == len(reference_records) and all(
         records_match(actual, expected)
         for actual, expected in zip(library_records, reference_records)
@@ -166,7 +201,7 @@ def _measure_task(
         label = "differs"
 
     print("{}: {}".format(display_name, label))
-    return matches
+    return label
 
 
 def main(argv=None):
@@ -201,7 +236,7 @@ def main(argv=None):
             if source.is_file() and source.suffix.lower() in (".txt", ".task")
         )
     )
-    matched = 0
+    counts = {"match": 0, "differs": 0, "error": 0, "not translated": 0}
     with tempfile.TemporaryDirectory(
         prefix="omt-measure-", dir=str(REPOSITORY_ROOT)
     ) as temporary_directory:
@@ -211,7 +246,7 @@ def main(argv=None):
             sources, task_directory, arguments.configs
         )
         for number, task in enumerate(tasks):
-            if _measure_task(
+            outcome = _measure_task(
                 task,
                 tasks_by_name,
                 task_directory,
@@ -219,10 +254,18 @@ def main(argv=None):
                 arguments.configs,
                 work_dir,
                 number,
-            ):
-                matched += 1
+            )
+            counts[outcome] += 1
 
-    print("{} of {} task files match MarcEdit".format(matched, len(tasks)))
+    print(
+        "{} of {} task files match MarcEdit ({} differ, {} error, {} not translated)".format(
+            counts["match"],
+            len(tasks),
+            counts["differs"],
+            counts["error"],
+            counts["not translated"],
+        )
+    )
     return 0
 
 
