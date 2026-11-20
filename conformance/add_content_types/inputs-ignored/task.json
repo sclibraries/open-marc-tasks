@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "inputs-ignored",
+  "description": "Synthetic Leader/07, 006, 008, and 040 variations that did not change the observed 33X results.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}

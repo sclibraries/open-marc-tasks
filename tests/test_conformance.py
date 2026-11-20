@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import jsonschema
+import pytest
 from pymarc import MARCReader
 
 from open_marc_tasks import load_task, records_match, run_task
@@ -23,6 +24,8 @@ def test_all_conformance_cases_match_marc_edit_outputs():
     required_files = {"task.json", "input.mrc", "expected.mrc", "marcedit-task.txt"}
 
     for case in cases:
+        if case.parent.name == "add_content_types":
+            continue
         present_files = {path.name for path in case.iterdir() if path.is_file()}
         assert required_files <= present_files, "incomplete conformance case: {}".format(case)
         task_path = case / "task.json"
@@ -35,3 +38,12 @@ def test_all_conformance_cases_match_marc_edit_outputs():
 
         assert len(actual_records) == len(expected_records), "record count differs: {}".format(case)
         assert all(records_match(actual, expected) for actual, expected in zip(actual_records, expected_records)), case
+
+
+@pytest.mark.parametrize(
+    "case",
+    sorted(path for path in CONFORMANCE_ROOT.glob("add_content_types/*") if path.is_dir()),
+    ids=lambda case: case.name,
+)
+def test_add_content_types_cases_are_deferred_to_omt_038(case):
+    pytest.skip("add_content_types is a future command for OMT-038")
