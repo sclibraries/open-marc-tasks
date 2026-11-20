@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "007-h-subtype-grid",
+  "description": "Synthetic grid for every 007/01 lowercase letter, blank, and fill character in class h.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}
