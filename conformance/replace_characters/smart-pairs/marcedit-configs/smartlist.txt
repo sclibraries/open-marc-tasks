@@ -1,0 +1,7 @@
+# synthetic rules
+
+&#x2022;	*
+&#x2022;	SHOULD-NOT-WIN
+ignored without tab
+# regex replacement follows
+([A-Z])([0-9])	$1-$2

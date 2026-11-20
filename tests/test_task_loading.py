@@ -120,6 +120,19 @@ REGEX_INVALID_DOCUMENTS.append(
 )
 REGEX_INVALID_DOCUMENTS.append(
     (
+        "apply_rules invalid regex pattern",
+        task_document(
+            [
+                VALID_STEP,
+                {"command": "apply_rules", "rules": [["=245", "(?=a)", "x"]]},
+            ]
+        ),
+        "step 2",
+        True,
+    )
+)
+REGEX_INVALID_DOCUMENTS.append(
+    (
         "edit_field invalid regex pattern",
         task_document(
             [
@@ -328,7 +341,7 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         assert "match_regex" in str(error.value)
     if name == "delete_field invalid regex pattern":
         assert "special groups are not supported" in str(error.value)
-    if name in ("edit_field invalid regex pattern", "edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern"):
+    if name in ("edit_field invalid regex pattern", "edit_subfield invalid regex pattern", "remove_subfield invalid regex pattern", "apply_rules invalid regex pattern"):
         assert "special groups are not supported" in str(error.value)
     build_field_errors = {
         "build_field missing field": "missing setting: field",
