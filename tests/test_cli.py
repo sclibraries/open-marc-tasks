@@ -141,7 +141,7 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
             task_path,
             steps=[
                 {"command": "delete_field", "tag": "998"},
-                {"command": "edit_subfield", "tag": "245", "code": "a", "action": "replace_regex", "find": "^a", "replace": "X"},
+                {"command": "edit_subfield", "tag": "245", "code": "a", "action": "replace_regex", "find": "^a", "replace": "!"},
             ],
         )
         first = Record(force_utf8=True)
@@ -155,7 +155,7 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
             task_path,
             steps=[
                 {"command": "delete_field", "tag": "998"},
-                {"command": "edit_field", "tag": "245", "find": "$a", "replace": "$A"},
+                {"command": "edit_field", "tag": "245", "find": "$a", "replace": "$!"},
             ],
         )
         first = Record(force_utf8=True)
@@ -179,7 +179,7 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
                     "name": "Synthetic child task",
                     "description": "Exercises errors in called tasks.",
                     "steps": [
-                        {"command": "edit_field", "tag": "245", "find": "$a", "replace": "$A"}
+                        {"command": "edit_field", "tag": "245", "find": "$a", "replace": "$!"}
                     ],
                 }
             ),

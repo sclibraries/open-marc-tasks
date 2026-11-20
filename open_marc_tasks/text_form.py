@@ -110,7 +110,7 @@ def parse_field(text):
         if len(remainder) < 2 or remainder[0] != "$":
             raise TextFormError("data field text must contain subfields after its indicators")
         code = remainder[1]
-        if not code.isascii() or code not in "abcdefghijklmnopqrstuvwxyz0123456789":
+        if not (code.isascii() and code.isalnum()):
             raise TextFormError("data field text has an invalid subfield code")
         next_subfield = remainder.find("$", 2)
         if next_subfield == -1:

@@ -98,7 +98,7 @@ def run(record: Record, step: Dict[str, Any]) -> None:
                 )
                 if not result:
                     continue
-                if result[0] not in "abcdefghijklmnopqrstuvwxyz0123456789":
+                if not (result[0].isascii() and result[0].isalnum()):
                     raise TextFormError("regex result has an invalid subfield code")
                 edited_subfields.append(Subfield(result[0], result[1:]))
             field.subfields = edited_subfields

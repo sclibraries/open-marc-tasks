@@ -85,7 +85,7 @@ ROUND_TRIPS = [
 INVALID_RESULTS = [
     ("tag is not three digits", "=24  10$aSOURCE"),
     ("data field has no indicators", "=245  "),
-    ("subfield code is invalid", "=245  10$Avalue"),
+    ("subfield code is invalid", "=245  10$!value"),
 ]
 
 
