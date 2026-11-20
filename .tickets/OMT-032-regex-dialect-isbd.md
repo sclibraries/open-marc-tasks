@@ -1,6 +1,6 @@
 Title: Extend the regex dialect for MarcEdit's ISBD rules (lazy quantifiers, punctuation escapes, \D, literal braces)
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — widens the documented regex dialect; no command changes
 Milestone: M2 — Commands
@@ -63,7 +63,7 @@ Verification:
   reruns the measurement (must stay 81/100, 0 differing).
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head b99abed, merged into main (owner OK 2026-11-20). Python 3.9 gate 242 passed, 1 skipped; host reference passed. All 209 private ISBD rules compile. Measure 81/100, 0 differ.
 
 Review:
-- (orchestrator fills in)
+- Lazy quantifiers, punctuation escapes, \D, .NET literal braces/brackets; `a+?` and `a{,3}` rows removed as now valid. No fix round.
