@@ -1,6 +1,6 @@
 Title: Characterize MarcEdit RDAHELPER 336/337/338 generation (black-box spec only)
 
-Status: Ready
+Status: In-Progress
 Size: M
 Tier: normal — specification and conformance cases only; no engine code
 Milestone: M2 — Commands
