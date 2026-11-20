@@ -1,6 +1,6 @@
 Title: Make the measurement report per-task errors instead of crashing
 
-Status: In-Progress
+Status: In-Review
 Size: S
 Tier: small — private-measurement tooling only; no engine, format or importer change
 Milestone: M2 — Commands
