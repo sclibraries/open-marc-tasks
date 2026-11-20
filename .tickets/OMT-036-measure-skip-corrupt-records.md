@@ -1,6 +1,6 @@
 Title: Measure the rest of a task when MarcEdit corrupts some records
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: small — private-measurement tooling only
 Milestone: M2 — Commands
@@ -39,7 +39,7 @@ Verification:
 - The Python 3.9 gate in AGENTS.md "Build and test".
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 4adbacf, merged into main (owner OK 2026-11-20). Python 3.9 gate 259 passed, 1 skipped. Measure: 89 of 100 match fully or except MarcEdit-corrupt records on all three samples; 0 differ; 2 error; 9 not translated.
 
 Review:
-- (orchestrator fills in)
+- As specified. No fix round.
