@@ -727,12 +727,13 @@ literal. Control-field ADD lines become `data` values. Descriptions come from
 `--configs DIR` folder. The importer copies the config's rule data into
 `replace_characters` or `apply_rules`; it does not retain a path to the file.
 Without the folder or named file, the source line is reported as not
-translated. Smart-character files skip blank lines, ignore non-tab lines,
-take the first tab-separated pair for each find string, and switch subsequent
-pairs to regex mode after a non-tab `#` line containing `regex`; other
-non-tab lines are ignored. Tab-delimited pairs are imported even when the find
-string starts with `#`. ISBD files skip blank, comment, and non-tab lines, then
-import tab-separated key, pattern, and replacement triples in file order.
+translated. Both rule files skip lines that are empty after trimming
+whitespace. Smart-character files ignore non-tab lines, take the first
+tab-separated pair for each find string, and switch subsequent pairs to regex
+mode after a non-tab `#` line containing `regex`; other non-tab lines are
+ignored. Tab-delimited pairs are imported even when the find string starts
+with `#`. ISBD files skip comment and non-tab lines, then import tab-separated
+key, pattern, and replacement triples in file order.
 Config files containing U+0085, U+2028, or U+2029 are reported as not translated
 because MarcEdit's handling of those characters in rule text is not
 characterized. `REPLACEHTMLENTITIES` maps to

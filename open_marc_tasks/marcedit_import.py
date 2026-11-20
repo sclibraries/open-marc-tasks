@@ -189,7 +189,7 @@ def _translate_cleanup(line: str, command: str, configs: Optional[Path]):
             seen = set()
             regex_mode = False
             for config_line in text.split("\n"):
-                if not config_line:
+                if not config_line.strip():
                     continue
                 if "\t" not in config_line:
                     if config_line.startswith("#") and "regex" in config_line.lower():
@@ -207,7 +207,7 @@ def _translate_cleanup(line: str, command: str, configs: Optional[Path]):
         else:
             rules = []
             for config_line in text.split("\n"):
-                if not config_line or config_line.startswith("#") or "\t" not in config_line:
+                if not config_line.strip() or config_line.startswith("#") or "\t" not in config_line:
                     continue
                 rule = config_line.split("\t", 2)
                 if len(rule) == 3:
