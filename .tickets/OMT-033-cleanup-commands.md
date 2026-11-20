@@ -1,6 +1,6 @@
 Title: Add the MarcEdit cleanup commands (smart characters, ISBD rules, HTML entities, blank lines)
 
-Status: In-Progress
+Status: In-Review
 Size: M
 Tier: normal — two new commands, one new decode command, importer and CLI option; owner decided the design
 Milestone: M2 — Commands
