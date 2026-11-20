@@ -290,10 +290,16 @@ also has `$2 rdacontent`.
 | `r` | `three-dimensional artifact` | (omitted) | `leader06-character-grid` |
 | `u`, `v`, `x`, `y`, `z` | no 336 | — | `leader06-character-grid` |
 
+Leader/06 `u`, `v`, `x`, `y`, or `z` also suppresses generated 337 and 338
+fields, even when a mapped 007 such as `cr` is present. The default media and
+carrier pair applies when Leader/06 has a content-type mapping and no mapped
+007 is present (`leader06-unmapped-with-007`).
+
 ### Media and carrier from 007
 
-With no applicable 007, the generated fields are `337 $a unmediated $b n $2 rdamedia`
-and `338 $a volume $b nc $2 rdacarrier`. The tested 007 classes
+When Leader/06 has a content-type mapping and no applicable 007, the generated
+fields are `337 $a unmediated $b n $2 rdamedia` and
+`338 $a volume $b nc $2 rdacarrier`. The tested 007 classes
 `a`, `d`, `f`, `k`, `o`, `q`, and `r` use that same default. For the classes
 below, 007/00 selects the media type and 007/01 selects the carrier. Each
 337 also has `$2 rdamedia`; each 338 also has `$2 rdacarrier`.

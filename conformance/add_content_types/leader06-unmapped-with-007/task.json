@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "leader06-unmapped-with-007",
+  "description": "Synthetic grid for mapped 007 generation with Leader/06 values that produce no 336.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}
