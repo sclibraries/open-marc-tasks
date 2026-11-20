@@ -1,0 +1,15 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic edit_subfield uppercase regex result",
+  "description": "Exercises an edit_subfield regex result with an uppercase code.",
+  "steps": [
+    {
+      "command": "edit_subfield",
+      "tag": "650",
+      "code": "a",
+      "action": "replace_regex",
+      "find": ".+",
+      "replace": "X"
+    }
+  ]
+}

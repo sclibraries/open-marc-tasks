@@ -229,7 +229,7 @@ INVALID_TASK_CASES.extend(
         ("build_field x with replace", "=901  \\\\$a{001$a[x]}", {"mode": "replace"}),
         ("build_field whole data-field placeholder in control field", "=001  X{956}", {}),
         ("build_field placeholder tag is not three digits", "=901  \\\\$a{01$a}", {}),
-        ("build_field bad template subfield code", "=901  \\\\$Atext", {}),
+        ("build_field bad template subfield code", "=901  \\\\$!text", {}),
     )
 )
 

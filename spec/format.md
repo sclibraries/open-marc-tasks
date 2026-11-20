@@ -383,9 +383,9 @@ For `replace_regex`, `find` uses the portable regex dialect and replacement
 rules defined for `replace_text`. Each matching subfield is treated as the
 string formed by its code followed by its value. Matching and replacement use
 Unicode code points, and every non-overlapping match is replaced from left to
-right. The resulting first character must be a lowercase ASCII letter or
-digit. An empty result removes the subfield, but a data field left with no
-subfields is retained, matching MarcEdit 7.6.
+right. The resulting first character must be an ASCII letter or digit, in
+either case. An empty result removes the subfield, but a data field left with
+no subfields is retained, matching MarcEdit 7.6.
 
 ## Command: `remove_subfield`
 
@@ -418,9 +418,9 @@ With `remove_regex`, the portable regex dialect defined for `replace_text` is
 applied to each matching subfield's code followed by value. Every
 non-overlapping match is removed from left to right. If the result is empty,
 the subfield is removed; otherwise its first character becomes the code and
-the rest becomes the value. A non-empty result with an invalid code raises a
-run-time error naming the record and step. A data field left with no subfields
-is deleted.
+the rest becomes the value. A non-empty result whose first character is not
+an ASCII letter or digit raises a run-time error naming the record and step.
+A data field left with no subfields is deleted.
 
 ## Field text form
 
@@ -450,12 +450,12 @@ and the line must start with `=` and the two-space separator. Tags `001`
 through `009` produce control fields, whose body decodes `\` to a blank.
 Other tags produce data fields and require two indicator characters. In those
 two positions, `\` decodes to a blank. After the indicators, the body is zero
-or more subfields, each beginning with `$` and followed by a lowercase ASCII
-letter or digit code; its value runs up to the next `$` or the end of the
-body. Values may be empty. An empty control-field body, a data field with no
-subfields, repeated subfields, and trailing spaces are valid. Retagging
-between control and data field forms is allowed. A parsed replacement stays
-at the original field position.
+or more subfields, each beginning with `$` and followed by an ASCII letter
+(lowercase or uppercase) or digit code; its value runs up to the next `$` or
+the end of the body. Values may be empty. An empty control-field body, a data
+field with no subfields, repeated subfields, and trailing spaces are valid.
+Retagging between control and data field forms is allowed. A parsed replacement
+stays at the original field position.
 
 ## Command: `sort_fields`
 
@@ -599,8 +599,8 @@ The result is read back using the field-text rules. In a data field, `$` starts
 a subfield; text before the first `$` is discarded, and `{dollar}` represents
 a literal dollar sign in a value. A result with no subfields keeps the field
 and its indicators. In a control field, `\` becomes a blank. A result with a
-data-field subfield code outside lowercase ASCII letters and digits raises a
-run-time error naming the one-based record and step numbers.
+data-field subfield code outside ASCII letters and digits raises a run-time
+error naming the one-based record and step numbers.
 
 ## Record text lines
 

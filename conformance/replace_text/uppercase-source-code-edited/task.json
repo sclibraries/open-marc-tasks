@@ -1,0 +1,12 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic uppercase source subfield code",
+  "description": "Exercises parsing an uppercase code when another part of the field changes.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "Documentary films.",
+      "replace": "Documentary features."
+    }
+  ]
+}
