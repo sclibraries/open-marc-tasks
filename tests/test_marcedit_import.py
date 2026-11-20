@@ -92,6 +92,13 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
             },
         ),
         (
+            "CLEANSMARTCHARACTERS\tsmartlist-whitespace.txt",
+            {
+                "command": "replace_characters",
+                "pairs": [["OLD", "NEW"]],
+            },
+        ),
+        (
             "REMOVEISBD\tremove_isbd_punc.txt",
             {
                 "command": "apply_rules",
@@ -100,6 +107,13 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
                     ["=24", "SAME", "SAME-3"],
                     ["=2", "SAME", "SAME-2"],
                 ],
+            },
+        ),
+        (
+            "REMOVEISBD\tremove_isbd-whitespace.txt",
+            {
+                "command": "apply_rules",
+                "rules": [["=245", "SAME", "SAME-4"]],
             },
         ),
         ("REPLACEHTMLENTITIES", {"command": "decode_entities"}),
@@ -467,17 +481,23 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
     configs = tmp_path / "configs"
     configs.mkdir()
     if line.startswith("CLEANSMARTCHARACTERS\t"):
-        (configs / "smartlist.txt").write_text(
-            "# synthetic config\n\n&#x2022;\t*\n&#x2022;\tSECOND\n#123\tNo. 123\n"
-            "# regex mode\n([A-Z])([0-9])\t$1-$2\n",
-            encoding="utf-8",
+        config_name = line.split("\t", 1)[1]
+        config_contents = (
+            "OLD\tNEW\n# REGEX\n\t\n"
+            if config_name == "smartlist-whitespace.txt"
+            else "# synthetic config\n\n&#x2022;\t*\n&#x2022;\tSECOND\n#123\tNo. 123\n"
+            "# regex mode\n([A-Z])([0-9])\t$1-$2\n"
         )
+        (configs / config_name).write_text(config_contents, encoding="utf-8")
     elif line.startswith("REMOVEISBD\t"):
-        (configs / "remove_isbd_punc.txt").write_text(
-            "# synthetic config\n\n=245\tSAME\tSAME-4\n=24\tSAME\tSAME-3\n"
-            "=2\tSAME\tSAME-2\n",
-            encoding="utf-8",
+        config_name = line.split("\t", 1)[1]
+        config_contents = (
+            "=245\tSAME\tSAME-4\n \t \t \n"
+            if config_name == "remove_isbd-whitespace.txt"
+            else "# synthetic config\n\n=245\tSAME\tSAME-4\n=24\tSAME\tSAME-3\n"
+            "=2\tSAME\tSAME-2\n"
         )
+        (configs / config_name).write_text(config_contents, encoding="utf-8")
 
     result = import_marcedit(source, configs=configs)
 
