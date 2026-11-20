@@ -1,6 +1,6 @@
 Title: Implement add_content_types and import the Smith RDAHELPER line
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — new command built from the OMT-037 black-box spec
 Milestone: M2 — Commands
@@ -62,7 +62,7 @@ Plan:
 3. Importer.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head 5afab51, merged into main (owner OK 2026-11-20). Python 3.9 gate 262 passed, 1 skipped; host reference passed. Measure 93/100 on all three samples (incl. MarcEdit-corrupt exceptions), 0 differ.
 
 Review:
-- (orchestrator fills in)
+- Clean-room; full Leader/06 and 007/01 grids. One fix round: one pair per 007 (unmapped → unmediated/volume), any one-character 007 suppresses 337/338 (orchestrator probes after a sample-221 difference).
