@@ -175,33 +175,35 @@ def _measure_task(
         )
         return "error"
 
-    unreadable_record = next(
-        (
-            number
-            for number, record in enumerate(reference_records, start=1)
-            if record is None
-        ),
-        None,
-    )
-    if unreadable_record is not None:
+    if len(library_records) != len(reference_records):
         print(
-            "{}: error (MarcEdit output unreadable): record {} returned None".format(
-                display_name, unreadable_record
+            "{}: error (MarcEdit output unreadable): record count differs "
+            "(ours {}, MarcEdit {})".format(
+                display_name, len(library_records), len(reference_records)
             )
         )
         return "error"
 
-    matches = len(library_records) == len(reference_records) and all(
-        records_match(actual, expected)
+    unreadable_records = [
+        number
+        for number, record in enumerate(reference_records, start=1)
+        if record is None
+    ]
+    matches = all(
+        expected is None or records_match(actual, expected)
         for actual, expected in zip(library_records, reference_records)
     )
-    if matches:
-        label = "match"
+    if unreadable_records and matches:
+        outcome = "match except MarcEdit-unreadable records"
+        label = "{}: {}".format(
+            outcome, ", ".join(str(number) for number in unreadable_records)
+        )
     else:
-        label = "differs"
+        outcome = "match" if matches else "differs"
+        label = outcome
 
     print("{}: {}".format(display_name, label))
-    return label
+    return outcome
 
 
 def main(argv=None):
@@ -236,7 +238,13 @@ def main(argv=None):
             if source.is_file() and source.suffix.lower() in (".txt", ".task")
         )
     )
-    counts = {"match": 0, "differs": 0, "error": 0, "not translated": 0}
+    counts = {
+        "match": 0,
+        "match except MarcEdit-unreadable records": 0,
+        "differs": 0,
+        "error": 0,
+        "not translated": 0,
+    }
     with tempfile.TemporaryDirectory(
         prefix="omt-measure-", dir=str(REPOSITORY_ROOT)
     ) as temporary_directory:
@@ -258,9 +266,11 @@ def main(argv=None):
             counts[outcome] += 1
 
     print(
-        "{} of {} task files match MarcEdit ({} differ, {} error, {} not translated)".format(
+        "{} of {} task files match MarcEdit ({} match except "
+        "MarcEdit-unreadable records, {} differ, {} error, {} not translated)".format(
             counts["match"],
             len(tasks),
+            counts["match except MarcEdit-unreadable records"],
             counts["differs"],
             counts["error"],
             counts["not translated"],

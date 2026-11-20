@@ -1,6 +1,6 @@
 Title: Measure the rest of a task when MarcEdit corrupts some records
 
-Status: Ready
+Status: In-Review
 Size: S
 Tier: small — private-measurement tooling only
 Milestone: M2 — Commands
