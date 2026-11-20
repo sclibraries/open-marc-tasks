@@ -38,6 +38,9 @@
         {"$ref": "#/$defs/edit_subfield_step"},
         {"$ref": "#/$defs/remove_subfield_step"},
         {"$ref": "#/$defs/replace_text_step"},
+        {"$ref": "#/$defs/replace_characters_step"},
+        {"$ref": "#/$defs/apply_rules_step"},
+        {"$ref": "#/$defs/decode_entities_step"},
         {"$ref": "#/$defs/edit_field_step"},
         {"$ref": "#/$defs/set_indicators_step"},
         {"$ref": "#/$defs/sort_fields_step"},
@@ -291,6 +294,67 @@
           "type": "array",
           "items": {"$ref": "#/$defs/condition"}
         }
+      }
+    },
+    "replace_characters_step": {
+      "type": "object",
+      "required": ["command", "pairs"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "replace_characters"},
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"type": "string", "minLength": 1},
+              {"type": "string"}
+            ]
+          }
+        },
+        "regex_pairs": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"type": "string", "minLength": 1},
+              {"type": "string"}
+            ]
+          }
+        }
+      }
+    },
+    "apply_rules_step": {
+      "type": "object",
+      "required": ["command", "rules"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "apply_rules"},
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "prefixItems": [
+              {"type": "string", "minLength": 2, "maxLength": 4, "pattern": "^=[A-Za-z0-9]{1,3}$"},
+              {"type": "string", "minLength": 1},
+              {"type": "string"}
+            ]
+          }
+        }
+      }
+    },
+    "decode_entities_step": {
+      "type": "object",
+      "required": ["command"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "decode_entities"}
       }
     },
     "edit_field_step": {
