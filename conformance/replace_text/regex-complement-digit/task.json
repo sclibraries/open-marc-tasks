@@ -1,0 +1,13 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic regex-complement-digit",
+  "description": "Synthetic regex replace_text conformance case.",
+  "steps": [
+    {
+      "command": "replace_text",
+      "find": "^(=245  10\\$a)\\D+$",
+      "replace": "$1NON-DIGITS",
+      "regex": true
+    }
+  ]
+}

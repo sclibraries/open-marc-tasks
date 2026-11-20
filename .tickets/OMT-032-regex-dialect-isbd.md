@@ -1,6 +1,6 @@
 Title: Extend the regex dialect for MarcEdit's ISBD rules (lazy quantifiers, punctuation escapes, \D, literal braces)
 
-Status: Ready
+Status: In-Review
 Size: S
 Tier: normal — widens the documented regex dialect; no command changes
 Milestone: M2 — Commands

@@ -528,31 +528,36 @@ With `regex: true`, `find` uses the following portable dialect:
   MarcEdit 7.6 processes UTF-8 regex text as bytes, so its results can differ
   when a pattern consumes non-ASCII text. This format never splits a Unicode
   character.
-- Ordinary characters match themselves. The literal escapes are `\.`, `\/`,
-  `\?`, `\$`, `\\`, `\(`, `\)`, `\[`, `\]`, `\+`, `\*`, `\{`, `\}`,
-  `\|`, `\^`, and `\-`. The escapes `\d`, `\w`, and `\s` match ASCII
-  `[0-9]`, `[A-Za-z0-9_]`, and `[ \t\n\r\f\v]`, respectively. A dot
+- Ordinary characters match themselves. Any ASCII punctuation character may
+  be escaped with `\` to match itself, both inside and outside character
+  classes. The escapes `\d`, `\D`, `\w`, and `\s` match ASCII `[0-9]`, its
+  complement, `[A-Za-z0-9_]`, and `[ \t\n\r\f\v]`, respectively. A dot
   matches any code point except LF. `^` and `$` are anchors, parentheses
   create groups, `|` separates alternatives, and quantifiers have the forms
   below. `/` and `-` are literal outside character classes, whether escaped
-  or not. An unescaped `]` or unmatched `}` is invalid.
+  or not. An unmatched `]` or `}` is literal, and `{` is literal when it
+  does not begin a valid repetition count.
 - A character class uses square brackets, may begin with `^` to negate the
-  class, and may contain literal characters, escaped characters, the three
-  ASCII classes above, and character ranges such as `a-z`. Class subtraction
-  and intersection are not supported. Parentheses inside a class are literal.
+  class, and may contain literal characters, escaped punctuation, the ASCII
+  classes above, and character ranges such as `a-z`. Class subtraction and
+  intersection are not supported. Parentheses inside a class are literal.
 - Parentheses create capturing groups, numbered from left to right. `|`
   separates alternatives. Greedy `*`, `+`, `?`, `{n}`, `{n,}`, and `{n,m}`
   quantifiers are supported, where `n` and `m` are non-negative integers and
-  `n` must not exceed `m`. `^` matches the start of the field text form and `$`
-  matches only its exact end, not the position before a trailing newline.
+  `n` must not exceed `m`. Adding `?` to any of these quantifiers makes it
+  lazy: `*?`, `+?`, `??`, `{n}?`, `{n,}?`, and `{n,m}?` match as few times as
+  possible, with backtracking. `^` matches the start of the field text form
+  and `$` matches only its exact end, not the position before a trailing
+  newline.
 - Matching is leftmost, uses the first alternative that can match, and uses
-  greedy quantifiers with backtracking. Every non-overlapping match is
+  greedy quantifiers in preference to more matches and lazy quantifiers in
+  preference to fewer, both with backtracking. Every non-overlapping match is
   replaced from left to right.
 - The pattern must be valid and must not be able to match an empty string.
-  Lookaround, non-capturing or inline-flag groups, lazy or possessive
-  quantifiers, backreferences, unsupported escapes, malformed expressions,
-  and class operations are rejected when the task is loaded. `TaskError`
-  identifies the one-based step number.
+  Lookaround, non-capturing or inline-flag groups, possessive quantifiers,
+  backreferences, unsupported letter escapes, malformed expressions, and
+  class operations are rejected when the task is loaded. `TaskError` identifies
+  the one-based step number.
 
 Regex-mode replacements use `$1` through `$9` to insert the corresponding
 capturing group. A group that did not participate inserts an empty string. A
