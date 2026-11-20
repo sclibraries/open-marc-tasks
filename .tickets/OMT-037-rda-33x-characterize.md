@@ -1,6 +1,6 @@
 Title: Characterize MarcEdit RDAHELPER 336/337/338 generation (black-box spec only)
 
-Status: In-Review
+Status: Completed
 Size: M
 Tier: normal — specification and conformance cases only; no engine code
 Milestone: M2 — Commands
@@ -56,7 +56,7 @@ Verification:
 - On the host from the worktree: `python3 -m pytest -q tests/test_reference.py`, counts reported.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head e86c8d0, merged into main (owner OK 2026-11-20). Python 3.9 gate 259 passed, 6 skipped (5 OMT-038 deferrals); host reference passed. Spec section add_content_types + five MarcEdit cases.
 
 Review:
-- (orchestrator fills in)
+- Clean-room black-box spec; OMT-038 to probe every 007/01 letter and Leader/06 letter before implementing. No fix round.
