@@ -84,6 +84,27 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
             {"command": "delete_field", "tag": "856", "match": r"^=856  40\$uhttps:\/\/example\.edu\/journal\/.+$", "match_regex": True, "delete_nonmatches": True},
         ),
         (
+            "CLEANSMARTCHARACTERS\tsmartlist.txt",
+            {
+                "command": "replace_characters",
+                "pairs": [["&#x2022;", "*"]],
+                "regex_pairs": [["([A-Z])([0-9])", "$1-$2"]],
+            },
+        ),
+        (
+            "REMOVEISBD\tremove_isbd_punc.txt",
+            {
+                "command": "apply_rules",
+                "rules": [
+                    ["=245", "SAME", "SAME-4"],
+                    ["=24", "SAME", "SAME-3"],
+                    ["=2", "SAME", "SAME-2"],
+                ],
+            },
+        ),
+        ("REPLACEHTMLENTITIES", {"command": "decode_entities"}),
+        ("REMOVEBLANKLINES", None),
+        (
             "ADD\t506\t1\\$aSynthetic text\t100\t",
             {
                 "command": "add_field",
@@ -443,14 +464,29 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
     source = tmp_path / "Synthetic task.txt"
     source.write_text("#DESCRIPTION#\tSynthetic description\n" + line + "\n", encoding="utf-8")
 
-    result = import_marcedit(source)
+    configs = tmp_path / "configs"
+    configs.mkdir()
+    if line.startswith("CLEANSMARTCHARACTERS\t"):
+        (configs / "smartlist.txt").write_text(
+            "# synthetic config\n\n&#x2022;\t*\n&#x2022;\tSECOND\n"
+            "# regex mode\n([A-Z])([0-9])\t$1-$2\n",
+            encoding="utf-8",
+        )
+    elif line.startswith("REMOVEISBD\t"):
+        (configs / "remove_isbd_punc.txt").write_text(
+            "# synthetic config\n\n=245\tSAME\tSAME-4\n=24\tSAME\tSAME-3\n"
+            "=2\tSAME\tSAME-2\n",
+            encoding="utf-8",
+        )
+
+    result = import_marcedit(source, configs=configs)
 
     assert result.not_translated == []
     assert len(result.tasks) == 1
     imported = result.tasks[0]
     assert imported.name == "Synthetic task"
-    expected_steps = [step]
-    if step["command"] == "gather_subfields":
+    expected_steps = [] if step is None else [step]
+    if step is not None and step["command"] == "gather_subfields":
         expected_steps.append({"command": "delete_field", "tag": "999"})
     assert imported.document == {
         "format_version": "0.1",
@@ -461,7 +497,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
     }
     task_path = tmp_path / "task.json"
     task_path.write_text(json.dumps(imported.document), encoding="utf-8")
-    if step["command"] == "call_task":
+    if step is not None and step["command"] == "call_task":
         (tmp_path / step["task"]).write_text(
             json.dumps(
                 {
@@ -474,6 +510,17 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
             encoding="utf-8",
         )
     assert load_task(task_path).steps == expected_steps
+    if line.split("\t", 1)[0] in (
+        "CLEANSMARTCHARACTERS",
+        "REMOVEISBD",
+        "REPLACEHTMLENTITIES",
+        "REMOVEBLANKLINES",
+    ):
+        output_dir = tmp_path / "cli-output"
+        assert main(
+            ["import", str(source), str(output_dir), "--configs", str(configs)]
+        ) == 0
+        assert load_task(output_dir / "Synthetic task.json").steps == expected_steps
 
 
 @pytest.mark.parametrize(
@@ -509,6 +556,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "COPY\t001\t035\tfalse\tabc\t\tfalse\t",
         "COPY\t001\t005\tfalse\t\t\tfalse\t",
         "COPY\t856\t001\tfalse\t\t\tfalse\t",
+        "CLEANSMARTCHARACTERS\tsmartlist.txt",
         "REPLACE\tbefore.*\tafter\t0|2\t\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t/=LDR.{6}a.+/\t0\tFalse",
         "REPLACE\tbefore\tafter\t0\t\t0\tTrue",
@@ -557,6 +605,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
     assert item.text == line
     if line.startswith("SUBFIELD_EDIT"):
         assert item.reason == "unsupported SUBFIELD_EDIT settings"
+    elif line.startswith("CLEANSMARTCHARACTERS\t"):
+        assert item.reason == "CLEANSMARTCHARACTERS requires --configs"
     elif line.startswith("SUBFIELD_REMOVE") and "\t9|" in line:
         assert item.reason == "option 9 with a value is not supported"
     elif line == "buildnewfield\t=001  X{956}\tFalse\tTrue\tFalse\tFalse":

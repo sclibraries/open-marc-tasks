@@ -43,11 +43,11 @@ def _task_sources(source_path):
     return [(source_path.name, source_path.stem, source_path.read_text(encoding="utf-8"))]
 
 
-def _collect_tasks(sources, task_directory):
+def _collect_tasks(sources, task_directory, configs=None):
     tasks = []
     tasks_by_name = {}
     for source_path, is_library in sources:
-        result = import_marcedit(source_path)
+        result = import_marcedit(source_path, configs=configs)
         source_entries = _task_sources(source_path)
         for imported_task in result.tasks:
             matches = [entry for entry in source_entries if entry[1] == imported_task.name]
@@ -207,7 +207,9 @@ def main(argv=None):
     ) as temporary_directory:
         work_dir = Path(temporary_directory)
         task_directory = work_dir / "tasks"
-        tasks, tasks_by_name = _collect_tasks(sources, task_directory)
+        tasks, tasks_by_name = _collect_tasks(
+            sources, task_directory, arguments.configs
+        )
         for number, task in enumerate(tasks):
             if _measure_task(
                 task,

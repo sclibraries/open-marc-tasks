@@ -41,8 +41,10 @@ a change that alters it updates it in the same ticket.
   (6 cases), `conformance/gather_subfields/` (6 cases),
   `conformance/replace_text/` (10 cases),
   `conformance/edit_field/` (5 cases), and `conformance/set_indicators/`
-  (4 cases), expected output from MarcEdit 7.6; each case keeps the MarcEdit
-  task line in `marcedit-task.txt`.
+  (4 cases), `conformance/replace_characters/`, `conformance/apply_rules/`,
+  `conformance/decode_entities/`, and `conformance/remove_blank_lines/`
+  (one case each), expected output from MarcEdit 7.6; each case keeps the
+  MarcEdit task line in `marcedit-task.txt`.
 - CI: Python 3.9 with pymarc 5.1.2, and Python 3.13 with the newest pymarc below 6.
 - Known MarcEdit behavior: an `X` before a later digit (`0X9`) matches
   nothing; v0.1 follows it. Backslash indicators become blanks on every
@@ -53,6 +55,8 @@ a change that alters it updates it in the same ticket.
   input only (Leader/09 `a`), refuses empty, unreadable or truncated input and
   records left with no fields, writes through a temporary file and replaces
   OUTPUT only on success, refuses OUTPUT equal to INPUT.
+- CLI `omt import SOURCE OUT_DIR --configs DIR` (`open_marc_tasks/cli.py`,
+  OMT-033) reads local rule files for the cleanup commands.
 - CI: the Python 3.9 job runs in the `python:3.9-slim` container (GitHub's
   runners no longer provide 3.9).
 - Reference runner `tools/marcedit_reference.py` (OMT-003): runs MarcEdit for a
@@ -95,4 +99,10 @@ a change that alters it updates it in the same ticket.
 - `call_task` (OMT-028): runs a same-folder JSON task at a step; imports the
   observed three-column `TASK_LIST` form; measurement stages called MarcEdit
   task files recursively.
+- Cleanup commands (OMT-033): `replace_characters` and `apply_rules` transform
+  Leader and field text lines, validating changed Leader lines;
+  `decode_entities` writes decoded Unicode as UTF-8. The importer reads
+  `CLEANSMARTCHARACTERS` and `REMOVEISBD` rules from `--configs`, maps
+  `REPLACEHTMLENTITIES` to `decode_entities`, and imports `REMOVEBLANKLINES`
+  as no step.
 - Not built yet: regex REPLACE import (OMT-013).

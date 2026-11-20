@@ -3,13 +3,16 @@ import zipfile
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
+from .commands.apply_rules import validate as validate_apply_rules
 from .commands.build_field import validate as validate_build_field
 from .commands.call_task import validate as validate_call_task
 from .commands.copy_field import validate as validate_copy_field
 from .commands.delete_field import validate as validate_delete_field
+from .commands.decode_entities import validate as validate_decode_entities
 from .commands.edit_field import validate as validate_edit_field
 from .commands.edit_subfield import validate as validate_edit_subfield
 from .commands.replace_text import validate as validate_replace_text
+from .commands.replace_characters import validate as validate_replace_characters
 from .commands.remove_subfield import validate as validate_remove_subfield
 from .commands.sort_fields import validate as validate_sort_fields
 from .commands.set_indicators import validate as validate_set_indicators
@@ -153,9 +156,96 @@ def called_task_name(line: str) -> Optional[str]:
     return "{}.-{}.json".format(name, Path(columns[2]).stem)
 
 
-def _translate(line: str) -> Tuple[Optional[Dict[str, object]], str]:
+def _read_config(
+    configs: Optional[Path], filename: str, command: str
+) -> Tuple[Optional[str], str]:
+    if configs is None:
+        return None, "{} requires --configs".format(command)
+    if not filename or filename in (".", "..") or "/" in filename or "\\" in filename:
+        return None, "{} config filename must not contain a path".format(command)
+    path = Path(configs) / filename
+    try:
+        return path.read_text(encoding="utf-8-sig"), ""
+    except FileNotFoundError:
+        return None, "{} config file was not found".format(command)
+    except (OSError, UnicodeError):
+        return None, "{} config file could not be read".format(command)
+
+
+def _translate_cleanup(line: str, command: str, configs: Optional[Path]):
+    columns = line.split("\t")
+    if command in ("CLEANSMARTCHARACTERS", "REMOVEISBD"):
+        if len(columns) != 2:
+            return None, "malformed {} line".format(command)
+        text, reason = _read_config(configs, columns[1], command)
+        if text is None:
+            return None, reason
+
+        if command == "CLEANSMARTCHARACTERS":
+            pairs = []
+            regex_pairs = []
+            seen = set()
+            regex_mode = False
+            for config_line in text.splitlines():
+                if not config_line:
+                    continue
+                if config_line.startswith("#"):
+                    if "regex" in config_line.lower():
+                        regex_mode = True
+                    continue
+                if "\t" not in config_line:
+                    continue
+                find, replacement = config_line.split("\t", 1)
+                if find in seen:
+                    continue
+                seen.add(find)
+                (regex_pairs if regex_mode else pairs).append([find, replacement])
+            step = {"command": "replace_characters", "pairs": pairs}
+            if regex_pairs:
+                step["regex_pairs"] = regex_pairs
+            validator = validate_replace_characters
+        else:
+            rules = []
+            for config_line in text.splitlines():
+                if not config_line or config_line.startswith("#") or "\t" not in config_line:
+                    continue
+                rule = config_line.split("\t", 2)
+                if len(rule) == 3:
+                    rules.append(rule)
+            step = {"command": "apply_rules", "rules": rules}
+            validator = validate_apply_rules
+
+        try:
+            validator(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
+
+    if len(columns) != 1:
+        return None, "malformed {} line".format(command)
+    if command == "REPLACEHTMLENTITIES":
+        step = {"command": "decode_entities"}
+        try:
+            validate_decode_entities(step, 1)
+        except TaskError as error:
+            return None, str(error)
+        return step, ""
+    return None, ""
+
+
+def _translate(
+    line: str, configs: Optional[Path] = None
+) -> Tuple[Optional[Dict[str, object]], str]:
     columns = line.split("\t")
     command = columns[0]
+
+    if command in (
+        "CLEANSMARTCHARACTERS",
+        "REMOVEISBD",
+        "REPLACEHTMLENTITIES",
+        "REMOVEBLANKLINES",
+    ):
+        return _translate_cleanup(line, command, configs)
 
     if command == "TASK_LIST":
         task_name = called_task_name(line)
@@ -511,7 +601,12 @@ def _translate_gather_loop(
     return step, ""
 
 
-def _import_text(text: str, source: str, name: str) -> Tuple[ImportedTask, List[NotTranslated]]:
+def _import_text(
+    text: str,
+    source: str,
+    name: str,
+    configs: Optional[Path] = None,
+) -> Tuple[ImportedTask, List[NotTranslated]]:
     description = ""
     description_seen = False
     steps = []
@@ -550,10 +645,10 @@ def _import_text(text: str, source: str, name: str) -> Tuple[ImportedTask, List[
             index += 1
             continue
 
-        step, reason = _translate(line)
-        if step is None:
+        step, reason = _translate(line, configs)
+        if step is None and reason:
             not_translated.append(NotTranslated(source, index + 1, line, reason))
-        else:
+        elif step is not None:
             steps.append(step)
         index += 1
 
@@ -572,8 +667,9 @@ def _import_text(text: str, source: str, name: str) -> Tuple[ImportedTask, List[
     )
 
 
-def import_marcedit(path: Path) -> ImportResult:
+def import_marcedit(path: Path, configs: Optional[Path] = None) -> ImportResult:
     path = Path(path)
+    configs = Path(configs) if configs is not None else None
     tasks = []
     not_translated = []
 
@@ -585,13 +681,16 @@ def import_marcedit(path: Path) -> ImportResult:
                     continue
                 source = entry.filename
                 task, untranslated = _import_text(
-                    task_zip.read(entry).decode("utf-8"), source, entry_path.stem
+                    task_zip.read(entry).decode("utf-8"),
+                    source,
+                    entry_path.stem,
+                    configs,
                 )
                 tasks.append(task)
                 not_translated.extend(untranslated)
     else:
         task, untranslated = _import_text(
-            path.read_text(encoding="utf-8"), path.name, path.stem
+            path.read_text(encoding="utf-8"), path.name, path.stem, configs
         )
         tasks.append(task)
         not_translated.extend(untranslated)

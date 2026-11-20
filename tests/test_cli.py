@@ -89,6 +89,7 @@ def test_run_writes_matching_conformance_output_and_preserves_utf8_bytes(tmp_pat
         ("invalid subfield regex result", 2, "record 2 step 2"),
         ("invalid edit_field result", 2, "record 2 step 2"),
         ("called task runtime error", 2, "record 2 step 2"),
+        ("Leader rule invalid length", 2, "record 2 step 2"),
     ],
 )
 def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_number, message):
@@ -190,12 +191,30 @@ def test_run_errors_once_and_leaves_output_unchanged(tmp_path, case, record_numb
         second.add_field(Field(tag="001", data="synthetic-2"))
         second.add_field(Field(tag="245", indicators=["1", "0"], subfields=[Subfield("a", "Synthetic title")]))
         input_path.write_bytes(first.as_marc() + second.as_marc())
+    elif case == "Leader rule invalid length":
+        write_task(
+            task_path,
+            steps=[
+                {"command": "delete_field", "tag": "999"},
+                {
+                    "command": "apply_rules",
+                    "rules": [["=LDR", "^(=LDR  .....)[b]", "$1"]],
+                },
+            ],
+        )
+        first = Record(force_utf8=True)
+        first.add_field(Field(tag="001", data="synthetic-1"))
+        first.leader = str(first.leader)[:5] + "a" + str(first.leader)[6:]
+        second = Record(force_utf8=True)
+        second.add_field(Field(tag="001", data="synthetic-2"))
+        second.leader = str(second.leader)[:5] + "b" + str(second.leader)[6:]
+        input_path.write_bytes(first.as_marc() + second.as_marc())
 
     if output_path != input_path and case != "empty build_field replacement":
         output_path.write_bytes(b"existing output must survive")
     original_output = output_path.read_bytes() if output_path.exists() else None
 
-    if case in ("empty build_field replacement", "invalid subfield regex result", "invalid edit_field result", "called task runtime error"):
+    if case in ("empty build_field replacement", "invalid subfield regex result", "invalid edit_field result", "called task runtime error", "Leader rule invalid length"):
         with input_path.open("rb") as source:
             input_records = list(MARCReader(source, to_unicode=True, utf8_handling="strict"))
         with pytest.raises(TaskError, match="record 2 step 2"):
