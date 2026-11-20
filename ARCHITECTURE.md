@@ -38,7 +38,8 @@ a change that alters it updates it in the same ticket.
   are dispatched by name through the table in `task.py`; each command module
   (`commands/<name>.py`) owns its `validate(step, number)` and `run(record, step)`.
 - Conformance: `conformance/delete_field/` (9 cases), `conformance/add_field/`
-  (6 cases), `conformance/gather_subfields/` (6 cases),
+  (6 cases), `conformance/add_content_types/` (14 cases),
+  `conformance/gather_subfields/` (6 cases),
   `conformance/replace_text/` (10 cases),
   `conformance/edit_field/` (5 cases), and `conformance/set_indicators/`
   (4 cases), `conformance/replace_characters/`, `conformance/apply_rules/`,
@@ -96,6 +97,9 @@ a change that alters it updates it in the same ticket.
 - `set_indicators` (OMT-027): changes the first one or two indicators on
   exact-tag fields, optionally filtered by an indicator prefix; imports
   unconditional `INDICATOR` lines with an empty condition.
+- `add_content_types` (OMT-038): generates the observed 336/337/338 fields
+  from Leader/06 and 007; the importer translates only the exact Smith
+  RDAHELPER line.
 - `call_task` (OMT-028): runs a same-folder JSON task at a step; imports the
   observed three-column `TASK_LIST` form; measurement stages called MarcEdit
   task files recursively.
