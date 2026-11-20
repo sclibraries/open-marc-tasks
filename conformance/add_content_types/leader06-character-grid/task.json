@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "leader06-character-grid",
+  "description": "Synthetic grid for every Leader/06 lowercase letter and blank.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}

@@ -14,6 +14,7 @@ INVALID_DOCUMENTS = [
     ("wrong version", {"format_version": "9.9", "name": "x", "description": "x", "steps": [VALID_STEP]}, None),
     ("missing command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"tag": "999"}]}, "step 2"),
     ("unknown command", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "unknown"}]}, "step 2"),
+    ("add_content_types unknown setting", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "add_content_types", "setting": "unexpected"}]}, "step 2"),
     ("missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "delete_field"}]}, "step 2"),
     ("edit_field missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "edit_field", "find": "x", "replace": "y"}]}, "step 2"),
     ("set_indicators missing tag", {"format_version": "0.1", "name": "x", "description": "x", "steps": [VALID_STEP, {"command": "set_indicators", "value": "9"}]}, "step 2"),
@@ -310,6 +311,8 @@ def test_invalid_tasks_are_rejected_by_loader_and_schema(
         load_task(task_path)
     if step_number:
         assert step_number in str(error.value)
+    if name == "add_content_types unknown setting":
+        assert "unknown setting: setting" in str(error.value)
     if name == "edit_field missing tag":
         assert "missing setting: tag" in str(error.value)
     if name == "set_indicators missing tag":

@@ -83,6 +83,8 @@ def _validate_conditions(conditions: Any, number: int) -> None:
 
 from .commands.add_field import run as run_add_field
 from .commands.add_field import validate as validate_add_field
+from .commands.add_content_types import run as run_add_content_types
+from .commands.add_content_types import validate as validate_add_content_types
 from .commands.apply_rules import run as run_apply_rules
 from .commands.apply_rules import validate as validate_apply_rules
 from .commands.build_field import run as run_build_field
@@ -117,6 +119,7 @@ COMMANDS = {
     "delete_field": (validate_delete_field, run_delete_field),
     "copy_field": (validate_copy_field, run_copy_field),
     "add_field": (validate_add_field, run_add_field),
+    "add_content_types": (validate_add_content_types, run_add_content_types),
     "build_field": (validate_build_field, run_build_field),
     "edit_subfield": (validate_edit_subfield, run_edit_subfield),
     "edit_field": (validate_edit_field, run_edit_field),

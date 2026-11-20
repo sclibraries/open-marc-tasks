@@ -117,6 +117,10 @@ GATHER_LOOP_UNCORRECTED = "\n".join(
             },
         ),
         ("REPLACEHTMLENTITIES", {"command": "decode_entities"}),
+        (
+            "RDAHELPER\t1|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|language of cataloging|0",
+            {"command": "add_content_types"},
+        ),
         ("REMOVEBLANKLINES", None),
         (
             "ADD\t506\t1\\$aSynthetic text\t100\t",
@@ -596,6 +600,7 @@ def test_import_translates_supported_lines_into_valid_tasks(tmp_path, line, step
         "EDITFIELD\t001\tocn\t1\t\t",
         "EDITFIELD\t001\tocn\t0\treplacement\tnote",
         "INDICATOR\t856\t\tcondition\t40",
+        "RDAHELPER\t1|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0|language of cataloging|0",
         "TASK_LIST\tSynthetic task list",
         "TASK_LIST\tFOLIO\tFOLIO UM Core\ttasksfile-2023_10_30_154434371.txt",
         "SORTBY\t1XX",
@@ -663,6 +668,8 @@ def test_import_preserves_unsupported_lines_for_review(tmp_path, line):
         assert item.reason == "unsupported EDITFIELD settings"
     elif line.startswith("INDICATOR\t"):
         assert item.reason == "INDICATOR condition is not supported"
+    elif line.startswith("RDAHELPER\t"):
+        assert item.reason == "unsupported RDAHELPER settings"
     elif line.startswith("TASK_LIST\t"):
         assert item.reason == "malformed TASK_LIST line"
     else:

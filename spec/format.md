@@ -257,17 +257,16 @@ replace.
 
 ## Command: `add_content_types`
 
-This is a planned step with no settings:
+This step has no settings:
 
 ```json
 {"command": "add_content_types"}
 ```
 
-It is not supported by the v0.1 runtime or schema yet; OMT-038 is expected to
-implement it. Its behavior below was characterized by applying the RDA helper
-with only content-type and media/carrier generation enabled to synthetic
-records. No configuration files were needed. Each generated data field has
-blank indicators and `$2` set to the source shown below.
+Its behavior below was characterized by applying the RDA helper with only
+content-type and media/carrier generation enabled to synthetic records. No
+configuration files were needed. Each generated data field has blank
+indicators and `$2` set to the source shown below.
 
 ### Content type from Leader/06
 
@@ -277,49 +276,54 @@ also has `$2 rdacontent`.
 
 | Leader/06 | 336 `$a` | 336 `$b` | Probe evidence |
 |---|---|---|---|
-| `a`, `t` | `text` | `txt` | `leader06-mappings` |
-| `c` | `notated music` | `ntm` | `leader06-mappings` |
-| `d` | `tactile notated music` | `tcn` | `leader06-mappings` |
-| `e`, `f` | `cartographic image` | `cri` | `leader06-mappings` |
-| `g` | `two-dimensional moving image` | `tdi` | `leader06-mappings` |
-| `i` | `spoken word` | `spw` | `leader06-mappings` |
-| `j` | `performed music` | `prm` | `leader06-mappings` |
-| `k` | `still image` | `sti` | `leader06-mappings` |
-| `m` | `computer dataset` | `cod` | `leader06-mappings` |
-| `o`, `p` | `other` | `xxx` | `leader06-mappings` |
-| `r` | `three-dimensional artifact` | (omitted) | `leader06-mappings` |
-| blank | `unspecified` | `zzz` | `leader06-mappings` |
-| `z` | no 336 | — | `leader06-mappings` |
+| `a`, `t` | `text` | `txt` | `leader06-character-grid` |
+| `b`, `h`, `l`, `n`, `q`, `s`, `w`, blank | `unspecified` | `zzz` | `leader06-character-grid` |
+| `c` | `notated music` | `ntm` | `leader06-character-grid` |
+| `d` | `tactile notated music` | `tcn` | `leader06-character-grid` |
+| `e`, `f` | `cartographic image` | `cri` | `leader06-character-grid` |
+| `g` | `two-dimensional moving image` | `tdi` | `leader06-character-grid` |
+| `i` | `spoken word` | `spw` | `leader06-character-grid` |
+| `j` | `performed music` | `prm` | `leader06-character-grid` |
+| `k` | `still image` | `sti` | `leader06-character-grid` |
+| `m` | `computer dataset` | `cod` | `leader06-character-grid` |
+| `o`, `p` | `other` | `xxx` | `leader06-character-grid` |
+| `r` | `three-dimensional artifact` | (omitted) | `leader06-character-grid` |
+| `u`, `v`, `x`, `y`, `z` | no 336 | — | `leader06-character-grid` |
+
+Leader/06 `u`, `v`, `x`, `y`, or `z` also suppresses generated 337 and 338
+fields, even when a mapped 007 such as `cr` is present
+(`leader06-unmapped-with-007`).
 
 ### Media and carrier from 007
 
-With no applicable 007, the generated fields are `337 $a unmediated $b n $2 rdamedia`
-and `338 $a volume $b nc $2 rdacarrier`. The tested 007 classes
-`a`, `d`, `f`, `k`, `o`, `q`, and `r` use that same default. For the classes
-below, 007/00 selects the media type and 007/01 selects the carrier. Each
+For a record whose Leader/06 has a content-type mapping and has no 007 fields,
+the generated fields are `337 $a unmediated $b n $2 rdamedia` and
+`338 $a volume $b nc $2 rdacarrier`. For 007 fields with at least two
+characters, 007/00 selects the media type and 007/01 selects the carrier. Each
 337 also has `$2 rdamedia`; each 338 also has `$2 rdacarrier`.
 
 | 007/00 | 337 `$a` / `$b` | 007/01 and 338 `$a` / `$b` | Probe evidence |
 |---|---|---|---|
-| `c` | `computer` / `c` | `r`: `online resource` / `cr`; blank, `o`, `z`, or `|`: `other` / `cz` | `007-media-carriers` |
-| `g` | `projected` / `g` | `s`: `slide` / `gs`; blank, `m`, or `z`: `other` / `mz` | `007-media-carriers` |
-| `h` | `microform` / `h` | `e`: `microfiche` / `he`; `d`: `microfilm reel` / `hd`; `c`: `microfilm cassette` / `hc`; blank or `z`: `other` / `hz` | `007-media-carriers` |
-| `m` | `motion picture` / `g` | `c`: `film cartridge` / `mc`; `f`: `film cassette` / `mf`; blank, `a`, or `z`: `other` / `mz` | `007-media-carriers` |
-| `s` | `audio` / `s` | `d`: `audio disc` / `sd`; `s`: `audiocassette` / `ss`; `e`: `audio cylinder` / `se`; blank, `r`, or `z`: `other` / `sz` | `007-media-carriers` |
-| `v` | `video` / `v` | `c`: `video cartridge` / `vc`; `d`: `videodisc` / `vd`; `f`: `videocassette` / `vf`; blank or `z`: `other` / `vz` | `007-media-carriers` |
-| `z` | `other` / `x` | blank or `u`: `unspecified` / `zu` | `007-media-carriers` |
+| `c` | `computer` / `c` | `a`: `computer tape cartridge` / `ca`; `b`: `computer chip cartridge` / `cb`; `d`: `computer disc` / `cd`; `e`: `computer disc cartridge` / `ce`; `f`: `computer tape cassette` / `cf`; `h`: `computer tape reel` / `ch`; `k`: `computer card` / `ck`; `r`: `online resource` / `cr`; all remaining values from `a`–`z`, blank, and `|`: `other` / `cz` | `007-c-subtype-grid` |
+| `g` | `projected` / `g` | `c`: `filmstrip cartridge` / `gc`; `d`: `filmslip` / `gd`; `f`: `filmstrip` / `gf`; `s`: `slide` / `gs`; `t`: `overhead transparency` / `gt`; all remaining values from `a`–`z`, blank, and `|`: `other` / `mz` | `007-g-subtype-grid` |
+| `h` | `microform` / `h` | `a`: `aperture card` / `ha`; `b`: `microfilm cartridge` / `hb`; `c`: `microfilm cassette` / `hc`; `d`: `microfilm reel` / `hd`; `e`: `microfiche` / `he`; `f`: `microfiche cassette` / `hf`; `g`: `microopaque` / `hg`; `h`: `microfilm slip` / `hh`; `j`: `microfilm roll` / `hj`; all remaining values from `a`–`z`, blank, and `|`: `other` / `hz` | `007-h-subtype-grid` |
+| `m` | `motion picture` / `g` | `c`: `film cartridge` / `mc`; `f`: `film cassette` / `mf`; `o`: `film roll` / `mo`; `r`: `film reel` / `mr`; all remaining values from `a`–`z`, blank, and `|`: `other` / `mz` | `007-m-subtype-grid` |
+| `s` | `audio` / `s` | `b`: `audio belt` / `sb`; `d`: `audio disc` / `sd`; `e`: `audio cylinder` / `se`; `g`: `audio cartridge` / `sg`; `i`: `sound track reel` / `si`; `q`: `audio roll` / `sq`; `s`: `audiocassette` / `ss`; `t`: `audiotape reel` / `st`; `w`: `udio wire reel` / `sw`; all remaining values from `a`–`z`, blank, and `|`: `other` / `sz` | `007-s-subtype-grid` |
+| `v` | `video` / `v` | `c`: `video cartridge` / `vc`; `d`: `videodisc` / `vd`; `f`: `videocassette` / `vf`; `r`: `videotape reel` / `vr`; all remaining values from `a`–`z`, blank, and `|`: `other` / `vz` | `007-v-subtype-grid` |
+| `z` | `other` / `x` | all values from `a`–`z`, blank, and `|`: `unspecified` / `zu` | `007-z-subtype-grid` |
 
-The values in these rows are the observed mappings, not a claim that every
-possible subtype was probed. A one-character 007 in any of the tested classes
-`c`, `g`, `h`, `m`, `s`, `v`, or `z` produces no 337 or 338; the 336 is still
-generated. For tested mapped entries, data after 007/01 did not change the
-result (`cr` and a longer `cr` value produced the same pair).
+Each subtype grid covers every lowercase value from `a` through `z`, blank,
+and `|`. Data after 007/01 did not change the result (`cr` and a longer `cr`
+value produced the same pair).
 
-Each mapped 007 field produces one 337 and one 338, in input order within each
-tag. For example, `cr` followed by `sd` produces computer then audio 337s and
-online resource then audio disc 338s; reversing the 007 fields reverses both
-orders. The 336 remains based on Leader/06. An unhandled 007 class does not
-produce a pair and uses the default above when no mapped 007 is present.
+If any 007 field has fewer than two characters, no 337 or 338 is generated;
+the 336 remains based on Leader/06. Otherwise, each 007 field produces one
+337/338 pair in input order. A mapped class uses the table above; any other
+007/00 value, including blank, uses the default `unmediated` / `n` and
+`volume` / `nc` pair. For example, `cr` followed by `sd` produces computer
+then audio 337s and online resource then audio disc 338s; reversing the 007
+fields reverses both orders. With no 007 fields and a mapped Leader/06, the
+default pair is generated once.
 
 ### Existing fields and placement
 
@@ -351,17 +355,6 @@ These probes found no 008 or 006 dependency and no effect from the tested
 Leader/07 or 040 values. The observed value inputs that change generated 33X
 content are Leader/06 and 007/00–01; existing 336/337/338 tags control
 generation, and existing field tags/order control placement.
-
-### Open questions
-
-- Other 007 classes and subtype values beyond those listed above remain
-  uncharacterized; the tested examples do not establish every possible mapping.
-- Leader/06 values other than those in the table, including codes besides the
-  tested `z`, remain uncharacterized.
-- Other record fields and fixed-field positions beyond the tested Leader/07,
-  006, 007, 008, and 040 variations were not exhaustively varied.
-- RDAHELPER settings other than the two generation flags used for these probes
-  are out of scope.
 
 ## Command: `copy_field`
 

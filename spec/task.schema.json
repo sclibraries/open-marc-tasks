@@ -34,6 +34,7 @@
         {"$ref": "#/$defs/copy_field_step"},
         {"$ref": "#/$defs/gather_subfields_step"},
         {"$ref": "#/$defs/add_field_step"},
+        {"$ref": "#/$defs/add_content_types_step"},
         {"$ref": "#/$defs/build_field_step"},
         {"$ref": "#/$defs/edit_subfield_step"},
         {"$ref": "#/$defs/remove_subfield_step"},
@@ -355,6 +356,14 @@
       "additionalProperties": false,
       "properties": {
         "command": {"const": "decode_entities"}
+      }
+    },
+    "add_content_types_step": {
+      "type": "object",
+      "required": ["command"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {"const": "add_content_types"}
       }
     },
     "edit_field_step": {
