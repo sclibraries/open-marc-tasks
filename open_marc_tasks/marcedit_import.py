@@ -38,6 +38,9 @@ class ImportResult(NamedTuple):
 
 
 _DELETE_FLAGS = ["False"] * 5
+_SMITH_RDAHELPER_CONTENT_TYPES = (
+    "RDAHELPER\t1|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|language of cataloging|0"
+)
 _CONDITION_BRACKETS = re.compile(
     r"=LDR\.\{([0-9]+)\}\[([A-Za-z]+(?:,[A-Za-z]+)*)\]"
     r"(?:\[([A-Za-z]+(?:,[A-Za-z]+)*)\])?\.\+"
@@ -238,6 +241,11 @@ def _translate(
 ) -> Tuple[Optional[Dict[str, object]], str]:
     columns = line.split("\t")
     command = columns[0]
+
+    if command == "RDAHELPER":
+        if line == _SMITH_RDAHELPER_CONTENT_TYPES:
+            return {"command": "add_content_types"}, ""
+        return None, "unsupported RDAHELPER settings"
 
     if command in (
         "CLEANSMARTCHARACTERS",
