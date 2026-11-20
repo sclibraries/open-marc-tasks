@@ -808,11 +808,14 @@ called task makes the caller not translated with a reason.
 
 A `TaskError` loading or running the library task is reported for that task as
 `error (ours): <message on one line>`, and measurement continues. If MarcEdit
-output cannot be read, because pymarc returns `None` for any record or raises
-while reading, the task is reported as
-`error (MarcEdit output unreadable): <reason>`. Neither error counts as a
-match. The final line reports `N of M task files match MarcEdit (D differ,
-E error, U not translated)`.
+output raises while reading or has a different record count from ours, the task
+is reported as `error (MarcEdit output unreadable): <reason>`. When the record
+counts match, positions where pymarc returns `None` are skipped and every other
+record is compared by position. If those records all match, the task is
+reported as `match except MarcEdit-unreadable records: <record numbers>` and is
+counted separately from full matches; if any differ, the task is reported as
+`differs`. The final line reports `N of M task files match MarcEdit (K match
+except MarcEdit-unreadable records, D differ, E error, U not translated)`.
 
 Unsupported lines are reported with their source and line number. A task is
 written only when every line has been translated, so partial imports cannot be
