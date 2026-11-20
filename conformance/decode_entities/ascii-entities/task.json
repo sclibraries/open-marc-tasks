@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "Synthetic entity decoding",
+  "description": "Covers hex, decimal, named, unknown and nested HTML entities.",
+  "steps": [
+    {
+      "command": "decode_entities"
+    }
+  ]
+}

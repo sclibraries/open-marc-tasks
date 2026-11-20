@@ -91,6 +91,8 @@ from .commands.call_task import run as run_call_task
 from .commands.call_task import validate as validate_call_task
 from .commands.copy_field import run as run_copy_field
 from .commands.copy_field import validate as validate_copy_field
+from .commands.decode_entities import run as run_decode_entities
+from .commands.decode_entities import validate as validate_decode_entities
 from .commands.delete_field import run as run_delete_field
 from .commands.delete_field import validate as validate_delete_field
 from .commands.edit_subfield import run as run_edit_subfield
@@ -121,6 +123,7 @@ COMMANDS = {
     "replace_text": (validate_replace_text, run_replace_text),
     "replace_characters": (validate_replace_characters, run_replace_characters),
     "apply_rules": (validate_apply_rules, run_apply_rules),
+    "decode_entities": (validate_decode_entities, run_decode_entities),
     "remove_subfield": (validate_remove_subfield, run_remove_subfield),
     "sort_fields": (validate_sort_fields, run_sort_fields),
     "set_indicators": (validate_set_indicators, run_set_indicators),
