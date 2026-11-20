@@ -1,6 +1,6 @@
 Title: Accept uppercase subfield codes in edited fields, as MarcEdit does
 
-Status: In-Review
+Status: Completed
 Size: S
 Tier: normal — relaxes a text-form check (owner decision 2026-11-20)
 Milestone: M2 — Commands
@@ -50,7 +50,7 @@ Verification:
 - The orchestrator reruns the measurement; the raw sample's 8 record-32 errors should go.
 
 Handoff:
-- (orchestrator fills in after the check)
+- Head f4e59d4, merged into main (owner OK 2026-11-20). Python 3.9 gate 259 passed, 1 skipped; host reference passed. Measure 89/86/81 match, 0 differ.
 
 Review:
-- (orchestrator fills in)
+- Uppercase codes accepted on parse-back and regex results; `$!` still raises. Raw record 92 now shows MarcEdit corrupting U+2212 in its smart-character step. No fix round.
