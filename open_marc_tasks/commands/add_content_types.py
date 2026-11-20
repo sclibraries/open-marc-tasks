@@ -131,24 +131,25 @@ def _content_field(record: Record) -> Optional[Field]:
 
 
 def _media_carrier_fields(record: Record) -> Tuple[List[Field], List[Field]]:
-    mapped_007 = [
-        field
-        for field in record.get_fields("007")
-        if field.data and field.data[0] in MEDIA_CARRIERS
-    ]
-    if not mapped_007:
+    fields_007 = record.get_fields("007")
+    if not fields_007:
         return (
             [_data_field("337", "unmediated", "n", "rdamedia")],
             [_data_field("338", "volume", "nc", "rdacarrier")],
         )
+    if any(len(field.data) < 2 for field in fields_007):
+        return [], []
 
     media_fields = []
     carrier_fields = []
-    for field in mapped_007:
-        if len(field.data) < 2:
-            continue
-        media, carriers, fallback = MEDIA_CARRIERS[field.data[0]]
-        carrier = carriers.get(field.data[1], fallback)
+    for field in fields_007:
+        mapping = MEDIA_CARRIERS.get(field.data[0])
+        if mapping is None:
+            media = ("unmediated", "n")
+            carrier = ("volume", "nc")
+        else:
+            media, carriers, fallback = mapping
+            carrier = carriers.get(field.data[1], fallback)
         media_fields.append(_data_field("337", media[0], media[1], "rdamedia"))
         carrier_fields.append(_data_field("338", carrier[0], carrier[1], "rdacarrier"))
     return media_fields, carrier_fields

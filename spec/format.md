@@ -291,17 +291,15 @@ also has `$2 rdacontent`.
 | `u`, `v`, `x`, `y`, `z` | no 336 | — | `leader06-character-grid` |
 
 Leader/06 `u`, `v`, `x`, `y`, or `z` also suppresses generated 337 and 338
-fields, even when a mapped 007 such as `cr` is present. The default media and
-carrier pair applies when Leader/06 has a content-type mapping and no mapped
-007 is present (`leader06-unmapped-with-007`).
+fields, even when a mapped 007 such as `cr` is present
+(`leader06-unmapped-with-007`).
 
 ### Media and carrier from 007
 
-When Leader/06 has a content-type mapping and no applicable 007, the generated
-fields are `337 $a unmediated $b n $2 rdamedia` and
-`338 $a volume $b nc $2 rdacarrier`. The tested 007 classes
-`a`, `d`, `f`, `k`, `o`, `q`, and `r` use that same default. For the classes
-below, 007/00 selects the media type and 007/01 selects the carrier. Each
+For a record whose Leader/06 has a content-type mapping and has no 007 fields,
+the generated fields are `337 $a unmediated $b n $2 rdamedia` and
+`338 $a volume $b nc $2 rdacarrier`. For 007 fields with at least two
+characters, 007/00 selects the media type and 007/01 selects the carrier. Each
 337 also has `$2 rdamedia`; each 338 also has `$2 rdacarrier`.
 
 | 007/00 | 337 `$a` / `$b` | 007/01 and 338 `$a` / `$b` | Probe evidence |
@@ -315,17 +313,17 @@ below, 007/00 selects the media type and 007/01 selects the carrier. Each
 | `z` | `other` / `x` | all values from `a`–`z`, blank, and `|`: `unspecified` / `zu` | `007-z-subtype-grid` |
 
 Each subtype grid covers every lowercase value from `a` through `z`, blank,
-and `|`. A one-character 007 in any of the mapped classes `c`, `g`, `h`, `m`,
-`s`, `v`, or `z` produces no 337 or 338; the 336 is still generated. Data
-after 007/01 did not change the result (`cr` and a longer `cr` value produced
-the same pair). The other tested 007 classes `a`, `d`, `f`, `k`, `o`, `q`, and
-`r` use the default media and carrier fields when no mapped class is present.
+and `|`. Data after 007/01 did not change the result (`cr` and a longer `cr`
+value produced the same pair).
 
-Each mapped 007 field produces one 337 and one 338, in input order within each
-tag. For example, `cr` followed by `sd` produces computer then audio 337s and
-online resource then audio disc 338s; reversing the 007 fields reverses both
-orders. The 336 remains based on Leader/06. An unhandled 007 class does not
-produce a pair and uses the default above when no mapped 007 is present.
+If any 007 field has fewer than two characters, no 337 or 338 is generated;
+the 336 remains based on Leader/06. Otherwise, each 007 field produces one
+337/338 pair in input order. A mapped class uses the table above; any other
+007/00 value, including blank, uses the default `unmediated` / `n` and
+`volume` / `nc` pair. For example, `cr` followed by `sd` produces computer
+then audio 337s and online resource then audio disc 338s; reversing the 007
+fields reverses both orders. With no 007 fields and a mapped Leader/06, the
+default pair is generated once.
 
 ### Existing fields and placement
 

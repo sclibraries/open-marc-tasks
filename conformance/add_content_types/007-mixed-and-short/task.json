@@ -1,0 +1,10 @@
+{
+  "format_version": "0.1",
+  "name": "007-mixed-and-short",
+  "description": "Synthetic mixed, unhandled, short, empty, and blank-class 007 fields.",
+  "steps": [
+    {
+      "command": "add_content_types"
+    }
+  ]
+}
